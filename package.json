@@ -9,16 +9,27 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/material": "^6.1.1",
+    "@types/node-dijkstra": "^2.5.6",
+    "@types/p5": "^1.7.6",
+    "@types/pathfinding": "^0.0.9",
+    "alea": "^1.0.1",
+    "next": "14.2.13",
+    "node-dijkstra": "^2.5.0",
+    "p5": "^1.10.0",
+    "pathfinding": "^0.4.18",
     "react": "^18",
     "react-dom": "^18",
-    "next": "14.2.13"
+    "simplex-noise": "^4.0.3"
   },
   "devDependencies": {
-    "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
-    "eslint-config-next": "14.2.13"
+    "eslint-config-next": "14.2.13",
+    "typescript": "^5"
   }
 }
