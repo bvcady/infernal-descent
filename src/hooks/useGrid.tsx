@@ -7,9 +7,9 @@ import { useEffect, useState } from "react";
 import { useNoise } from "./useNoise";
 
 interface Props {
-  width: number;
-  height: number;
-  seed: string;
+  width?: number;
+  height?: number;
+  seed?: string;
   density?: number;
 }
 
@@ -24,19 +24,10 @@ export const useGrid = ({ width, height, seed, density = 10 }: Props) => {
   const [cells, setCells] = useState<Cell[]>([]);
   const { genericNoise } = useNoise({ seed });
 
-  useEffect(() => {
-    resetGrid();
-  }, [width, height, seed]);
-
-  useEffect(() => {
-    if (hasFailure === true) {
-      console.log("had failure");
-      setHasFailure(false);
-      resetGrid();
-    }
-  }, [hasFailure]);
-
   const resetGrid = () => {
+    if (!width || !height || !seed) {
+      return;
+    }
     setLoading(true);
     setCells([]);
     const fillableCells = new Array(height)
@@ -125,8 +116,29 @@ export const useGrid = ({ width, height, seed, density = 10 }: Props) => {
       .filter((c) => c.isEdge)
       .sort((a, b) => b.n - a.n);
 
-    const startCell = edgeCells.sort((a, b) => a.x - b.x)[0];
-    const exitCell = edgeCells.sort((a, b) => b.x - a.x)[0];
+    const randomDirection = shuffle(["x", "y"]);
+    const randomSide = shuffle([-1, 1]);
+
+    const dirCombination = shuffle(
+      randomDirection
+        .map((dir) => {
+          return randomSide.map((side) => {
+            return { dir: dir as "x" | "y", side };
+          });
+        })
+        .flat()
+    );
+    const startPosition = dirCombination[0];
+    const endPosition = dirCombination[1];
+
+    const startCell = edgeCells.sort(
+      (a, b) =>
+        startPosition.side * (a[startPosition.dir] - b[startPosition.dir])
+    )[0];
+
+    const exitCell = edgeCells.sort(
+      (a, b) => endPosition.side * (a[endPosition.dir] - b[endPosition.dir])
+    )[0];
 
     const nonEdgeCells = [...roomCells]
       .filter((c) => !c.isEdge && !c.isOutside && !c.isRock)
@@ -240,6 +252,7 @@ export const useGrid = ({ width, height, seed, density = 10 }: Props) => {
       } else if (rockCount >= 0) {
         if (scale([0, 1], [0, rockCount])(Math.random()) > 0.8) {
           current.isLava = true;
+          current.isPath = true;
         } else {
           current.isPath = true;
         }
@@ -284,34 +297,61 @@ export const useGrid = ({ width, height, seed, density = 10 }: Props) => {
       return cell;
     });
 
-    const withNeighbours = [...cellsWithThickenedEdge].map((cell) => {
+    const cellIsImportant = (cell: Cell) => {
+      if (startCell.x === cell.x && startCell.y === cell.y) return true;
+      if (exitCell.x === cell.x && exitCell.y === cell.y) return true;
+      if (poiCell.x === cell.x && poiCell.y === cell.y) return true;
+      return false;
+    };
+
+    const withEmptiedCells = [...cellsWithThickenedEdge].map((cell) => {
       const emptyPath =
-        cell.isPath && Math.random() < 0.05 ? true : cell.isOutside;
+        cell.isPath && Math.random() < 0.05 && !cellIsImportant(cell)
+          ? true
+          : cell.isOutside;
       return {
         ...cell,
         isOutside: emptyPath,
         isPath: cell.isPath ? !emptyPath : cell.isPath,
+      };
+    });
+
+    const withNeighbours = [...withEmptiedCells].map((cell) => {
+      return {
+        ...cell,
         neighbours: {
-          top: cellsWithThickenedEdge.find(
+          top: withEmptiedCells.find(
             (c) => c.x === cell.x && c.y === cell.y - 1
           ),
-          bottom: cellsWithThickenedEdge.find(
+          bottom: withEmptiedCells.find(
             (c) => c.x === cell.x && c.y === cell.y + 1
           ),
-          left: cellsWithThickenedEdge.find(
+          left: withEmptiedCells.find(
             (c) => c.x === cell.x - 1 && c.y === cell.y
           ),
-          right: cellsWithThickenedEdge.find(
+          right: withEmptiedCells.find(
             (c) => c.x === cell.x + 1 && c.y === cell.y
           ),
         },
       };
     });
 
-    // console.log({ withNeighbours });
     setCells([...withNeighbours]);
     setLoading(false);
     setHasFailure(false);
   };
+
+  useEffect(() => {
+    resetGrid();
+  }, [width, height, seed]);
+
+  useEffect(() => {
+    if (hasFailure === true) {
+      console.log("had failure");
+      setHasFailure(false);
+      resetGrid();
+    }
+  }, [hasFailure]);
+
   return { trigger: resetGrid, cells, loading, start, exit, POI };
 };

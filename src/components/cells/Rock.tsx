@@ -93,6 +93,10 @@ export const Rock = ({ cellSize = 16, cell }: Props) => {
         backgroundColor: "black",
         transform: "translateY(-50%)",
         // backgroundColor: nextToPath ? "white" : undefined,
+        gridColumnStart: (cell?.x || 0) + 1,
+        gridRowStart: (cell?.y || 0) + 1,
+        gridColumnEnd: "span 1",
+        gridRowEnd: "span 1",
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
         backgroundImage:

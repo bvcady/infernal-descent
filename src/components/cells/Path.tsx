@@ -1,12 +1,14 @@
 import { Cell } from "@/types/Cell";
 import { shuffle } from "@/utils/shuffle";
 import { Box } from "@mui/material";
+import { styled } from "@mui/system";
+import { useEffect } from "react";
 
 interface Props {
   cellSize?: number;
   cell?: Cell;
 }
-
+const PathTile = styled(Box)``;
 const d = 17;
 
 export const Path = ({ cellSize = 16, cell }: Props) => {
@@ -15,15 +17,18 @@ export const Path = ({ cellSize = 16, cell }: Props) => {
   };
 
   return (
-    <Box
+    <PathTile
       className="path"
-      width={Math.floor(cellSize * 0.45) * 2}
-      height={Math.floor(cellSize * 0.45) * 2}
+      width={cellSize}
+      height={cellSize}
       sx={{
+        // boxShadow: " 0 0 2px 1px blue",
+        gridColumnStart: (cell?.x || 0) + 1,
+        gridRowStart: (cell?.y || 0) + 1,
+        gridColumnEnd: "span 1",
+        gridRowEnd: "span 1",
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
-        backgroundColor: !cell?.isOutside ? "white" : undefined,
-        borderRadius: "2px",
         backgroundImage:
           getFromTileset() >= 0
             ? `url("/images/Monochrome/tilemap/new_tile${

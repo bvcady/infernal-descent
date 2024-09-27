@@ -18,7 +18,7 @@ export const RockBottom = ({ cellSize = 16, cell }: Props) => {
       width={cellSize * 0.9}
       height={cellSize * 0.9}
       sx={{
-        transform: "translateY(-45%)",
+        transform: `translateY(-75%) scale(${Math.random() > 0.5 ? 1 : -1}, 1)`,
         gridColumnStart: x + 1,
         gridColumnEnd: "span 1",
         gridRowStart: y + 1,

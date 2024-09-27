@@ -1,4 +1,4 @@
-import { Cell } from "@/components/map/Map";
+import { Cell } from "@/types/Cell";
 import Graph from "node-dijkstra";
 import { useEffect, useState } from "react";
 

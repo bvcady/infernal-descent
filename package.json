@@ -16,13 +16,15 @@
     "@types/p5": "^1.7.6",
     "@types/pathfinding": "^0.0.9",
     "alea": "^1.0.1",
+    "css-animation-sync": "^0.5.0",
     "next": "14.2.13",
     "node-dijkstra": "^2.5.0",
     "p5": "^1.10.0",
     "pathfinding": "^0.4.18",
     "react": "^18",
     "react-dom": "^18",
-    "simplex-noise": "^4.0.3"
+    "simplex-noise": "^4.0.3",
+    "use-sound": "^4.0.3"
   },
   "devDependencies": {
     "@types/node": "^20",
