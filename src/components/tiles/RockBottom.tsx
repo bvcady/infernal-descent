@@ -1,14 +1,15 @@
+import { windowStore } from "@/stores/WindowStore";
 import { Cell } from "@/types/Cell";
 import { Box } from "@mui/material";
+import { useStore } from "zustand";
 
 interface Props {
-  cellSize?: number;
   cell?: Cell;
 }
 
-const d = 17;
+export const RockBottom = ({ cell }: Props) => {
+  const { cellSize } = useStore(windowStore, (state) => state);
 
-export const RockBottom = ({ cellSize = 16, cell }: Props) => {
   const x = cell?.x || 0;
   const y = cell?.y || 0;
 

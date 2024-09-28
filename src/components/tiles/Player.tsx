@@ -1,17 +1,20 @@
+import { windowStore } from "@/stores/WindowStore";
 import { Cell } from "@/types/Cell";
 import { Box, styled } from "@mui/material";
 import { useEffect, useRef } from "react";
+import { useStore } from "zustand";
 
 const PlayerSprite = styled(Box)``;
 
 interface Props {
-  cellSize?: number;
   cell?: Cell;
 }
 
 const d = 17;
 
-export const Player = ({ cellSize = 16, cell }: Props) => {
+export const Player = ({ cell }: Props) => {
+  const { cellSize } = useStore(windowStore, (state) => state);
+
   const x = cell?.x || -1;
   const y = cell?.y || -1;
 

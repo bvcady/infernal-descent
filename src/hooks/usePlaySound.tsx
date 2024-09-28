@@ -1,7 +1,6 @@
+import { scale } from "@/utils/scale";
 import { useCallback, useState } from "react";
 import useSound from "use-sound";
-import { useNoise } from "./useNoise";
-import { scale } from "@/utils/scale";
 
 interface Props {
   soundFile: string;
@@ -19,14 +18,10 @@ export const usePlaySound = ({ soundFile, options }: Props) => {
     volume: options?.volume || 1,
   });
 
-  const { genericNoise } = useNoise({ seed: "player-move" });
-
   const handlePlay = useCallback(() => {
     setIncrement((prev) => (prev += 0.5));
     if (!options?.playbackRate)
-      setPlaybackRate(
-        scale([-1, 1], [0.9, 1.1])(genericNoise(increment, increment) || 0)
-      );
+      setPlaybackRate(scale([0, 1], [0.9, 1.1])(Math.random()));
     // stop();
     play();
   }, [increment, setIncrement, setPlaybackRate, playbackRate]);

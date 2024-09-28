@@ -7,6 +7,6 @@ interface Props {
 
 const d = 17;
 
-export const Chest = ({ cell }: Props) => {
-  return <DefaultTile cell={cell} tileNumber={15 + 4 * d} noBackground />;
+export const Exit = ({ cell }: Props) => {
+  return <DefaultTile cell={cell} tileNumber={16 + 4 * d} noBackground />;
 };

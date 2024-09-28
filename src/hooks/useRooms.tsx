@@ -1,23 +1,31 @@
+import { runStore } from "@/stores/RunStore";
 import { Room } from "@/types/Room";
+import { generateNoise, shuffle } from "@/utils/noise";
 import { scale } from "@/utils/scale";
-import { shuffle } from "@/utils/shuffle";
-import { useCallback, useEffect, useState } from "react";
-import { useNoise } from "./useNoise";
+import Alea from "alea";
+
+import { useCallback, useEffect } from "react";
+import { useStore } from "zustand";
 
 interface Props {
   seed: string;
 }
 
 export const useRooms = ({ seed }: Props) => {
-  const [rooms, setRooms] = useState<Room[]>([]);
-  const { genericNoise } = useNoise({ seed });
+  const { rooms, setRooms, setCurrentRoom } = useStore(
+    runStore,
+    (state) => state
+  );
 
   const generateRooms = useCallback(() => {
+    const r = Alea(seed);
+
     if (!seed) {
       setRooms([]);
     }
+
     const targetTotal = Math.floor(
-      scale([-1, 1], [8, 14])(genericNoise(0.5, 1) || 0)
+      scale([0, 1], [8, 14])(generateNoise({ random: r }))
     );
 
     const roomGrid = new Array(5)
@@ -51,11 +59,18 @@ export const useRooms = ({ seed }: Props) => {
 
       const nextRoom =
         totalRooms.length === 0
-          ? shuffle([...roomGrid])[0]
-          : (shuffle(options)[0] as Room);
+          ? shuffle([...roomGrid], r)[0]
+          : (shuffle(options, r)[0] as Room);
 
       const newSize = Math.floor(
-        scale([-1, 1], [1, 5])(genericNoise(nextRoom.x, nextRoom.y) || 0)
+        scale(
+          [0, 1],
+          [1, 4]
+        )(
+          generateNoise({
+            random: r,
+          })
+        )
       );
 
       nextRoom.isCollapsed = true;
@@ -69,14 +84,36 @@ export const useRooms = ({ seed }: Props) => {
 
       totalRooms.push(nextRoom);
     }
-    console.log({ totalRooms });
 
-    setRooms(totalRooms);
-  }, [genericNoise, seed]);
+    const roomsWithNeighbours = [...totalRooms].map((room) => {
+      const neighbours = {
+        top: totalRooms.find((r) => r.x === room.x && r.y === room.y - 1),
+        bottom: totalRooms.find((r) => r.x === room.x && r.y === room.y + 1),
+        left: totalRooms.find((r) => r.x === room.x - 1 && r.y === room.y),
+        right: totalRooms.find((r) => r.x === room.x + 1 && r.y === room.y),
+      };
+      return { ...room, neighbours };
+    });
+
+    setRooms(roomsWithNeighbours);
+  }, [generateNoise, seed]);
 
   useEffect(() => {
     generateRooms();
   }, [seed]);
 
-  return { rooms };
+  useEffect(() => {
+    setCurrentRoom(
+      rooms.sort((a, b) => {
+        const nNeighbours = (room: Room) => {
+          const top = room?.neighbours?.top ? -1 : 0;
+          const bottom = room?.neighbours?.bottom ? -1 : 0;
+          const right = room?.neighbours?.right ? -1 : 0;
+          const left = room?.neighbours?.left ? -1 : 0;
+          return top + bottom + right + left;
+        };
+        return nNeighbours(a) - nNeighbours(b);
+      })[0]
+    );
+  }, [rooms]);
 };

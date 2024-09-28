@@ -1,14 +1,17 @@
-import { cellSize } from "@/utils/defaultValues";
+import { levelStore } from "@/stores/LevelStore";
+import { windowStore } from "@/stores/WindowStore";
 import { Box } from "@mui/material";
 import { CSSProperties, ReactNode } from "react";
+import { useStore } from "zustand";
 
 interface Props {
-  width: number;
-  height: number;
   style?: CSSProperties;
   children?: ReactNode;
 }
-export const GridWrapper = ({ width, height, children, style = {} }: Props) => {
+export const GridWrapper = ({ children, style = {} }: Props) => {
+  const { cellSize } = useStore(windowStore, (state) => state);
+  const { dimensions } = useStore(levelStore, (state) => state);
+  const { width, height } = dimensions;
   return (
     <Box
       position={"absolute"}

@@ -1,4 +1,4 @@
-import { cellSize, miniFont } from "@/utils/defaultValues";
+import { miniFont } from "@/utils/defaultValues";
 import { styled } from "@mui/material";
 import { Box } from "@mui/system";
 import { ReactNode } from "react";

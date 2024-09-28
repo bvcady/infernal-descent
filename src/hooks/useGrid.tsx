@@ -1,58 +1,68 @@
 import { Cell } from "@/types/Cell";
 import { distanceFromCenter } from "@/utils/distanceFromCenter";
 import { scale } from "@/utils/scale";
-import { shuffle } from "@/utils/shuffle";
 import Graph from "node-dijkstra";
 import { useEffect, useState } from "react";
-import { useNoise } from "./useNoise";
+
+import { levelStore } from "@/stores/LevelStore";
+import { runStore } from "@/stores/RunStore";
+import { generateNoise, shuffle } from "@/utils/noise";
+import Alea from "alea";
+import { useStore } from "zustand";
+import { createNoise2D } from "simplex-noise";
 
 interface Props {
-  width?: number;
-  height?: number;
   seed?: string;
-  density?: number;
 }
 
-const colorScale = scale([-1, 1], [0, 255]);
+export const useGrid = ({ seed }: Props) => {
+  const { setWalls, setFloorTiles, setDimensions } = useStore(levelStore);
+  const { currentRoom } = useStore(runStore);
 
-export const useGrid = ({ width, height, seed, density = 10 }: Props) => {
   const [start, setStart] = useState<Cell>();
   const [exit, setExit] = useState<Cell>();
   const [POI, setPOI] = useState<Cell>();
-  const [loading, setLoading] = useState(false);
+
   const [hasFailure, setHasFailure] = useState(false);
   const [cells, setCells] = useState<Cell[]>([]);
-  const { genericNoise } = useNoise({ seed });
+
+  const currentSeed = `${seed} - ${currentRoom?.x} - ${currentRoom?.y}`;
 
   const resetGrid = () => {
-    if (!width || !height || !seed) {
+    if (!currentRoom || !seed) {
       return;
     }
-    setLoading(true);
+    const width = (currentRoom?.size + 1) * 10;
+    const height = Math.floor(width * (9 / 16));
+
+    const r = Alea(currentSeed);
+
+    setDimensions({ width, height });
+
+    const densityNoise = generateNoise({ random: r });
+
+    const density = Math.floor(scale([0, 1], [0, 10])(densityNoise));
+
     setCells([]);
+
+    const noise2D = createNoise2D(r);
     const fillableCells = new Array(height)
       .fill("")
       .map((_, y) =>
         new Array(width).fill("").map((_, x) => {
           const d = distanceFromCenter(x, y, width, height);
-          // const insideShape = d < (width < height ? width : height) / 3;
-          const insideShape =
-            d +
-              scale(
-                [-1, 1],
-                [-height / 12, height / 12]
-              )(genericNoise(x / 12, y / 12, 0.2) || 0) <
-            (width < height ? width : height) / 3;
 
-          const noiseColor = Math.floor(
-            colorScale(genericNoise?.(x / width, y / height) || 0)
-          );
+          const noisedVal = scale([-1, 1], [0, 1])(noise2D(x / 10, y / 10));
+          // console.log({ d, noisedVal, line: height / 3 });
+          const insideShape =
+            d + scale([0, 1], [-height / 12, height / 12])(noisedVal) <
+            (width < height ? width : height) / 3;
 
           return {
             x,
             y,
             isOutside: !insideShape,
-            n: noiseColor,
+            n: noisedVal,
             isCollapsed: !insideShape,
           };
         })
@@ -65,7 +75,7 @@ export const useGrid = ({ width, height, seed, density = 10 }: Props) => {
       ...[...insideCells]
         .sort((a, b) => a.n - b.n)
         .splice(0, insideCells.length / 6),
-      ...shuffle([...insideCells]).splice(0, insideCells.length / 40),
+      ...shuffle([...insideCells], r).splice(0, insideCells.length / 40),
     ];
 
     const roomCells = fillableCells.map((cell) => {
@@ -116,8 +126,8 @@ export const useGrid = ({ width, height, seed, density = 10 }: Props) => {
       .filter((c) => c.isEdge)
       .sort((a, b) => b.n - a.n);
 
-    const randomDirection = shuffle(["x", "y"]);
-    const randomSide = shuffle([-1, 1]);
+    const randomDirection = shuffle(["x", "y"], r);
+    const randomSide = shuffle([-1, 1], r);
 
     const dirCombination = shuffle(
       randomDirection
@@ -126,7 +136,8 @@ export const useGrid = ({ width, height, seed, density = 10 }: Props) => {
             return { dir: dir as "x" | "y", side };
           });
         })
-        .flat()
+        .flat(),
+      r
     );
     const startPosition = dirCombination[0];
     const endPosition = dirCombination[1];
@@ -145,7 +156,14 @@ export const useGrid = ({ width, height, seed, density = 10 }: Props) => {
       .sort((a, b) => b.n - a.n);
 
     const poiCell =
-      nonEdgeCells[Math.floor(Math.random() * (nonEdgeCells.length - 1))];
+      nonEdgeCells[
+        Math.floor(
+          scale(
+            [0, 1],
+            [0, nonEdgeCells.length - 1]
+          )(generateNoise({ random: r }))
+        )
+      ];
 
     setStart(startCell);
     setExit(exitCell);
@@ -171,7 +189,7 @@ export const useGrid = ({ width, height, seed, density = 10 }: Props) => {
 
         neighbours?.forEach((n) => {
           const index = `${n.x} - ${n.y}`;
-          connections.set(index, Math.pow(255 - (n.isOutside ? 0 : n.n), 3));
+          connections.set(index, Math.pow(1 - (n.isOutside ? 0 : n.n), 3));
         });
 
         const c = Object.fromEntries(connections);
@@ -195,36 +213,39 @@ export const useGrid = ({ width, height, seed, density = 10 }: Props) => {
 
       const isCollapsed = containsPath || cell.isCollapsed;
 
-      const options = isCollapsed
-        ? []
-        : ([
-            ...new Array(density).fill("rock"),
-            ...new Array(30 - density).fill("path"),
-          ] as string[]);
-
       return {
         ...cell,
         isPath: containsPath,
         isOutside: containsPath ? false : cell.isOutside,
         isRock: containsPath ? false : cell.isRock,
         isCollapsed,
-        options,
-        entropy: options.length,
       };
     });
 
     const finalCells = [...cellsWithPath];
+
     const options = [...cellsWithPath].filter((cell) => !cell.isCollapsed);
 
     while (options.length) {
-      const current = [...options].sort((a, b) => b.entropy - a.entropy)?.[0];
+      const current = [...options]?.[0];
       const optsIndex = options.findIndex(
         (opt) => opt.x === current.x && opt.y === current.y
       );
       const finalIndex = finalCells.findIndex(
         (opt) => opt.x === current.x && opt.y === current.y
       );
-      const cellType = shuffle(current.options)[0];
+
+      const cellType =
+        scale(
+          [0, 1],
+          [0, 100]
+        )(
+          generateNoise({
+            random: r,
+          })
+        ) < density
+          ? "rock"
+          : "path";
 
       const dirs = {
         top: [...finalCells].find(
@@ -249,17 +270,16 @@ export const useGrid = ({ width, height, seed, density = 10 }: Props) => {
 
       if (cellType === "rock") {
         current.isRock = true;
-      } else if (rockCount >= 0) {
-        if (scale([0, 1], [0, rockCount])(Math.random()) > 0.8) {
-          current.isLava = true;
-          current.isPath = true;
-        } else {
-          current.isPath = true;
+        // current.isOutside = false;
+      } else {
+        current.isRock = false;
+        // current.isOutside = false;
+        current.isPath = true;
+        if (rockCount >= 0) {
+          current.isLava = generateNoise({ random: r }) < 0.05;
         }
       }
       current.isCollapsed = true;
-      current.options = [];
-
       finalCells[finalIndex] = current;
 
       options.splice(optsIndex, 1);
@@ -306,7 +326,9 @@ export const useGrid = ({ width, height, seed, density = 10 }: Props) => {
 
     const withEmptiedCells = [...cellsWithThickenedEdge].map((cell) => {
       const emptyPath =
-        cell.isPath && Math.random() < 0.05 && !cellIsImportant(cell)
+        cell.isPath &&
+        scale([0, 1], [0, 100])(generateNoise({ random: r })) < density * 2 &&
+        !cellIsImportant(cell)
           ? true
           : cell.isOutside;
       return {
@@ -337,13 +359,22 @@ export const useGrid = ({ width, height, seed, density = 10 }: Props) => {
     });
 
     setCells([...withNeighbours]);
-    setLoading(false);
+
     setHasFailure(false);
   };
 
   useEffect(() => {
+    // at the start of a floor / level, first check if there is something stored in the localstorage for that seed-floor combination
+    // then set the cells to the wall and floor cells from the storage (no need to include n-values and isComplete)
     resetGrid();
-  }, [width, height, seed]);
+  }, [seed, currentRoom]);
+
+  useEffect(() => {
+    // set all walls to a state containing all the (immutable) wall cells;
+    setWalls([...cells].filter((c) => c.isRock));
+    // set all path (including those that contain items) to a state containing all the mutable floor tiles;
+    setFloorTiles([...cells].filter((c) => c.isPath || c.isLava));
+  }, [cells]);
 
   useEffect(() => {
     if (hasFailure === true) {
@@ -353,5 +384,5 @@ export const useGrid = ({ width, height, seed, density = 10 }: Props) => {
     }
   }, [hasFailure]);
 
-  return { trigger: resetGrid, cells, loading, start, exit, POI };
+  return { trigger: resetGrid, cells, start, exit, POI };
 };

@@ -1,38 +1,34 @@
 import { Cell } from "@/types/Cell";
-import { cellSize } from "@/utils/defaultValues";
 import { GridWrapper } from "../grid/GridWrapper";
 import { Chest } from "../tiles/Chest";
 import { Key } from "../tiles/Key";
 import { Rubble } from "../tiles/Rubble";
+import { useStore } from "zustand";
+import { levelStore } from "@/stores/LevelStore";
 
 interface Props {
-  width?: number;
-  height?: number;
   itemCells: { type: string; cells: Cell[] }[];
 }
-export const ItemMap = ({ width = 10, height = 10, itemCells }: Props) => {
+export const ItemMap = ({ itemCells }: Props) => {
+  const { items } = useStore(levelStore, (state) => state);
   return (
-    <GridWrapper {...{ width, height }}>
+    <GridWrapper>
       {itemCells
         .find((item) => item.type === "rubble")
         ?.cells.map((cell) => (
-          <Rubble
-            key={`rubble - ${cell.x} - ${cell.y}`}
-            cell={cell}
-            cellSize={cellSize}
-          />
+          <Rubble key={`rubble - ${cell.x} - ${cell.y}`} cell={cell} />
         ))}
 
       {itemCells
         .find((item) => item.type === "exit")
         ?.cells?.map((c) => (
-          <Chest key={`exit - ${c.x} - ${c.y}`} cellSize={cellSize} cell={c} />
+          <Chest key={`exit - ${c.x} - ${c.y}`} cell={c} />
         ))}
 
       {itemCells
         .find((item) => item.type === "poi")
         ?.cells?.map((c) => (
-          <Key key={`key - ${c.x} - ${c.y}`} cellSize={cellSize} cell={c} />
+          <Key key={`key - ${c.x} - ${c.y}`} cell={c} />
         ))}
     </GridWrapper>
   );

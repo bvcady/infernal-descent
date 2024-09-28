@@ -1,25 +1,13 @@
 import { Cell } from "@/types/Cell";
-import { Box } from "@mui/material";
+import { DefaultTile } from "./DefaultTile";
 
 interface Props {
-  cellSize?: number;
   cell?: Cell;
 }
 
 const d = 17;
 
-export const Rock = ({ cellSize = 16, cell }: Props) => {
-  // const topCell = cell?.neighbours?.top;
-  // const bottomCell = cell?.neighbours?.bottom;
-  // const rightCell = cell?.neighbours?.right;
-  // const leftCell = cell?.neighbours?.left;
-
-  // const nextToPath =
-  //   topCell?.isPath ||
-  //   bottomCell?.isPath ||
-  //   rightCell?.isPath ||
-  //   leftCell?.isPath;
-
+export const Wall = ({ cell }: Props) => {
   const getFromTileset = () => {
     const top = cell?.neighbours?.top?.isRock;
     const bottom = cell?.neighbours?.bottom?.isRock;
@@ -83,29 +71,10 @@ export const Rock = ({ cellSize = 16, cell }: Props) => {
   };
 
   return (
-    <Box
-      className={"rock"}
-      width={cellSize}
-      height={cellSize}
-      sx={{
-        position: "absolute",
-        zIndex: 2,
-        backgroundColor: "black",
-        transform: "translateY(-50%)",
-        // backgroundColor: nextToPath ? "white" : undefined,
-        gridColumnStart: (cell?.x || 0) + 1,
-        gridRowStart: (cell?.y || 0) + 1,
-        gridColumnEnd: "span 1",
-        gridRowEnd: "span 1",
-        backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
-        backgroundImage:
-          getFromTileset() >= 0
-            ? `url("/images/Monochrome/tilemap/new_tile${
-                getFromTileset() + 1
-              }.png")`
-            : undefined,
-      }}
+    <DefaultTile
+      cell={cell}
+      tileNumber={getFromTileset()}
+      style={{ transform: "translateY(-50%)" }}
     />
   );
 };

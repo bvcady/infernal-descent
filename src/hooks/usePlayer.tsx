@@ -1,6 +1,8 @@
+import { playerStore } from "@/stores/PlayerStore";
 import { Cell } from "@/types/Cell";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePlaySound } from "./usePlaySound";
+import { useStore } from "zustand";
 
 interface Props {
   startCell: Cell;
@@ -11,9 +13,7 @@ interface Props {
 const cardinals = ["ArrowUp", "ArrowDown", "ArrowRight", "ArrowLeft"];
 
 export const usePlayer = ({ startCell, allCells, POI }: Props) => {
-  const [player, setPlayer] = useState(
-    allCells.find((c) => c.x === startCell.x && c.y === startCell.y)
-  );
+  const { player, setPlayer } = useStore(playerStore, (state) => state);
 
   const { play: playStep } = usePlaySound({
     soundFile: "/Audio/Impact Sounds/Audio/footstep_wood_002.ogg",
@@ -21,13 +21,10 @@ export const usePlayer = ({ startCell, allCells, POI }: Props) => {
   });
   const { play: playThud } = usePlaySound({
     soundFile: "/Audio/Impact Sounds/Audio/impactWood_heavy_000.ogg",
-    // options: { loop: true },
-    // soundFile: "/Audio/Impact Sounds/Audio/impactSoft_heavy_001.ogg",
   });
   const { play: playKey } = usePlaySound({
     soundFile: "/Audio/Impact Sounds/Audio/impactMining_002.ogg",
-    // options: { loop: true },
-    // soundFile: "/Audio/Impact Sounds/Audio/impactSoft_heavy_001.ogg",
+    options: { volume: 0.3 },
   });
 
   useEffect(() => {
