@@ -11,8 +11,6 @@ import { ItemMap } from "./ItemMap";
 import { PlayerMap } from "./PlayerMap";
 import { TileMap } from "./TileMap";
 import { WallMap } from "./WallMap";
-import { GridWrapper } from "../grid/GridWrapper";
-import { cellSize } from "@/utils/defaultValues";
 
 interface Props {
   seed: string;
@@ -36,7 +34,7 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
 
   const cells = grid?.cells || [];
   const start = grid?.start;
-  const exit = grid?.exit;
+  const exits = grid?.exits;
   const POI = grid?.POI;
 
   const updateSeed = () => {
@@ -73,6 +71,7 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
             rockEdges={[...cells].filter(
               (c) => c.neighbours?.top?.isRock && !c.isRock
             )}
+            exits={exits}
           />
 
           <TileMap />
@@ -80,22 +79,18 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
           <ItemMap
             itemCells={[
               { type: "rubble", cells: [...cells].filter((c) => c.isLava) },
-              { type: "exit", cells: exit ? [exit] : [] },
               { type: "poi", cells: POI ? [POI] : [] },
             ]}
           />
 
-          {start ? (
-            <PlayerMap start={start} allCells={[...cells]} POI={POI} />
-          ) : null}
-
+          <PlayerMap startCell={start} allCells={[...cells]} POI={POI} />
           <WallMap />
 
           <UIOverlay updateSeed={updateSeed} />
         </Box>
         <Box bgcolor={"#400438"} position={"absolute"} sx={{ inset: "0" }} />
       </Box>
-      <GridWrapper style={{ gap: 0 }}>
+      {/* <GridWrapper style={{ gap: 0 }}>
         {cells?.map((c) => (
           <Box
             key={`${c.n} - ${c.y}`}
@@ -104,7 +99,7 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
             bgcolor={`rgb(${c.n * 255}, ${c.n * 255}, ${c.n * 255})`}
           ></Box>
         ))}
-      </GridWrapper>
+      </GridWrapper> */}
     </>
   );
 };

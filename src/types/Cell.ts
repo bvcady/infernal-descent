@@ -11,4 +11,6 @@ export type Cell = {
   n: number;
   options?: string[]
   neighbours?: {top?: Cell, bottom?: Cell, left?: Cell, right?: Cell}
+  isAccessible?: boolean;
+
 };

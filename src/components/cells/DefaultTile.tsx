@@ -11,6 +11,7 @@ interface Props {
   tileNumber?: number;
   style?: CSSProperties;
   noBackground?: boolean;
+  onClick?: () => void;
 }
 export const DefaultTile = ({
   ref,
@@ -19,11 +20,13 @@ export const DefaultTile = ({
   className = "",
   style = {},
   noBackground,
+  onClick,
 }: Props) => {
   const { cellSize } = useStore(windowStore, (state) => state);
 
   return (
     <Box
+      onClick={() => onClick?.()}
       ref={ref}
       className={className}
       width={cellSize}

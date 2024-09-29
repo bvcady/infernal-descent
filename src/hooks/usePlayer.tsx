@@ -77,6 +77,7 @@ export const usePlayer = ({ startCell, allCells, POI }: Props) => {
       );
       if (nextCell) return setPlayer({ ...nextCell });
     }
+
     playThud();
   };
 

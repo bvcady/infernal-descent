@@ -2,25 +2,36 @@ import { Cell } from "@/types/Cell";
 import { distanceFromCenter } from "@/utils/distanceFromCenter";
 import { scale } from "@/utils/scale";
 import Graph from "node-dijkstra";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { levelStore } from "@/stores/LevelStore";
+import { playerStore } from "@/stores/PlayerStore";
 import { runStore } from "@/stores/RunStore";
+import { Room } from "@/types/Room";
 import { generateNoise, shuffle } from "@/utils/noise";
 import Alea from "alea";
-import { useStore } from "zustand";
 import { createNoise2D } from "simplex-noise";
+import { useStore } from "zustand";
+import { exit } from "process";
 
 interface Props {
   seed?: string;
 }
+type Direction = "top" | "bottom" | "left" | "right";
 
 export const useGrid = ({ seed }: Props) => {
   const { setWalls, setFloorTiles, setDimensions } = useStore(levelStore);
-  const { currentRoom } = useStore(runStore);
+  const { currentRoom, previousRoom } = useStore(runStore);
+  const { setPlayer } = useStore(playerStore);
 
   const [start, setStart] = useState<Cell>();
-  const [exit, setExit] = useState<Cell>();
+  const [exits, setExits] = useState<
+    {
+      cell: Cell;
+      exit: Room | undefined;
+      side: Direction;
+    }[]
+  >();
   const [POI, setPOI] = useState<Cell>();
 
   const [hasFailure, setHasFailure] = useState(false);
@@ -53,7 +64,7 @@ export const useGrid = ({ seed }: Props) => {
           const d = distanceFromCenter(x, y, width, height);
 
           const noisedVal = scale([-1, 1], [0, 1])(noise2D(x / 10, y / 10));
-          // console.log({ d, noisedVal, line: height / 3 });
+
           const insideShape =
             d + scale([0, 1], [-height / 12, height / 12])(noisedVal) <
             (width < height ? width : height) / 3;
@@ -62,6 +73,7 @@ export const useGrid = ({ seed }: Props) => {
             x,
             y,
             isOutside: !insideShape,
+            isAccessible: !insideShape,
             n: noisedVal,
             isCollapsed: !insideShape,
           };
@@ -80,7 +92,7 @@ export const useGrid = ({ seed }: Props) => {
 
     const roomCells = fillableCells.map((cell) => {
       if (cell.isOutside) {
-        return { ...cell, isEdge: false, isRock: false };
+        return { ...cell };
       }
 
       const checkIfNeighbourIsOutside = () => {
@@ -126,30 +138,33 @@ export const useGrid = ({ seed }: Props) => {
       .filter((c) => c.isEdge)
       .sort((a, b) => b.n - a.n);
 
-    const randomDirection = shuffle(["x", "y"], r);
-    const randomSide = shuffle([-1, 1], r);
-
-    const dirCombination = shuffle(
-      randomDirection
-        .map((dir) => {
-          return randomSide.map((side) => {
-            return { dir: dir as "x" | "y", side };
-          });
-        })
-        .flat(),
-      r
-    );
-    const startPosition = dirCombination[0];
-    const endPosition = dirCombination[1];
-
-    const startCell = edgeCells.sort(
-      (a, b) =>
-        startPosition.side * (a[startPosition.dir] - b[startPosition.dir])
-    )[0];
-
-    const exitCell = edgeCells.sort(
-      (a, b) => endPosition.side * (a[endPosition.dir] - b[endPosition.dir])
-    )[0];
+    const exits = (Object.keys(currentRoom.neighbours) as Direction[])
+      .map((k) => {
+        return {
+          side: k,
+          exit: currentRoom.neighbours[k],
+          cell: {
+            ...edgeCells.sort((a, b) => {
+              if (k === "top") {
+                return a.y - b.y;
+              }
+              if (k === "bottom") {
+                return b.y - a.y;
+              }
+              if (k === "right") {
+                return b.x - a.x;
+              }
+              if (k === "left") {
+                return a.x - b.x;
+              }
+              return 1;
+            })[0],
+            isAccessible: true,
+            isCollapsed: true,
+          },
+        };
+      })
+      .filter((room) => room.exit);
 
     const nonEdgeCells = [...roomCells]
       .filter((c) => !c.isEdge && !c.isOutside && !c.isRock)
@@ -165,10 +180,7 @@ export const useGrid = ({ seed }: Props) => {
         )
       ];
 
-    setStart(startCell);
-    setExit(exitCell);
-
-    const findPath = (route: Graph, endCell: Cell) => {
+    const findPath = (startCell: Cell, route: Graph, endCell: Cell) => {
       return route.path(
         `${startCell.x} - ${startCell.y}`,
         `${endCell.x} - ${endCell.y}`
@@ -201,14 +213,31 @@ export const useGrid = ({ seed }: Props) => {
 
     const grid = makeGrid(roomCells);
 
-    const exitPath = findPath(grid, exitCell);
-    const poiPath = findPath(grid, poiCell);
+    const allPaths = [...exits]
+      .map((exit) =>
+        [...exits].map((e) => findPath(exit.cell, grid, e.cell)).flat()
+      )
+      .flat();
+
+    const poiPath = findPath(exits[0].cell, grid, poiCell);
 
     if (poiPath?.length) setPOI(poiCell);
 
     const cellsWithPath = [...roomCells].map((cell) => {
+      if (
+        exits.find((exit) => exit.cell.x === cell.x && exit.cell.y === cell.y)
+      ) {
+        return {
+          ...cell,
+          isPath: false,
+          isCollapsed: true,
+          isAccessible: true,
+          isOutside: false,
+          isRock: false,
+        };
+      }
       const containsPath =
-        !!exitPath?.find((p) => p === `${cell.x} - ${cell.y}`) ||
+        !!allPaths?.find((p) => p === `${cell.x} - ${cell.y}`) ||
         !!poiPath?.find((p) => p === `${cell.x} - ${cell.y}`);
 
       const isCollapsed = containsPath || cell.isCollapsed;
@@ -318,8 +347,10 @@ export const useGrid = ({ seed }: Props) => {
     });
 
     const cellIsImportant = (cell: Cell) => {
-      if (startCell.x === cell.x && startCell.y === cell.y) return true;
-      if (exitCell.x === cell.x && exitCell.y === cell.y) return true;
+      if (
+        exits.find((exit) => exit.cell.x === cell.x && exit.cell.y === cell.y)
+      )
+        return true;
       if (poiCell.x === cell.x && poiCell.y === cell.y) return true;
       return false;
     };
@@ -358,6 +389,24 @@ export const useGrid = ({ seed }: Props) => {
       };
     });
 
+    const exitsWithNeighbours = [...exits]
+      .map((exit) => {
+        const wn = withNeighbours.find(
+          (c) => c.x === exit.cell.x && c.y === exit.cell.y
+        );
+        if (!wn) {
+          return exit;
+        }
+        return {
+          ...exit,
+          cell: wn,
+        };
+      })
+      .filter((c) => !!c);
+
+    setExits(exitsWithNeighbours);
+    setStart(exitsWithNeighbours[0]?.cell);
+
     setCells([...withNeighbours]);
 
     setHasFailure(false);
@@ -369,11 +418,28 @@ export const useGrid = ({ seed }: Props) => {
     resetGrid();
   }, [seed, currentRoom]);
 
+  const updatePlayer = useCallback(() => {
+    if (previousRoom && currentRoom) {
+      if (previousRoom.x < currentRoom.x) {
+      }
+      if (previousRoom.x > currentRoom.x) {
+      }
+      if (previousRoom.y > currentRoom.y) {
+      }
+      if (previousRoom.y < currentRoom.y) {
+      }
+    }
+
+    setPlayer(exits?.[0].cell);
+  }, [setPlayer, currentRoom, exits, previousRoom]);
+
   useEffect(() => {
     // set all walls to a state containing all the (immutable) wall cells;
     setWalls([...cells].filter((c) => c.isRock));
     // set all path (including those that contain items) to a state containing all the mutable floor tiles;
     setFloorTiles([...cells].filter((c) => c.isPath || c.isLava));
+
+    updatePlayer();
   }, [cells]);
 
   useEffect(() => {
@@ -384,5 +450,5 @@ export const useGrid = ({ seed }: Props) => {
     }
   }, [hasFailure]);
 
-  return { trigger: resetGrid, cells, start, exit, POI };
+  return { trigger: resetGrid, cells, start, exits, POI };
 };

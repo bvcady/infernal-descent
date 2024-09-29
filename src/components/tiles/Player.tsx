@@ -1,22 +1,19 @@
+import { playerStore } from "@/stores/PlayerStore";
 import { windowStore } from "@/stores/WindowStore";
-import { Cell } from "@/types/Cell";
 import { Box, styled } from "@mui/material";
 import { useEffect, useRef } from "react";
 import { useStore } from "zustand";
 
 const PlayerSprite = styled(Box)``;
 
-interface Props {
-  cell?: Cell;
-}
-
 const d = 17;
 
-export const Player = ({ cell }: Props) => {
+export const Player = () => {
+  const { player } = useStore(playerStore);
   const { cellSize } = useStore(windowStore, (state) => state);
 
-  const x = cell?.x || -1;
-  const y = cell?.y || -1;
+  const x = player?.x || -1;
+  const y = player?.y || -1;
 
   const requestRef = useRef<number>(0);
   const playerRef = useRef<HTMLDivElement>();

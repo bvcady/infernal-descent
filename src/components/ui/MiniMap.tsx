@@ -5,7 +5,7 @@ import { windowStore } from "@/stores/WindowStore";
 import { Box } from "@mui/material";
 
 export const MiniMap = () => {
-  const { rooms, setCurrentRoom } = useStore(runStore);
+  const { rooms } = useStore(runStore);
   const { cellSize } = useStore(windowStore);
 
   return (
@@ -21,9 +21,6 @@ export const MiniMap = () => {
     >
       {rooms?.map((room) => (
         <Box
-          onClick={() => {
-            setCurrentRoom(room);
-          }}
           key={`mini - room - ${room.x} - ${room.y}`}
           bgcolor={"white"}
           gridColumn={`${room.x + 1} / span 1`}

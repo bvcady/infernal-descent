@@ -6,19 +6,12 @@ import { Player } from "../tiles/Player";
 // @ts-ignore
 
 interface Props {
-  start: Cell;
+  startCell: Cell;
   allCells: Cell[];
   POI?: Cell;
 }
 
-export const PlayerMap = ({ start, allCells, POI }: Props) => {
-  const { player } = usePlayer({ startCell: start, allCells, POI });
-
-  return (
-    <GridWrapper>
-      {start ? (
-        <Player key={`player - ${player?.x} - ${player?.y}`} cell={player} />
-      ) : null}
-    </GridWrapper>
-  );
+export const PlayerMap = ({ startCell, allCells, POI }: Props) => {
+  usePlayer({ startCell, allCells, POI });
+  return <GridWrapper>{<Player />}</GridWrapper>;
 };
