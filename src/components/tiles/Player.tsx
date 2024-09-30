@@ -53,7 +53,7 @@ export const Player = () => {
         // zIndex: cell?.y,
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
-        backgroundImage: `url("/images/Monochrome/tilemap/new_tile${
+        backgroundImage: `url("../../images/Monochrome/Tilemap/new_tile${
           7 + 7 * d + 1
         }.png")`,
       }}

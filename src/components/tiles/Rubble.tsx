@@ -30,7 +30,7 @@ export const Rubble = ({ cell }: Props) => {
         backgroundPosition: "center center",
         backgroundSize: "contain",
         backgroundRepeat: "no-repeat",
-        backgroundImage: `url("/images/Monochrome/tilemap/new_tile${
+        backgroundImage: `url("../../images/Monochrome/tilemap/new_tile${
           7 + 6 * d + 1
         }.png")`,
       }}
