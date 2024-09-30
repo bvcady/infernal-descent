@@ -4,7 +4,6 @@ import { ButtonBase, styled } from "@mui/material";
 interface Props {
   callback?: () => void;
   label?: string;
-  width?: number;
 }
 
 const CustomButton = styled(ButtonBase)`
@@ -16,7 +15,7 @@ const CustomButton = styled(ButtonBase)`
   padding: 4px;
 `;
 
-export const Button = ({ callback, label, width = 3 }: Props) => {
+export const Button = ({ callback, label }: Props) => {
   // const tiles = new Array(width * 2).fill("").map((_, i) => i);
   return (
     <CustomButton

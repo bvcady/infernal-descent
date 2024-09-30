@@ -5,7 +5,7 @@ import { usePlaySound } from "./usePlaySound";
 import { useStore } from "zustand";
 
 interface Props {
-  startCell: Cell;
+  startCell?: Cell;
   allCells: Cell[];
   POI?: Cell;
 }
@@ -28,7 +28,9 @@ export const usePlayer = ({ startCell, allCells, POI }: Props) => {
   });
 
   useEffect(() => {
-    setPlayer(allCells.find((c) => c.x === startCell.x && c.y === startCell.y));
+    setPlayer(
+      allCells.find((c) => c.x === startCell?.x && c.y === startCell?.y)
+    );
   }, [startCell]);
 
   useEffect(() => {
@@ -71,7 +73,7 @@ export const usePlayer = ({ startCell, allCells, POI }: Props) => {
 
   const handleMoveInDirection = (dir: "top" | "bottom" | "right" | "left") => {
     const cellCheck = player?.neighbours?.[dir];
-    if (cellCheck?.isPath && !cellCheck.isLava) {
+    if (cellCheck?.isPath && !cellCheck.isObstacle) {
       const nextCell = allCells.find(
         (c) => c.x === cellCheck.x && c.y === cellCheck.y
       );
@@ -98,12 +100,11 @@ export const usePlayer = ({ startCell, allCells, POI }: Props) => {
         }
       }
     },
-    [player, startCell]
+    [player, startCell, allCells]
   );
 
   useEffect(() => {
     addEventListener("keyup", handleKeyUp);
-
     return () => removeEventListener("keyup", handleKeyUp);
   }, [handleKeyUp]);
 

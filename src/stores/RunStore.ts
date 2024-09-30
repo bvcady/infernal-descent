@@ -3,14 +3,14 @@ import { createStore } from "zustand";
 
 type RunStoreState = {
   rooms: Room[];
-  currentRoom?: Room,
-  previousRoom?: Room
+  currentRoom?: Room;
+  previousRoom?: Room;
 };
 
 type RunStoreActions = {
   setRooms: (nextRooms: RunStoreState["rooms"]) => void;
   setCurrentRoom: (nextCurrentRoom: RunStoreState["currentRoom"]) => void;
-  setPreviousRoom: (nextPreviousRoom: RunStoreState['previousRoom']) => void
+  updateRooms: (nextCurrentRoom: RunStoreState["currentRoom"]) => void;
 };
 
 type RunStore = RunStoreState & RunStoreActions;
@@ -21,5 +21,9 @@ export const runStore = createStore<RunStore>()((set) => ({
   currentRoom: undefined,
   setCurrentRoom: (currentRoom) => set({ currentRoom }),
   previousRoom: undefined,
-  setPreviousRoom: (previousRoom) => set({previousRoom})
+  updateRooms: (currentRoom) => {
+    const oldRoom = runStore.getState().currentRoom;
+    set({ previousRoom: oldRoom });
+    set({ currentRoom });
+  },
 }));

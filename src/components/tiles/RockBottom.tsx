@@ -15,11 +15,12 @@ export const RockBottom = ({ cell }: Props) => {
 
   return (
     <Box
-      className="rubble"
       width={cellSize * 0.9}
       height={cellSize * 0.9}
       sx={{
-        transform: `translateY(-75%) scale(${Math.random() > 0.5 ? 1 : -1}, 1)`,
+        transform: `translateY(-75%) scale(${
+          (cell?.n || 0) > 0.5 ? 1 : -1
+        }, 1)`,
         gridColumnStart: x + 1,
         gridColumnEnd: "span 1",
         gridRowStart: y + 1,

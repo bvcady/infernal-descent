@@ -1,10 +1,12 @@
 "use client";
 
 import { useGrid } from "@/hooks/useGrid";
-import { usePlaySound } from "@/hooks/usePlaySound";
+// import { usePlaySound } from "@/hooks/usePlaySound";
+import { levelStore } from "@/stores/LevelStore";
 import { Room } from "@/types/Room";
 import { Box } from "@mui/material";
 import { Dispatch, useEffect } from "react";
+import { useStore } from "zustand";
 import { UIOverlay } from "../ui/RoomsOverlay";
 import { BottomMap } from "./BottomMap";
 import { ItemMap } from "./ItemMap";
@@ -19,10 +21,12 @@ interface Props {
 }
 
 export const RoomMap = ({ seed, setSeed }: Props) => {
-  const { play } = usePlaySound({
-    soundFile: "/Audio/Music/Retro/Retro Mystic.ogg",
-    options: { playbackRate: 1, loop: true },
-  });
+  const { dimensions } = useStore(levelStore, (state) => state);
+
+  // const { play } = usePlaySound({
+  //   soundFile: "/Audio/Music/Retro/Retro Mystic.ogg",
+  //   options: { playbackRate: 1, loop: true },
+  // });
 
   useEffect(() => {
     // play();
@@ -51,17 +55,22 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
         overflow={"hidden"}
         display={"flex"}
         justifyContent={"center"}
-        alignItems={"center"}
+        alignItems={"flex-start"}
       >
         <Box
           position={"relative"}
           width={"100%"}
-          height={"100%"}
-          borderRadius={"4px"}
+          maxWidth={"min(100dvw, 100dvh)"}
+          // height={"100%"}
           display={"flex"}
           justifyContent={"center"}
           alignItems={"center"}
           sx={{
+            aspectRatio: 1,
+            marginBottom:
+              dimensions.width < dimensions.height ? "auto" : undefined,
+            // width: width < height ? "100%" : undefined,
+            // height: height < height ? "100%" : undefined,
             userSelect: "none",
             mixBlendMode: "screen",
             zIndex: 2,
@@ -69,7 +78,7 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
         >
           <BottomMap
             rockEdges={[...cells].filter(
-              (c) => c.neighbours?.top?.isRock && !c.isRock
+              (c) => c.neighbours?.top?.isWall && !c.isWall
             )}
             exits={exits}
           />
@@ -78,12 +87,12 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
 
           <ItemMap
             itemCells={[
-              { type: "rubble", cells: [...cells].filter((c) => c.isLava) },
+              { type: "rubble", cells: [...cells].filter((c) => c.isObstacle) },
               { type: "poi", cells: POI ? [POI] : [] },
             ]}
           />
 
-          <PlayerMap startCell={start} allCells={[...cells]} POI={POI} />
+          <PlayerMap startCell={start} allCells={[...cells]} />
           <WallMap />
 
           <UIOverlay updateSeed={updateSeed} />

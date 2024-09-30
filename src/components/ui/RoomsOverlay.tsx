@@ -1,7 +1,6 @@
 import { Box } from "@mui/system";
 import { ReactNode } from "react";
 import { Button } from "./Button";
-import { Metronome } from "./Metronome";
 import { MiniMap } from "./MiniMap";
 
 // const RoomsWrapper = styled(Box)`
@@ -25,7 +24,7 @@ export const UIOverlay = ({ updateSeed }: Props) => {
       gap={"1rem"}
     >
       <MiniMap />
-      <Metronome />
+      {/* <Metronome /> */}
       <Button label="reset" callback={updateSeed} />
     </Box>
   );

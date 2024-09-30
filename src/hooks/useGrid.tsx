@@ -2,7 +2,7 @@ import { Cell } from "@/types/Cell";
 import { distanceFromCenter } from "@/utils/distanceFromCenter";
 import { scale } from "@/utils/scale";
 import Graph from "node-dijkstra";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { levelStore } from "@/stores/LevelStore";
 import { playerStore } from "@/stores/PlayerStore";
@@ -12,7 +12,6 @@ import { generateNoise, shuffle } from "@/utils/noise";
 import Alea from "alea";
 import { createNoise2D } from "simplex-noise";
 import { useStore } from "zustand";
-import { exit } from "process";
 
 interface Props {
   seed?: string;
@@ -22,6 +21,7 @@ type Direction = "top" | "bottom" | "left" | "right";
 export const useGrid = ({ seed }: Props) => {
   const { setWalls, setFloorTiles, setDimensions } = useStore(levelStore);
   const { currentRoom, previousRoom } = useStore(runStore);
+
   const { setPlayer } = useStore(playerStore);
 
   const [start, setStart] = useState<Cell>();
@@ -129,7 +129,7 @@ export const useGrid = ({ seed }: Props) => {
       return {
         ...cell,
         isEdge: checkIfNeighbourIsOutside(),
-        isRock: containsRock,
+        isWall: containsRock,
         isCollapsed: containsRock || cell.isCollapsed,
       };
     }) as Cell[];
@@ -167,7 +167,7 @@ export const useGrid = ({ seed }: Props) => {
       .filter((room) => room.exit);
 
     const nonEdgeCells = [...roomCells]
-      .filter((c) => !c.isEdge && !c.isOutside && !c.isRock)
+      .filter((c) => !c.isEdge && !c.isOutside && !c.isWall)
       .sort((a, b) => b.n - a.n);
 
     const poiCell =
@@ -233,7 +233,7 @@ export const useGrid = ({ seed }: Props) => {
           isCollapsed: true,
           isAccessible: true,
           isOutside: false,
-          isRock: false,
+          isWall: false,
         };
       }
       const containsPath =
@@ -246,7 +246,7 @@ export const useGrid = ({ seed }: Props) => {
         ...cell,
         isPath: containsPath,
         isOutside: containsPath ? false : cell.isOutside,
-        isRock: containsPath ? false : cell.isRock,
+        isWall: containsPath ? false : cell.isWall,
         isCollapsed,
       };
     });
@@ -292,20 +292,20 @@ export const useGrid = ({ seed }: Props) => {
       };
 
       const rockCount =
-        (dirs.top?.isRock ? 1 : 0) +
-        (dirs.bottom?.isRock ? 1 : 0) +
-        (dirs.left?.isRock ? 1 : 0) +
-        (dirs.right?.isRock ? 1 : 0);
+        (dirs.top?.isWall ? 1 : 0) +
+        (dirs.bottom?.isWall ? 1 : 0) +
+        (dirs.left?.isWall ? 1 : 0) +
+        (dirs.right?.isWall ? 1 : 0);
 
       if (cellType === "rock") {
-        current.isRock = true;
+        current.isWall = true;
         // current.isOutside = false;
       } else {
-        current.isRock = false;
+        current.isWall = false;
         // current.isOutside = false;
         current.isPath = true;
         if (rockCount >= 0) {
-          current.isLava = generateNoise({ random: r }) < 0.05;
+          current.isObstacle = generateNoise({ random: r }) < 0.05;
         }
       }
       current.isCollapsed = true;
@@ -319,29 +319,38 @@ export const useGrid = ({ seed }: Props) => {
         return false;
       }
 
-      const dirs = {
-        top: allCells.find(
-          (c) => c.x === cell.x && c.y === cell.y - 2 && !c.isOutside
-        ),
-        bottom: allCells.find(
-          (c) => c.x === cell.x && c.y === cell.y + 2 && !c.isOutside
-        ),
-        left: allCells.find(
-          (c) => c.x === cell.x - 2 && c.y === cell.y && !c.isOutside
-        ),
-        right: allCells.find(
-          (c) => c.x === cell.x + 2 && c.y === cell.y && !c.isOutside
-        ),
-      };
-      if (dirs.top || dirs.bottom || dirs.left || dirs.right) {
-        return true;
-      }
-      return false;
+      const isClose = allCells
+        ?.filter((c) => !c.isOutside)
+        .some(
+          (c) =>
+            Math.sqrt(Math.pow(cell.x - c.x, 2) + Math.pow(cell.y - c.y, 2)) <
+            2.4
+        );
+
+      // const dirs = {
+      //   top: allCells.find(
+      //     (c) => c.x === cell.x && c.y === cell.y - 1 && !c.isOutside
+      //   ),
+      //   bottom: allCells.find(
+      //     (c) => c.x === cell.x && c.y === cell.y + 1 && !c.isOutside
+      //   ),
+      //   left: allCells.find(
+      //     (c) => c.x === cell.x - 1 && c.y === cell.y && !c.isOutside
+      //   ),
+      //   right: allCells.find(
+      //     (c) => c.x === cell.x + 1 && c.y === cell.y && !c.isOutside
+      //   ),
+      // };
+      // if (dirs.top || dirs.bottom || dirs.left || dirs.right) {
+      //   return true;
+      // }
+      // return false;
+      return isClose;
     };
 
     const cellsWithThickenedEdge = [...finalCells].map((cell) => {
       if (cellNeighboursAnEdge(cell, finalCells)) {
-        return { ...cell, isRock: true, isOutside: false };
+        return { ...cell, isWall: true, isOutside: false };
       }
       return cell;
     });
@@ -355,19 +364,29 @@ export const useGrid = ({ seed }: Props) => {
       return false;
     };
 
-    const withEmptiedCells = [...cellsWithThickenedEdge].map((cell) => {
-      const emptyPath =
-        cell.isPath &&
-        scale([0, 1], [0, 100])(generateNoise({ random: r })) < density * 2 &&
-        !cellIsImportant(cell)
-          ? true
-          : cell.isOutside;
-      return {
-        ...cell,
-        isOutside: emptyPath,
-        isPath: cell.isPath ? !emptyPath : cell.isPath,
-      };
-    });
+    const withEmptiedCells = [...cellsWithThickenedEdge]
+      .map((cell) => {
+        const emptyPath =
+          cell.isPath &&
+          scale([0, 1], [0, 100])(generateNoise({ random: r })) < density * 2 &&
+          !cellIsImportant(cell)
+            ? true
+            : cell.isOutside;
+        return {
+          ...cell,
+          isOutside: emptyPath,
+          isPath: cell.isPath ? !emptyPath : cell.isPath,
+        };
+      })
+      .map((c) => {
+        const possibleExit = exits.find(
+          (e) => e.cell.x === c.x && e.cell.y === c.y
+        );
+        if (possibleExit) {
+          return { ...c, exit: possibleExit.exit, isCollapsed: true };
+        }
+        return c;
+      });
 
     const withNeighbours = [...withEmptiedCells].map((cell) => {
       return {
@@ -388,7 +407,6 @@ export const useGrid = ({ seed }: Props) => {
         },
       };
     });
-
     const exitsWithNeighbours = [...exits]
       .map((exit) => {
         const wn = withNeighbours.find(
@@ -405,7 +423,28 @@ export const useGrid = ({ seed }: Props) => {
       .filter((c) => !!c);
 
     setExits(exitsWithNeighbours);
-    setStart(exitsWithNeighbours[0]?.cell);
+    if (!previousRoom) {
+      setStart(exitsWithNeighbours[0]?.cell);
+    } else {
+      console.log({ previousRoom, currentRoom });
+      if (previousRoom.x < currentRoom.x) {
+        setStart(
+          exitsWithNeighbours.sort((a, b) => a.cell.x - b.cell.x)[0].cell
+        );
+      } else if (previousRoom.x > currentRoom.x) {
+        setStart(
+          exitsWithNeighbours.sort((a, b) => b.cell.x - a.cell.x)[0].cell
+        );
+      } else if (previousRoom.y < currentRoom.y) {
+        setStart(
+          exitsWithNeighbours.sort((a, b) => a.cell.y - b.cell.y)[0].cell
+        );
+      } else if (previousRoom.y > currentRoom.y) {
+        setStart(
+          exitsWithNeighbours.sort((a, b) => b.cell.y - a.cell.y)[0].cell
+        );
+      }
+    }
 
     setCells([...withNeighbours]);
 
@@ -415,31 +454,15 @@ export const useGrid = ({ seed }: Props) => {
   useEffect(() => {
     // at the start of a floor / level, first check if there is something stored in the localstorage for that seed-floor combination
     // then set the cells to the wall and floor cells from the storage (no need to include n-values and isComplete)
-    resetGrid();
-  }, [seed, currentRoom]);
-
-  const updatePlayer = useCallback(() => {
-    if (previousRoom && currentRoom) {
-      if (previousRoom.x < currentRoom.x) {
-      }
-      if (previousRoom.x > currentRoom.x) {
-      }
-      if (previousRoom.y > currentRoom.y) {
-      }
-      if (previousRoom.y < currentRoom.y) {
-      }
-    }
-
-    setPlayer(exits?.[0].cell);
-  }, [setPlayer, currentRoom, exits, previousRoom]);
+    if (currentRoom) resetGrid();
+  }, [seed, currentRoom, previousRoom]);
 
   useEffect(() => {
     // set all walls to a state containing all the (immutable) wall cells;
-    setWalls([...cells].filter((c) => c.isRock));
+    setWalls([...cells].filter((c) => c.isWall));
     // set all path (including those that contain items) to a state containing all the mutable floor tiles;
-    setFloorTiles([...cells].filter((c) => c.isPath || c.isLava));
-
-    updatePlayer();
+    setFloorTiles([...cells].filter((c) => c.isPath || c.isObstacle));
+    setPlayer(start);
   }, [cells]);
 
   useEffect(() => {

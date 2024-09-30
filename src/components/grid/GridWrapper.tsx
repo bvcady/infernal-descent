@@ -16,6 +16,7 @@ export const GridWrapper = ({ children, style = {} }: Props) => {
     <Box
       position={"absolute"}
       padding={`${cellSize}px`}
+      width={"100%"}
       minWidth={"fit-content"}
       maxWidth={"fit-content"}
       sx={{

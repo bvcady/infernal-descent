@@ -9,10 +9,10 @@ const d = 17;
 
 export const Wall = ({ cell }: Props) => {
   const getFromTileset = () => {
-    const top = cell?.neighbours?.top?.isRock;
-    const bottom = cell?.neighbours?.bottom?.isRock;
-    const right = cell?.neighbours?.right?.isRock;
-    const left = cell?.neighbours?.left?.isRock;
+    const top = cell?.neighbours?.top?.isWall;
+    const bottom = cell?.neighbours?.bottom?.isWall;
+    const right = cell?.neighbours?.right?.isWall;
+    const left = cell?.neighbours?.left?.isWall;
 
     // center tile
     if (top && bottom && left && right) {

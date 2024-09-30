@@ -1,9 +1,13 @@
 import { Cell } from "@/types/Cell";
-import { Item } from "@/types/Item";
+
 import { createStore } from "zustand";
 
-type PlayerStoreState = { player?: Cell; items: Item[] };
-export type KeyboardDirection = "ArrowUp" | "ArrowDown" | "ArrowLeft" | "ArrowRight";
+type PlayerStoreState = { player?: Cell };
+export type KeyboardDirection =
+  | "ArrowUp"
+  | "ArrowDown"
+  | "ArrowLeft"
+  | "ArrowRight";
 
 type PlayerStoreActions = {
   setPlayer: (nextPosition: PlayerStoreState["player"]) => void;
@@ -14,7 +18,6 @@ type PlayerStore = PlayerStoreState & PlayerStoreActions;
 
 export const playerStore = createStore<PlayerStore>()((set) => ({
   player: undefined,
-  items: [],
   setPlayer: (player) => {
     set({ player });
   },

@@ -103,17 +103,17 @@ export const useRooms = ({ seed }: Props) => {
   }, [seed]);
 
   useEffect(() => {
-    setCurrentRoom(
-      rooms.sort((a, b) => {
-        const nNeighbours = (room: Room) => {
-          const top = room?.neighbours?.top ? -1 : 0;
-          const bottom = room?.neighbours?.bottom ? -1 : 0;
-          const right = room?.neighbours?.right ? -1 : 0;
-          const left = room?.neighbours?.left ? -1 : 0;
-          return top + bottom + right + left;
-        };
-        return nNeighbours(a) - nNeighbours(b);
-      })[0]
-    );
+    const selectedRoom = rooms.sort((a, b) => {
+      const nNeighbours = (room: Room) => {
+        const top = room?.neighbours?.top ? -1 : 0;
+        const bottom = room?.neighbours?.bottom ? -1 : 0;
+        const right = room?.neighbours?.right ? -1 : 0;
+        const left = room?.neighbours?.left ? -1 : 0;
+        return top + bottom + right + left;
+      };
+      return nNeighbours(a) - nNeighbours(b);
+    })[0];
+
+    setCurrentRoom(selectedRoom);
   }, [rooms]);
 };
