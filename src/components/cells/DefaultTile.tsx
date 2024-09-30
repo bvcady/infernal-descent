@@ -43,7 +43,7 @@ export const DefaultTile = ({
         ...style,
         backgroundImage:
           tileNumber >= 0
-            ? `url("../../images/Monochrome/tilemap/new_tile${
+            ? `url("../../images/Monochrome/Tilemap/new_tile${
                 tileNumber + 1
               }.png")`
             : undefined,

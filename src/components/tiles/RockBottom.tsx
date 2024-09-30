@@ -28,7 +28,7 @@ export const RockBottom = ({ cell }: Props) => {
         backgroundPosition: "center center",
         backgroundSize: "contain",
         backgroundRepeat: "no-repeat",
-        backgroundImage: `url("../../images/Monochrome/tilemap/new_tile${10}.png")`,
+        backgroundImage: `url("../../images/Monochrome/Tilemap/new_tile${10}.png")`,
       }}
     />
   );
