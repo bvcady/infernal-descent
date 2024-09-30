@@ -6,8 +6,6 @@ interface Props {
   cell?: Cell;
 }
 
-const d = 17;
-
 export const Key = ({ cell }: Props) => {
   const keyRef = useRef<HTMLDivElement>();
   const requestRef = useRef(0);
