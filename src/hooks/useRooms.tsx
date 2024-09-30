@@ -75,6 +75,9 @@ export const useRooms = ({ seed }: Props) => {
 
       nextRoom.isCollapsed = true;
       nextRoom.size = totalRooms?.length > 0 ? newSize : 3;
+      if (nextRoom.size === 3 && !totalRooms?.some((room) => room.isBossRoom)) {
+        nextRoom.isBossRoom = true;
+      }
 
       const indexOfRoom = [...roomGrid].findIndex(
         (room) => room.x === nextRoom.x && room.y === nextRoom.y

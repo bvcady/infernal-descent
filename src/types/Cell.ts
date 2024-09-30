@@ -14,4 +14,5 @@ export type Cell = {
   neighbours?: { top?: Cell; bottom?: Cell; left?: Cell; right?: Cell };
   isAccessible?: boolean;
   exit?: Room;
+  skull?: boolean
 };

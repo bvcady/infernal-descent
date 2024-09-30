@@ -27,6 +27,11 @@ export const ItemMap = ({ itemCells }: Props) => {
         ?.cells?.map((c) => (
           <Key key={`key - ${c.x} - ${c.y}`} cell={c} />
         ))}
+      {itemCells
+        .find((item) => item.type === "skull")
+        ?.cells?.map((c) => (
+          <Key key={`skull - ${c.x} - ${c.y}`} cell={c} />
+        ))}
     </GridWrapper>
   );
 };

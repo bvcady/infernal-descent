@@ -4,4 +4,5 @@ export type Room = {
   isCollapsed: boolean;
   size: number;
   neighbours: { top?: Room; bottom?: Room; left?: Room; right?: Room };
+  isBossRoom?: boolean
 };

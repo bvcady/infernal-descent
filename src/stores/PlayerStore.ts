@@ -2,7 +2,7 @@ import { Cell } from "@/types/Cell";
 
 import { createStore } from "zustand";
 
-type PlayerStoreState = { player?: Cell };
+type PlayerStoreState = { player?: Cell, faces: KeyboardDirection};
 export type KeyboardDirection =
   | "ArrowUp"
   | "ArrowDown"
@@ -17,6 +17,7 @@ type PlayerStoreActions = {
 type PlayerStore = PlayerStoreState & PlayerStoreActions;
 
 export const playerStore = createStore<PlayerStore>()((set) => ({
+  faces: "ArrowDown",
   player: undefined,
   setPlayer: (player) => {
     set({ player });
@@ -26,6 +27,7 @@ export const playerStore = createStore<PlayerStore>()((set) => ({
     if (!previousState) {
       return;
     }
+    set({faces: dir})
     if (dir === "ArrowUp") {
       set({ player: { ...previousState, y: previousState?.y - 1 } });
     }

@@ -9,6 +9,7 @@ interface Props {
   className?: string;
   cell?: Cell;
   tileNumber?: number;
+  customPath?: string;
   style?: CSSProperties;
   noBackground?: boolean;
   onClick?: () => void;
@@ -21,9 +22,15 @@ export const DefaultTile = ({
   style = {},
   noBackground,
   onClick,
+  customPath,
 }: Props) => {
   const { cellSize } = useStore(windowStore, (state) => state);
 
+  const bgPath = customPath
+    ? `url("../../${customPath}")`
+    : tileNumber >= 0
+    ? `url("../../images/Monochrome/Tilemap/new_tile${tileNumber + 1}.png")`
+    : undefined;
   return (
     <Box
       onClick={() => onClick?.()}
@@ -41,12 +48,7 @@ export const DefaultTile = ({
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
         ...style,
-        backgroundImage:
-          tileNumber >= 0
-            ? `url("../../images/Monochrome/Tilemap/new_tile${
-                tileNumber + 1
-              }.png")`
-            : undefined,
+        backgroundImage: bgPath,
       }}
     />
   );

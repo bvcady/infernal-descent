@@ -36,5 +36,14 @@ export const Key = ({ cell }: Props) => {
     return () => cancelAnimationFrame(requestRef.current);
   }, []);
 
-  return <DefaultTile cell={cell} tileNumber={15 + 6 * d} noBackground />;
+  return (
+    <DefaultTile
+      cell={cell}
+      customPath="images/Monochrome/Tilemap/threat3.png"
+      noBackground
+      style={{
+        transform: "rotate(90deg) scale(1, -1)",
+      }}
+    />
+  );
 };

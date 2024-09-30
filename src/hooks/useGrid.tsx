@@ -324,7 +324,7 @@ export const useGrid = ({ seed }: Props) => {
         .some(
           (c) =>
             Math.sqrt(Math.pow(cell.x - c.x, 2) + Math.pow(cell.y - c.y, 2)) <
-            2.4
+            3.5
         );
 
       // const dirs = {
@@ -366,6 +366,23 @@ export const useGrid = ({ seed }: Props) => {
 
     const withEmptiedCells = [...cellsWithThickenedEdge]
       .map((cell) => {
+        if (!cell.isPath) {
+          return cell;
+        }
+        const distFromExit = (c: Cell) => {
+          return exits.some((exit) => {
+            const dist = Math.sqrt(
+              Math.pow(exit.cell.x - c.x, 2) + Math.pow(exit.cell.y - c.y, 2)
+            );
+
+            return dist < 2.5 ? true : false;
+          });
+        };
+
+        if (distFromExit(cell)) {
+          console.log("too close");
+          return cell;
+        }
         const emptyPath =
           cell.isPath &&
           scale([0, 1], [0, 100])(generateNoise({ random: r })) < density * 2 &&
@@ -384,6 +401,25 @@ export const useGrid = ({ seed }: Props) => {
         );
         if (possibleExit) {
           return { ...c, exit: possibleExit.exit, isCollapsed: true };
+        }
+        return c;
+      })
+      .map((c) => {
+        if (!c.isPath) {
+          return c;
+        }
+        const isRightNextToExit = exits.some((exit) => {
+          if (!exit?.exit?.isBossRoom) {
+            return false;
+          }
+          const dist = Math.sqrt(
+            Math.pow(exit.cell.x - c.x, 2) + Math.pow(exit.cell.y - c.y, 2)
+          );
+
+          return dist === 1 ? true : false;
+        });
+        if (isRightNextToExit) {
+          return { ...c, skull: true };
         }
         return c;
       });
@@ -407,6 +443,7 @@ export const useGrid = ({ seed }: Props) => {
         },
       };
     });
+
     const exitsWithNeighbours = [...exits]
       .map((exit) => {
         const wn = withNeighbours.find(
@@ -423,6 +460,7 @@ export const useGrid = ({ seed }: Props) => {
       .filter((c) => !!c);
 
     setExits(exitsWithNeighbours);
+
     if (!previousRoom) {
       setStart(exitsWithNeighbours[0]?.cell);
     } else {

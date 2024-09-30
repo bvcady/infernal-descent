@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 
 export const MobileMovement = () => {
   const keyboardRef = useRef<HTMLDivElement>();
-  const [buttonsVisible, toggleButtonsVisible] = useState(true);
+  const [buttonsVisible, toggleButtonsVisible] = useState(false);
 
   const handleClick = (
     dir: "ArrowUp" | "ArrowDown" | "ArrowLeft" | "ArrowRight"

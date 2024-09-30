@@ -89,6 +89,7 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
             itemCells={[
               { type: "rubble", cells: [...cells].filter((c) => c.isObstacle) },
               { type: "poi", cells: POI ? [POI] : [] },
+              { type: "skull", cells: [...cells].filter((c) => c.skull) },
             ]}
           />
 
