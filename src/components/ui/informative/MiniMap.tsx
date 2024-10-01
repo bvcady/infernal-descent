@@ -1,9 +1,8 @@
-import { useStore } from "zustand";
-import { GridWrapper } from "../../level/GridWrapper";
 import { runStore } from "@/stores/RunStore";
 import { windowStore } from "@/stores/WindowStore";
 import { Box } from "@mui/material";
-import { Player } from "@/components/player/Player";
+import { useStore } from "zustand";
+import { GridWrapper } from "../../level/GridWrapper";
 
 const d = 17;
 
