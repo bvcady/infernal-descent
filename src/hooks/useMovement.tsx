@@ -1,6 +1,6 @@
+import { levelStore } from "@/stores/LevelStore";
 import { playerStore } from "@/stores/PlayerStore";
 import { runStore } from "@/stores/RunStore";
-import { Cell } from "@/types/Cell";
 import { Dispatch, useEffect, useRef, useState } from "react";
 import { useStore } from "zustand";
 
@@ -8,36 +8,49 @@ export type Direction = "top" | "bottom" | "right" | "left";
 
 interface Props {
   moveDirection?: Direction;
-  allCells?: Cell[];
   setMoveDirection?: Dispatch<Direction | undefined>;
 }
 
-export const useMovement = ({
-  moveDirection,
-  allCells = [],
-  setMoveDirection,
-}: Props) => {
+export const useMovement = ({ moveDirection, setMoveDirection }: Props) => {
   const requestRef = useRef(0);
 
+  const { walls, tiles, items, exits } = useStore(levelStore);
   const { player, setPlayer } = useStore(playerStore);
   const { updateRooms, rooms } = useStore(runStore);
 
   const [shouldDoNextMove, setShouldDoNextMove] = useState(false);
 
+  const tileOptions = [...tiles, ...exits];
+  const neighbouringCells = player
+    ? {
+        top: tileOptions?.find(
+          (cell) => cell.x === player?.x && cell.y === player?.y - 1
+        ),
+        bottom: tileOptions?.find(
+          (cell) => cell.x === player?.x && cell.y === player?.y + 1
+        ),
+        left: tileOptions?.find(
+          (cell) => cell.x === player?.x - 1 && cell.y === player?.y
+        ),
+        right: tileOptions?.find(
+          (cell) => cell.x === player?.x + 1 && cell.y === player?.y
+        ),
+      }
+    : {};
+
   const handleMoveInDirection = (dir: "top" | "bottom" | "right" | "left") => {
-    const cellCheck = player?.neighbours?.[dir];
+    const cellCheck = neighbouringCells?.[dir];
+    console.log({ cellCheck });
+    // Find the player's neighbours (based on the tiles and walls, not on what is in its default state
 
-    if ((cellCheck?.isPath || cellCheck?.exit) && !cellCheck.isObstacle) {
-      const nextCell = allCells.find(
-        (c) => c.x === cellCheck.x && c.y === cellCheck.y
-      );
-      if (nextCell) setPlayer({ ...nextCell });
+    if (cellCheck) {
+      setPlayer(cellCheck);
 
-      if (nextCell?.exit) {
+      if (cellCheck?.exit) {
         const nextRoom = [...rooms].find(
-          (r) => r.x === nextCell.exit?.x && r.y === nextCell.exit.y
+          (r) => r.x === cellCheck.exit?.x && r.y === cellCheck.exit.y
         );
-        if (nextRoom) updateRooms(nextRoom);
+        if (nextRoom) updateRooms(nextRoom, { walls, tiles, items });
       }
       return;
     }

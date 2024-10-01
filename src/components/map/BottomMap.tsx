@@ -1,9 +1,9 @@
 import { Cell } from "@/types/Cell";
 
-import { GridWrapper } from "../grid/GridWrapper";
-import { RockBottom } from "../tiles/RockBottom";
 import { Room } from "@/types/Room";
-import { Exit } from "../tiles/Exit";
+import { GridWrapper } from "../level/GridWrapper";
+import { RockBottom } from "../tiles/fixed/RockBottom";
+import { Exit } from "../tiles/passable/Exit";
 
 type Direction = "top" | "bottom" | "left" | "right";
 

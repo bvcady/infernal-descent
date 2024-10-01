@@ -1,9 +1,9 @@
 import { Cell } from "@/types/Cell";
 import { scale } from "@/utils/scale";
-import { DefaultTile } from "./DefaultTile";
+import { DefaultTile } from "../default/DefaultTile";
 
 interface Props {
-  cell?: Cell;
+  cell: Cell;
 }
 
 const d = 17;

@@ -15,7 +15,7 @@ export const useResize = () => {
 
     const newCellSize = Math.floor(deterministicSize / maxDimension / 4) * 4;
 
-    setCellSize(newCellSize);
+    setCellSize(newCellSize * 1.5);
   };
 
   useEffect(() => {

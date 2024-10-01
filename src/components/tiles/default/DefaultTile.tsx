@@ -47,6 +47,7 @@ export const DefaultTile = ({
         gridRowEnd: "span 1",
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
+        pointerEvents: "none",
         ...style,
         backgroundImage: bgPath,
       }}

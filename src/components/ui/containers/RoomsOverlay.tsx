@@ -1,7 +1,7 @@
 import { Box } from "@mui/system";
 import { ReactNode } from "react";
-import { Button } from "./Button";
-import { MiniMap } from "./MiniMap";
+import { Button } from "../interactive/Button";
+import { MiniMap } from "../informative/MiniMap";
 
 // const RoomsWrapper = styled(Box)`
 //   color: white;

@@ -2,7 +2,7 @@ import { miniFont } from "@/utils/defaultValues";
 import { styled } from "@mui/material";
 import { Box } from "@mui/system";
 import { ReactNode } from "react";
-import { GridWrapper } from "../grid/GridWrapper";
+import { GridWrapper } from "../../level/GridWrapper";
 
 const ScoreWrapper = styled(Box)`
   color: white;

@@ -1,5 +1,5 @@
 import { Cell } from "@/types/Cell";
-import { DefaultTile } from "./DefaultTile";
+import { DefaultTile } from "../default/DefaultTile";
 
 interface Props {
   cell?: Cell;

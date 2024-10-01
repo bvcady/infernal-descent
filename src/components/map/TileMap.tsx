@@ -1,13 +1,14 @@
 import { levelStore } from "@/stores/LevelStore";
 import { useStore } from "zustand";
-import { FloorTile } from "../cells/FloorTile";
-import { GridWrapper } from "../grid/GridWrapper";
+
+import { GridWrapper } from "../level/GridWrapper";
+import { FloorTile } from "../tiles/passable/FloorTile";
 
 export const TileMap = () => {
-  const { floorTiles } = useStore(levelStore, (state) => state);
+  const { tiles } = useStore(levelStore, (state) => state);
   return (
     <GridWrapper>
-      {floorTiles.map((cell) => (
+      {tiles.map((cell) => (
         <FloorTile key={`tile - ${cell.x} - ${cell.y}`} cell={cell} />
       ))}
     </GridWrapper>

@@ -1,5 +1,5 @@
 import { useStore } from "zustand";
-import { GridWrapper } from "../grid/GridWrapper";
+import { GridWrapper } from "../../level/GridWrapper";
 import { runStore } from "@/stores/RunStore";
 import { windowStore } from "@/stores/WindowStore";
 import { Box } from "@mui/material";

@@ -1,6 +1,6 @@
 import { Cell } from "@/types/Cell";
 import { useEffect, useRef } from "react";
-import { DefaultTile } from "../cells/DefaultTile";
+import { DefaultTile } from "../tiles/default/DefaultTile";
 
 interface Props {
   cell?: Cell;

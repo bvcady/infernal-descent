@@ -24,6 +24,7 @@ export const GridWrapper = ({ children, style = {} }: Props) => {
         gridTemplateColumns: `repeat(${width}, ${cellSize}px)`,
         gridTemplateRows: `repeat(${height}, ${cellSize}px)`,
         placeItems: "center",
+        pointerEvents: "none",
         ...style,
       }}
     >

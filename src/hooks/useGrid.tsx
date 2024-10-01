@@ -19,9 +19,16 @@ interface Props {
 type Direction = "top" | "bottom" | "left" | "right";
 
 export const useGrid = ({ seed }: Props) => {
-  const { setWalls, setFloorTiles, setDimensions } = useStore(levelStore);
-  const { currentRoom, previousRoom } = useStore(runStore);
+  const {
+    // setters
+    setDimensions,
+    setTiles,
+    setItems,
+    setWalls,
+    setExits: setExitCells,
+  } = useStore(levelStore);
 
+  const { currentRoom, previousRoom } = useStore(runStore);
   const { setPlayer } = useStore(playerStore);
 
   const [start, setStart] = useState<Cell>();
@@ -34,7 +41,6 @@ export const useGrid = ({ seed }: Props) => {
   >();
   const [POI, setPOI] = useState<Cell>();
 
-  const [hasFailure, setHasFailure] = useState(false);
   const [cells, setCells] = useState<Cell[]>([]);
 
   const currentSeed = `${seed} - ${currentRoom?.x} - ${currentRoom?.y}`;
@@ -53,8 +59,6 @@ export const useGrid = ({ seed }: Props) => {
     const densityNoise = generateNoise({ random: r });
 
     const density = Math.floor(scale([0, 1], [0, 10])(densityNoise));
-
-    setCells([]);
 
     const noise2D = createNoise2D(r);
     const fillableCells = new Array(height)
@@ -327,24 +331,6 @@ export const useGrid = ({ seed }: Props) => {
             3.5
         );
 
-      // const dirs = {
-      //   top: allCells.find(
-      //     (c) => c.x === cell.x && c.y === cell.y - 1 && !c.isOutside
-      //   ),
-      //   bottom: allCells.find(
-      //     (c) => c.x === cell.x && c.y === cell.y + 1 && !c.isOutside
-      //   ),
-      //   left: allCells.find(
-      //     (c) => c.x === cell.x - 1 && c.y === cell.y && !c.isOutside
-      //   ),
-      //   right: allCells.find(
-      //     (c) => c.x === cell.x + 1 && c.y === cell.y && !c.isOutside
-      //   ),
-      // };
-      // if (dirs.top || dirs.bottom || dirs.left || dirs.right) {
-      //   return true;
-      // }
-      // return false;
       return isClose;
     };
 
@@ -380,7 +366,6 @@ export const useGrid = ({ seed }: Props) => {
         };
 
         if (distFromExit(cell)) {
-          console.log("too close");
           return cell;
         }
         const emptyPath =
@@ -464,7 +449,6 @@ export const useGrid = ({ seed }: Props) => {
     if (!previousRoom) {
       setStart(exitsWithNeighbours[0]?.cell);
     } else {
-      console.log({ previousRoom, currentRoom });
       if (previousRoom.x < currentRoom.x) {
         setStart(
           exitsWithNeighbours.sort((a, b) => a.cell.x - b.cell.x)[0].cell
@@ -485,31 +469,25 @@ export const useGrid = ({ seed }: Props) => {
     }
 
     setCells([...withNeighbours]);
-
-    setHasFailure(false);
   };
 
   useEffect(() => {
     // at the start of a floor / level, first check if there is something stored in the localstorage for that seed-floor combination
     // then set the cells to the wall and floor cells from the storage (no need to include n-values and isComplete)
+
     if (currentRoom) resetGrid();
-  }, [seed, currentRoom, previousRoom]);
+  }, [seed, currentRoom]);
 
   useEffect(() => {
-    // set all walls to a state containing all the (immutable) wall cells;
-    setWalls([...cells].filter((c) => c.isWall));
-    // set all path (including those that contain items) to a state containing all the mutable floor tiles;
-    setFloorTiles([...cells].filter((c) => c.isPath || c.isObstacle));
+    setWalls(currentRoom?.walls ?? [...cells].filter((c) => c.isWall));
+    setTiles(
+      currentRoom?.tiles ?? [...cells].filter((c) => c.isPath || c.isObstacle)
+    );
+    setItems(currentRoom?.items ?? []);
+    setExitCells((exits || [])?.map((exit) => exit.cell));
+
     setPlayer(start);
   }, [cells]);
-
-  useEffect(() => {
-    if (hasFailure === true) {
-      console.log("had failure");
-      setHasFailure(false);
-      resetGrid();
-    }
-  }, [hasFailure]);
 
   return { trigger: resetGrid, cells, start, exits, POI };
 };

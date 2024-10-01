@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useMovement } from "@/hooks/useMovement";
+import { levelStore } from "@/stores/LevelStore";
 import { playerStore } from "@/stores/PlayerStore";
 import { Cell } from "@/types/Cell";
 import { useEffect, useState } from "react";
 import { useStore } from "zustand";
-import { GridWrapper } from "../grid/GridWrapper";
-import { Player } from "../tiles/Player";
+import { GridWrapper } from "../level/GridWrapper";
+import { Player } from "../player/Player";
 // @ts-ignore
 
 interface Props {
@@ -15,17 +16,16 @@ interface Props {
 
 const cardinals = ["ArrowUp", "ArrowDown", "ArrowRight", "ArrowLeft"];
 
-export const PlayerMap = ({ startCell, allCells }: Props) => {
+export const PlayerMap = ({ startCell }: Props) => {
   const { setPlayer } = useStore(playerStore);
+  const { tiles } = useStore(levelStore);
 
   const [moveDirection, setMoveDirection] = useState<
     "top" | "bottom" | "left" | "right"
   >();
 
   useEffect(() => {
-    setPlayer(
-      allCells.find((c) => c.x === startCell?.x && c.y === startCell?.y)
-    );
+    setPlayer(tiles.find((c) => c.x === startCell?.x && c.y === startCell?.y));
   }, [startCell]);
 
   const handleKeyUp = (e: KeyboardEvent) => {
@@ -48,9 +48,9 @@ export const PlayerMap = ({ startCell, allCells }: Props) => {
   useEffect(() => {
     addEventListener("keyup", handleKeyUp);
     return () => removeEventListener("keyup", handleKeyUp);
-  }, [handleKeyUp]);
+  }, []);
 
-  useMovement({ moveDirection, setMoveDirection, allCells });
+  useMovement({ moveDirection, setMoveDirection });
 
   return <GridWrapper>{<Player />}</GridWrapper>;
 };

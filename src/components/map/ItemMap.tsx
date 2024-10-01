@@ -1,8 +1,8 @@
 import { Cell } from "@/types/Cell";
-import { GridWrapper } from "../grid/GridWrapper";
-import { Exit } from "../tiles/Exit";
-import { Key } from "../tiles/Key";
-import { Rubble } from "../tiles/Rubble";
+import { GridWrapper } from "../level/GridWrapper";
+import { Exit } from "../tiles/passable/Exit";
+import { Rubble } from "../items/Rubble";
+import { Key } from "../items/Key";
 
 interface Props {
   itemCells: { type: string; cells: Cell[] }[];

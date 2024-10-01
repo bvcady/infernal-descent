@@ -4,7 +4,7 @@ import { generateNoise, shuffle } from "@/utils/noise";
 import { scale } from "@/utils/scale";
 import Alea from "alea";
 
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { useStore } from "zustand";
 
 interface Props {
@@ -12,26 +12,19 @@ interface Props {
 }
 
 export const useRooms = ({ seed }: Props) => {
-  const { rooms, setRooms, setCurrentRoom } = useStore(
-    runStore,
-    (state) => state
-  );
+  const { setRooms, setCurrentRoom } = useStore(runStore, (state) => state);
 
-  const generateRooms = useCallback(() => {
+  const generateRooms = () => {
     const r = Alea(seed);
 
-    if (!seed) {
-      setRooms([]);
-    }
-
     const targetTotal = Math.floor(
-      scale([0, 1], [8, 14])(generateNoise({ random: r }))
+      scale([0, 1], [12, 20])(generateNoise({ random: r }))
     );
 
-    const roomGrid = new Array(5)
+    const roomGrid = new Array(7)
       .fill("")
       .map((_, y) =>
-        new Array(5).fill("").map((_, x) => {
+        new Array(7).fill("").map((_, x) => {
           return { x, y, isCollapsed: false };
         })
       )
@@ -98,15 +91,7 @@ export const useRooms = ({ seed }: Props) => {
       return { ...room, neighbours };
     });
 
-    setRooms(roomsWithNeighbours);
-  }, [generateNoise, seed]);
-
-  useEffect(() => {
-    generateRooms();
-  }, [seed]);
-
-  useEffect(() => {
-    const selectedRoom = rooms.sort((a, b) => {
+    const selectedRoom = [...roomsWithNeighbours].sort((a, b) => {
       const nNeighbours = (room: Room) => {
         const top = room?.neighbours?.top ? -1 : 0;
         const bottom = room?.neighbours?.bottom ? -1 : 0;
@@ -116,7 +101,12 @@ export const useRooms = ({ seed }: Props) => {
       };
       return nNeighbours(a) - nNeighbours(b);
     })[0];
-
     setCurrentRoom(selectedRoom);
-  }, [rooms]);
+
+    setRooms(roomsWithNeighbours);
+  };
+
+  useEffect(() => {
+    if (seed) generateRooms();
+  }, [seed]);
 };

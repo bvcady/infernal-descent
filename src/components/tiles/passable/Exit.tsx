@@ -1,6 +1,6 @@
 import { Cell } from "@/types/Cell";
 import { Room } from "@/types/Room";
-import { DefaultTile } from "../cells/DefaultTile";
+import { DefaultTile } from "../default/DefaultTile";
 
 type Direction = "top" | "bottom" | "left" | "right";
 
