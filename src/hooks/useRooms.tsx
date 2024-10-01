@@ -101,9 +101,16 @@ export const useRooms = ({ seed }: Props) => {
       };
       return nNeighbours(a) - nNeighbours(b);
     })[0];
-    setCurrentRoom(selectedRoom);
 
-    setRooms(roomsWithNeighbours);
+    setCurrentRoom(selectedRoom);
+    setRooms(
+      roomsWithNeighbours.map((r) => {
+        if (r.x === selectedRoom?.x && r.y === selectedRoom?.y) {
+          return { ...r, isVisited: true };
+        }
+        return r;
+      })
+    );
   };
 
   useEffect(() => {

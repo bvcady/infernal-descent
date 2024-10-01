@@ -32,16 +32,22 @@ export const runStore = createStore<RunStore>()((set) => ({
     const oldRooms = [...runStore.getState().rooms];
     const oldRoom = runStore.getState().currentRoom;
 
-    const id = oldRooms.findIndex(
+    const prevId = oldRooms.findIndex(
       (r) => r.x === oldRoom?.x && r.y === oldRoom?.y
     );
-    
+    const nextId = oldRooms.findIndex(
+      (r) => r.x === currentRoom?.x && r.y === currentRoom?.y
+    );
+
     if (oldRoom) {
-      oldRooms[id] = { ...oldRoom, walls, tiles, items };
+      oldRooms[prevId] = { ...oldRoom, walls, tiles, items, isVisited: true };
+    }
+    if (currentRoom) {
+      oldRooms[nextId] = { ...currentRoom, isVisited: true };
     }
 
     set({ previousRoom: oldRoom });
     set({ rooms: oldRooms });
-    set({ currentRoom });
+    set({ currentRoom: { ...currentRoom!, isVisited: true } });
   },
 }));

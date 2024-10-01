@@ -11,4 +11,5 @@ export type Room = {
   tiles?: Cell[]
   walls?: Cell[]
   items?: Item[]
+  isVisited?: boolean
 };
