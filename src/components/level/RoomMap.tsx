@@ -2,26 +2,27 @@
 
 import { useGrid } from "@/hooks/useGrid";
 import { useRooms } from "@/hooks/useRooms";
+import { windowStore } from "@/stores/WindowStore";
 import { Box } from "@mui/material";
 import { Dispatch } from "react";
+import { useStore } from "zustand";
+import { ButtonArea } from "../console/ButtonArea";
+import { Console } from "../console/Console";
+import { ScreenPadding } from "../console/Console.styles";
+import { ArrowButton } from "../console/controls/buttons/ArrowButton";
+import { DirectionalPad } from "../console/controls/buttons/DirectionalPad";
+import { LetterButton } from "../console/controls/buttons/LetterButton";
+import { LetterButtonContainer } from "../console/controls/buttons/LetterButtonStyles";
+import { SSButton } from "../console/controls/buttons/SSButton";
 import { BottomMap } from "../map/BottomMap";
+import { CombinedMap } from "../map/CombinedMap";
 import { ItemMap } from "../map/ItemMap";
 import { PlayerMap } from "../map/PlayerMap";
 import { TileMap } from "../map/TileMap";
 import { Viewer } from "../map/Viewer";
 import { WallMap } from "../map/WallMap";
 import { UIOverlay } from "../ui/containers/RoomsOverlay";
-import { CombinedMap } from "../map/CombinedMap";
-import { useStore } from "zustand";
-import { windowStore } from "@/stores/WindowStore";
-import { Console } from "../console/Console";
-import { ScreenPadding } from "../console/Console.styles";
-import { Grate } from "../console/Grate";
-import { ButtonArea } from "../console/ButtonArea";
-import { DirectionalPad } from "../console/controls/buttons/DirectionalPad";
-import { ArrowButton } from "../console/controls/buttons/ArrowButton";
-import { SSButton } from "../console/controls/buttons/SSButton";
-import { LetterButton } from "../console/controls/buttons/LetterButton";
+
 interface Props {
   seed: string;
   setSeed: Dispatch<string>;
@@ -57,7 +58,7 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
           <ScreenPadding w={cellSize * 10}>
             {/* <ViewPort> */}
             <Box
-              bgcolor={"#400438"}
+              bgcolor={"#252533"}
               position={"absolute"}
               sx={{ inset: 0, zIndex: -1 }}
             />
@@ -93,7 +94,7 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
             </Viewer>
             {/* </ViewPort> */}
           </ScreenPadding>
-          <Grate />
+          {/* <Grate /> */}
           <ButtonArea>
             <DirectionalPad>
               <ArrowButton
@@ -124,17 +125,14 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
               <SSButton callback={() => {}} />
               <SSButton callback={() => {}} />
             </div>
-            <div
-              style={{
-                width: "100%",
-                alignItems: "flex-end",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <LetterButton letter="A" callback={() => null} />
-              <LetterButton letter="B" callback={() => null} />
-            </div>
+            <LetterButtonContainer w={cellSize * 1.5}>
+              <LetterButton
+                letter="Z"
+                color="blanchedalmond"
+                callback={() => null}
+              />
+              <LetterButton letter="X" color="#252533" callback={() => null} />
+            </LetterButtonContainer>
           </ButtonArea>
         </Console>
       </Box>

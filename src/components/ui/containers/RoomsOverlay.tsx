@@ -2,7 +2,7 @@ import { Box } from "@mui/system";
 import { ReactNode } from "react";
 import { Button } from "../interactive/Button";
 import { MiniMap } from "../informative/MiniMap";
-import { Metronome } from "../informative/Metronome";
+// import { Metronome } from "../informative/Metronome";
 
 // const RoomsWrapper = styled(Box)`
 //   color: white;
@@ -57,7 +57,7 @@ export const UIOverlay = ({ updateSeed }: Props) => {
         }}
       ></Box>
       <MiniMap />
-      <Metronome />
+      {/* <Metronome /> */}
       <Button label="reset" callback={updateSeed} />
     </Box>
   );

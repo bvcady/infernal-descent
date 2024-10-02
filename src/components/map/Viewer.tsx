@@ -16,12 +16,10 @@ interface ViewerProps {
 const StyledViewer = styled(Box)<ViewerProps>`
   position: absolute;
   width: ${({ w }) => w}px;
-  border-radius: 8px;
   aspect-ratio: 160/144;
   user-select: none;
   overflow: hidden;
   z-index: 2;
-
   mix-blend-mode: screen;
 `;
 

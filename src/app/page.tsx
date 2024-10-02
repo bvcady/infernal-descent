@@ -33,7 +33,7 @@ export default function Home() {
       alignItems={"flex-start"}
       ref={mainRef}
     >
-      <RoomMap seed={seed} setSeed={setSeed} />
+      {seed ? <RoomMap seed={seed} setSeed={setSeed} /> : null}
     </Box>
   );
 }

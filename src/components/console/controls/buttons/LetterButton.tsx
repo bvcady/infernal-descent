@@ -1,4 +1,4 @@
-import { LetterButtonWrapper } from "../styles/ButtonsStyled";
+import { LetterButtonWrapper } from "./LetterButtonStyles";
 
 interface Props {
   callback?: () => void;
@@ -15,7 +15,7 @@ export const LetterButton = ({ callback, color, letter }: Props) => {
         callback?.();
       }}
     >
-      {letter.toLocaleUpperCase()}
+      <span style={{ marginLeft: "5%" }}>{letter.toLocaleUpperCase()}</span>
     </LetterButtonWrapper>
   );
 };
