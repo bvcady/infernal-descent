@@ -22,6 +22,7 @@ import { TileMap } from "../map/TileMap";
 import { Viewer } from "../map/Viewer";
 import { WallMap } from "../map/WallMap";
 import { UIOverlay } from "../ui/containers/RoomsOverlay";
+import { SSButtonContainer } from "../console/controls/buttons/SSButtonStyles";
 
 interface Props {
   seed: string;
@@ -51,8 +52,10 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
       <Box
         position={"relative"}
         width={11 * cellSize}
-        height={11 * cellSize * 1.5}
+        height={"100%"}
         display={"flex"}
+        justifyContent={"center"}
+        alignItems={"center"}
       >
         <Console p={cellSize / 2}>
           <ScreenPadding w={cellSize * 10}>
@@ -114,17 +117,10 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
                 rotation="180deg"
               />
             </DirectionalPad>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "0.5rem",
-                transform: "translateX(24px)",
-              }}
-            >
+            <SSButtonContainer w={cellSize}>
               <SSButton callback={() => {}} />
               <SSButton callback={() => {}} />
-            </div>
+            </SSButtonContainer>
             <LetterButtonContainer w={cellSize * 1.5}>
               <LetterButton
                 letter="Z"

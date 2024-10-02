@@ -130,6 +130,7 @@ export const MiniMap = () => {
           ))}
         </GridWrapper>
       ) : null}
+      {!showMap ? "X" : null}
     </>
   );
 };

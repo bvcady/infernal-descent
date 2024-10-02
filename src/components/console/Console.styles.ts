@@ -30,11 +30,14 @@ export const ScreenPadding = styled("div")<{w: number}>`
 `;
 
 export const ButtonAreaWrapper = styled("div")`
-  margin-top: auto;
+  /* margin-top: auto; */
+  padding-top: 5%;
   width: 100%;
   height: 100%;
   max-height: fit-content;
-  display: grid;
-  place-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
   grid-template-columns: repeat(3, 1fr);
 `;

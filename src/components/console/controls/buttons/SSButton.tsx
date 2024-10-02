@@ -1,4 +1,4 @@
-import { SSButtonWrapper } from "../styles/ButtonsStyled";
+import { SSButtonWrapper } from "./SSButtonStyles";
 
 interface Props {
   callback?: () => void;

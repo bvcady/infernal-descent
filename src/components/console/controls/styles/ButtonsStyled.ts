@@ -1,20 +1,6 @@
 import styled from "@emotion/styled";
 import { ButtonBase, css } from "@mui/material";
 
-export const SSButtonWrapper = styled(ButtonBase)`
-  width: 56px;
-  aspect-ratio: 5/1;
-  border-radius: 1rem;
-  background-color: orange;
-  box-shadow: inset 0 0 0 1px grey,
-    inset 1px 1px 4px 0px rgba(0, 0, 0, 0.2);
-  transform: rotate(-22.5deg);
-  :first-of-type {
-    transform: rotate(-22.5deg) translateX(-32px);
-  }
-`;
-
-
 interface WrapperProps {
   rotation: string;
   position: "ArrowUp" | "ArrowDown" | "ArrowLeft" | "ArrowRight";
