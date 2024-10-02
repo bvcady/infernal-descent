@@ -1,4 +1,5 @@
 import { windowStore } from "@/stores/WindowStore";
+import { cellSize } from "@/utils/defaultValues";
 import { useEffect } from "react";
 import { useStore } from "zustand";
 
@@ -15,7 +16,7 @@ export const useResize = () => {
 
     const newCellSize = Math.floor(deterministicSize / maxDimension / 4) * 4;
 
-    setCellSize(newCellSize * 2);
+    setCellSize(Math.min(newCellSize * 2, 48));
   };
 
   useEffect(() => {
