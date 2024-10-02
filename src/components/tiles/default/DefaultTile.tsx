@@ -1,7 +1,8 @@
 import { windowStore } from "@/stores/WindowStore";
 import { Cell } from "@/types/Cell";
+import { miniFont } from "@/utils/defaultValues";
 import { Box } from "@mui/material";
-import { CSSProperties, MutableRefObject } from "react";
+import { CSSProperties, MutableRefObject, ReactNode } from "react";
 import { useStore } from "zustand";
 
 interface Props {
@@ -13,6 +14,8 @@ interface Props {
   style?: CSSProperties;
   noBackground?: boolean;
   onClick?: () => void;
+  hasShadow?: boolean;
+  children?: ReactNode;
 }
 export const DefaultTile = ({
   ref,
@@ -23,6 +26,8 @@ export const DefaultTile = ({
   noBackground,
   onClick,
   customPath,
+  hasShadow,
+  children,
 }: Props) => {
   const { cellSize } = useStore(windowStore, (state) => state);
 
@@ -39,7 +44,6 @@ export const DefaultTile = ({
       width={cellSize}
       height={cellSize}
       sx={{
-        position: "absolute",
         backgroundColor: noBackground ? "transparent" : "black",
         gridColumnStart: (cell?.x || 0) + 1,
         gridRowStart: (cell?.y || 0) + 1,
@@ -50,7 +54,13 @@ export const DefaultTile = ({
         pointerEvents: "none",
         ...style,
         backgroundImage: bgPath,
+        boxShadow: hasShadow ? `0 4px 4px 0 rgba(0, 0, 0, 0.6)` : "unset",
+        fontFamily: miniFont.style.fontFamily,
+        display: "grid",
+        placeItems: "center",
       }}
-    />
+    >
+      {children}
+    </Box>
   );
 };

@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
+import { useEnterRoom } from "@/hooks/useEnterRoom";
 import { useMovement } from "@/hooks/useMovement";
 import { levelStore } from "@/stores/LevelStore";
 import { playerStore } from "@/stores/PlayerStore";
 import { Cell } from "@/types/Cell";
+import { KeyboardDirection } from "@/types/KeyboardDirections";
 import { useEffect, useState } from "react";
 import { useStore } from "zustand";
 import { GridWrapper } from "../level/GridWrapper";
@@ -20,9 +22,7 @@ export const PlayerMap = ({ startCell }: Props) => {
   const { setPlayer } = useStore(playerStore);
   const { tiles } = useStore(levelStore);
 
-  const [moveDirection, setMoveDirection] = useState<
-    "top" | "bottom" | "left" | "right"
-  >();
+  const [moveDirection, setMoveDirection] = useState<KeyboardDirection>();
 
   useEffect(() => {
     setPlayer(tiles.find((c) => c.x === startCell?.x && c.y === startCell?.y));
@@ -30,18 +30,7 @@ export const PlayerMap = ({ startCell }: Props) => {
 
   const handleKeyUp = (e: KeyboardEvent) => {
     if (cardinals.includes(e.key)) {
-      if (e.key === "ArrowUp") {
-        setMoveDirection("top");
-      }
-      if (e.key === "ArrowDown") {
-        setMoveDirection("bottom");
-      }
-      if (e.key === "ArrowLeft") {
-        setMoveDirection("left");
-      }
-      if (e.key === "ArrowRight") {
-        setMoveDirection("right");
-      }
+      setMoveDirection(e.key as KeyboardDirection);
     }
   };
 
@@ -51,6 +40,7 @@ export const PlayerMap = ({ startCell }: Props) => {
   }, []);
 
   useMovement({ moveDirection, setMoveDirection });
+  useEnterRoom();
 
   return <GridWrapper>{<Player />}</GridWrapper>;
 };

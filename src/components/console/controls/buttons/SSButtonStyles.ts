@@ -5,13 +5,13 @@ export const SSButtonContainer = styled(Box)<{w: number}>`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  rotate: 180deg;
+
   border-radius: calc(var(--w) /4);
   width: calc(var(--w) * 2);
   height: calc(var(--w));
   padding: calc(var(--w) / 4);
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
   position: absolute;
   top: 0;
   left: 0;
@@ -19,7 +19,7 @@ export const SSButtonContainer = styled(Box)<{w: number}>`
   margin-left: auto;
   margin-right: auto;
 
-  box-shadow: inset 0 calc(var(--w)/8) 8px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: inset calc(var(--w)/4) calc(var(--w)/12) 8px 0 rgba(0, 0, 0, 0.2);
   
   button {
     /* min-width: 5px;

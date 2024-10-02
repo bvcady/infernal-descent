@@ -40,26 +40,30 @@ export const Player = () => {
   }, []);
 
   return (
-    <PlayerSprite
-      ref={playerRef}
-      className="player"
-      width={cellSize}
-      height={cellSize}
-      sx={{
-        gridColumnStart: x + 1,
-        gridRowStart: y + 1,
-        gridColumnEnd: "span 1",
-        gridRowEnd: "span 1",
-        // zIndex: cell?.y,
-        backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
-        backgroundImage: `url("../../images/Monochrome/Tilemap/new_tile${
-          7 + 7 * d + 1
-        }.png")`,
-        // backgroundImage: `url("../../images/Monochrome/Tilemap/new_tile${
-        //   7 + 7 * d + 1
-        // }.png")`,
-      }}
-    />
+    <>
+      <PlayerSprite
+        ref={playerRef}
+        className="player"
+        width={cellSize}
+        height={cellSize}
+        sx={{
+          overflow: "visible",
+          position: "relative",
+          gridColumnStart: x + 1,
+          gridRowStart: y + 1,
+          gridColumnEnd: "span 1",
+          gridRowEnd: "span 1",
+          // zIndex: cell?.y,
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+          backgroundImage: `url("../../images/Monochrome/Tilemap/new_tile${
+            7 + 7 * d + 1
+          }.png")`,
+          // backgroundImage: `url("../../images/Monochrome/Tilemap/new_tile${
+          //   7 + 7 * d + 1
+          // }.png")`,
+        }}
+      />
+    </>
   );
 };

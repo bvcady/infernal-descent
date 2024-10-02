@@ -1,18 +1,33 @@
+import { useRef } from "react";
 import { LetterButtonWrapper } from "./LetterButtonStyles";
 
 interface Props {
-  callback?: () => void;
   color?: string;
   letter: string;
 }
 
-export const LetterButton = ({ callback, color, letter }: Props) => {
+export const LetterButton = ({ color, letter }: Props) => {
+  const keyboardRef = useRef<HTMLButtonElement>(null);
+
+  const handleClick = (key: string, type: "keydown" | "keyup") => {
+    const event = new KeyboardEvent(type, {
+      key: key.toLocaleLowerCase(),
+      bubbles: true,
+    });
+    keyboardRef?.current?.dispatchEvent(event);
+  };
+
   return (
     <LetterButtonWrapper
+      ref={keyboardRef}
       color={color}
-      onClick={(e) => {
+      onMouseDown={(e) => {
         e.preventDefault();
-        callback?.();
+        handleClick(letter, "keydown");
+      }}
+      onMouseUp={(e) => {
+        e.preventDefault();
+        handleClick(letter, "keyup");
       }}
     >
       <span style={{ marginLeft: "5%" }}>{letter.toLocaleUpperCase()}</span>

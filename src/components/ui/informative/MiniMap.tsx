@@ -3,7 +3,7 @@ import { windowStore } from "@/stores/WindowStore";
 import { Box } from "@mui/material";
 import { useStore } from "zustand";
 import { GridWrapper } from "../../level/GridWrapper";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const d = 17;
 
@@ -32,7 +32,33 @@ export const MiniMap = () => {
     return false;
   });
 
-  console.log({ toggleShowMap });
+  const handleKeyUp = (e: KeyboardEvent) => {
+    if (e.repeat) {
+      return;
+    }
+    if (e.key === "z") {
+      toggleShowMap(false);
+    }
+  };
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.repeat) {
+      return;
+    }
+
+    if (e.key === "z") {
+      toggleShowMap(true);
+    }
+  };
+
+  useEffect(() => {
+    addEventListener("keyup", handleKeyUp);
+    addEventListener("keydown", handleKeyDown);
+    return () => {
+      removeEventListener("keyup", handleKeyUp);
+      removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   return (
     <>
@@ -130,7 +156,6 @@ export const MiniMap = () => {
           ))}
         </GridWrapper>
       ) : null}
-      {!showMap ? "X" : null}
     </>
   );
 };
