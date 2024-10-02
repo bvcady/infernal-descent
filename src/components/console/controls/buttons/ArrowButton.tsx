@@ -23,7 +23,7 @@ export const ArrowButton = ({ dir, rotation = "0deg" }: Props) => {
 
   return (
     <ArrowButtonWrapper
-      style={{ width: cellSize, height: cellSize }}
+      style={{ width: cellSize * 1.25, height: cellSize * 1.25 }}
       ref={keyboardRef}
       {...{ position: dir, rotation }}
       onClick={(e) => {

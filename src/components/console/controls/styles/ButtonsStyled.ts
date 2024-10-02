@@ -44,8 +44,6 @@ interface WrapperProps {
 }
 
 export const ArrowButtonWrapper = styled(ButtonBase)<WrapperProps>`
-  height: 32px;
-  width: 32px;
   display: grid;
   place-items: center;
   border-radius: 0.25rem;
@@ -54,31 +52,31 @@ export const ArrowButtonWrapper = styled(ButtonBase)<WrapperProps>`
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
 
-  ${({ rotation }) => css`
-    transform: rotate(${rotation});
-  `}
-  ${({ position }) => css`
+  ${({ position, rotation }) => css`
     grid-area: ${position};
     ${position === "ArrowUp" &&
     css`
       grid-row: 1 / span 1;
       grid-column: 2 / span 1;
-      transform: translateY(2px);
+      transform: translateY(2px) rotate(${rotation});
     `}
     ${position === "ArrowLeft" &&
     css`
       grid-row: 2 / span 1;
       grid-column: 1 / span 1;
+      transform: translateX(2px) rotate(${rotation});
     `}
-    ${position === "ArrowDown" &&
+      ${position === "ArrowDown" &&
     css`
       grid-row: 3 / span 1;
       grid-column: 2 / span 1;
+      transform: translateY(-2px) rotate(${rotation});
     `}
-    ${position === "ArrowRight" &&
+      ${position === "ArrowRight" &&
     css`
       grid-row: 2 / span 1;
       grid-column: 3 / span 1;
+      transform: translateX(-2px) rotate(${rotation});
     `}
   `}
 `;
