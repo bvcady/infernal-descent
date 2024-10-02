@@ -36,6 +36,7 @@ export const Key = ({ cell }: Props) => {
 
   return (
     <DefaultTile
+      className="itemKey"
       cell={cell}
       customPath="images/Monochrome/Tilemap/threat3.png"
       noBackground

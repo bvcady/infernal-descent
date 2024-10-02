@@ -13,7 +13,6 @@ import { Player } from "../player/Player";
 
 interface Props {
   startCell?: Cell;
-  allCells: Cell[];
 }
 
 const cardinals = ["ArrowUp", "ArrowDown", "ArrowRight", "ArrowLeft"];
@@ -37,7 +36,7 @@ export const PlayerMap = ({ startCell }: Props) => {
   useEffect(() => {
     addEventListener("keyup", handleKeyUp);
     return () => removeEventListener("keyup", handleKeyUp);
-  }, []);
+  }, [setMoveDirection]);
 
   useMovement({ moveDirection, setMoveDirection });
   useEnterRoom();

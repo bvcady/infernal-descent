@@ -1,0 +1,1 @@
+export type PlayerEvent = {name: 'health_lost', type: "PlayerEvent"}

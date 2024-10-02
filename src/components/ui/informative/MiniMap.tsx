@@ -4,13 +4,15 @@ import { Box } from "@mui/material";
 import { useStore } from "zustand";
 import { GridWrapper } from "../../level/GridWrapper";
 import { useEffect, useState } from "react";
+import { playerStore } from "@/stores/PlayerStore";
 
 const d = 17;
 
 export const MiniMap = () => {
   const [showMap, toggleShowMap] = useState(false);
   const { rooms, currentRoom } = useStore(runStore);
-  const { cellSize } = useStore(windowStore);
+  const { cellSize, toggleShowZHint } = useStore(windowStore);
+  const { setCanMove } = useStore(playerStore);
 
   const undiscoveredNeighbours = [...rooms].filter((r) => {
     if (r.isVisited) {
@@ -59,6 +61,11 @@ export const MiniMap = () => {
       removeEventListener("keydown", handleKeyDown);
     };
   }, []);
+
+  useEffect(() => {
+    setCanMove(!showMap);
+    toggleShowZHint(!showMap);
+  }, [showMap]);
 
   return (
     <>

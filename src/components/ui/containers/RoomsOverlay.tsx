@@ -1,11 +1,9 @@
+import { windowStore } from "@/stores/WindowStore";
 import { Box } from "@mui/system";
-import { ReactNode } from "react";
+import { useStore } from "zustand";
 import { MiniMap } from "../informative/MiniMap";
 import { PressHint } from "../informative/PressHint";
-import { Button } from "../interactive/Button";
-import { windowStore } from "@/stores/WindowStore";
-import { useStore } from "zustand";
-import { playerStore } from "@/stores/PlayerStore";
+import { Inventory } from "./inventory/Inventory";
 // import { Metronome } from "../informative/Metronome";
 
 // const RoomsWrapper = styled(Box)`
@@ -13,14 +11,9 @@ import { playerStore } from "@/stores/PlayerStore";
 //   font-family: ${miniFont.style.fontFamily};
 // `;
 
-interface Props {
-  updateSeed: () => void;
-  children?: ReactNode;
-}
-
-export const UIOverlay = ({ updateSeed }: Props) => {
-  const { cellSize } = useStore(windowStore);
-  const { player } = useStore(playerStore);
+export const UIOverlay = () => {
+  const { cellSize, showXHint, showZHint, showStartHint } =
+    useStore(windowStore);
 
   return (
     <Box
@@ -38,6 +31,7 @@ export const UIOverlay = ({ updateSeed }: Props) => {
         width={"50%"}
         bottom={0}
         sx={{
+          zIndex: 2,
           backgroundColor: "rgba(1, 1, 1, 0.7)",
           backdropFilter: "blur(4px)",
           mask: `linear-gradient(
@@ -54,6 +48,7 @@ export const UIOverlay = ({ updateSeed }: Props) => {
         width={"50%"}
         bottom={0}
         sx={{
+          zIndex: 2,
           backgroundColor: "rgba(1, 1, 1, 0.7)",
           backdropFilter: "blur(4px)",
           mask: `linear-gradient(
@@ -63,6 +58,7 @@ export const UIOverlay = ({ updateSeed }: Props) => {
                 )`,
         }}
       />
+      <Inventory />
       <MiniMap />
       <Box
         sx={{ boxSizing: "border-box" }}
@@ -77,11 +73,20 @@ export const UIOverlay = ({ updateSeed }: Props) => {
         justifyContent={"flex-end"}
         alignItems={"center"}
         overflow={"visible"}
+        gap={`${cellSize / 5}px`}
       >
-        <PressHint letter="Z" toggle={true} style={{ marginRight: "auto" }} />
-        <PressHint letter="X" toggle={player?.exit} />
+        <PressHint
+          letter="Z"
+          toggle={showZHint}
+          // style={{ marginRight: "auto" }}
+        />
+        <PressHint
+          letter="S"
+          toggle={showStartHint}
+          // style={{ marginRight: "auto" }}
+        />
+        <PressHint letter="X" toggle={showXHint} />
       </Box>
-      <Button label="reset" callback={updateSeed} />
     </Box>
   );
 };

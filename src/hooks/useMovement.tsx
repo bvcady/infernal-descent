@@ -13,7 +13,7 @@ export const useMovement = ({ moveDirection, setMoveDirection }: Props) => {
   const requestRef = useRef(0);
 
   const { tiles, exits } = useStore(levelStore);
-  const { player, moveInDirection } = useStore(playerStore);
+  const { player, moveInDirection, canMove } = useStore(playerStore);
 
   const [shouldDoNextMove, setShouldDoNextMove] = useState(false);
 
@@ -21,26 +21,35 @@ export const useMovement = ({ moveDirection, setMoveDirection }: Props) => {
   const neighbouringCells = player
     ? {
         ArrowUp: tileOptions?.find(
-          (cell) => cell.x === player?.x && cell.y === player?.y - 1
+          (cell) =>
+            cell.x === player?.x &&
+            cell.y === player?.y - 1 &&
+            cell.item?.type !== "Unobtainable"
         ),
         ArrowDown: tileOptions?.find(
-          (cell) => cell.x === player?.x && cell.y === player?.y + 1
+          (cell) =>
+            cell.x === player?.x &&
+            cell.y === player?.y + 1 &&
+            cell.item?.type !== "Unobtainable"
         ),
         ArrowLeft: tileOptions?.find(
-          (cell) => cell.x === player?.x - 1 && cell.y === player?.y
+          (cell) =>
+            cell.x === player?.x - 1 &&
+            cell.y === player?.y &&
+            cell.item?.type !== "Unobtainable"
         ),
         ArrowRight: tileOptions?.find(
-          (cell) => cell.x === player?.x + 1 && cell.y === player?.y
+          (cell) =>
+            cell.x === player?.x + 1 &&
+            cell.y === player?.y &&
+            cell.item?.type !== "Unobtainable"
         ),
       }
     : {};
 
   const handleMoveInDirection = (dir: KeyboardDirection) => {
     const cellCheck = neighbouringCells?.[dir];
-
-    // Find the player's neighbours (based on the tiles and walls, not on what is in its default state
-
-    if (cellCheck) {
+    if (cellCheck && canMove) {
       moveInDirection(cellCheck);
     }
   };

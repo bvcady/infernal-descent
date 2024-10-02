@@ -1,5 +1,6 @@
 import { Cell } from "./Cell";
 import { Item } from "./Item";
+import { Obtainable, Unobtainable } from "./Obtainable";
 
 export type Room = {
   x: number;
@@ -11,5 +12,13 @@ export type Room = {
   tiles?: Cell[]
   walls?: Cell[]
   items?: Item[]
+  hazards?: Cell[],
   isVisited?: boolean
+  maxExits: number  
+  itemsToPlace: (Obtainable | Unobtainable)[]
+  hazardsToPlace: Unobtainable[] ,
+  density?: number,
+  emptiness?: number,
+  entryRequirement?: (Obtainable | Unobtainable) []
+  opened?: boolean
 };

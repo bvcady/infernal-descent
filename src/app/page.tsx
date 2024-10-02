@@ -2,24 +2,33 @@
 
 import { RoomMap } from "@/components/level/RoomMap";
 import { useResize } from "@/hooks/useResize";
+import { windowStore } from "@/stores/WindowStore";
 import { Box } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
+import { useStore } from "zustand";
 
 export default function Home() {
   useResize();
   const mainRef = useRef<HTMLElement>(null);
 
   const [seed, setSeed] = useState<string>("");
+  const { toggleShowStartHint, toggleShowZHint, hasLoaded } =
+    useStore(windowStore);
 
-  useEffect(() => {
-    setSeed((Math.random() + 1).toString(36).substring(7));
-  }, []);
+  // useEffect(() => {
+  //   setSeed((Math.random() + 1).toString(36).substring(7));
+  // }, []);
 
   useEffect(() => {
     mainRef.current?.dispatchEvent(
       new MouseEvent("click", { bubbles: true, clientX: 0, clientY: 0 })
     );
   }, []);
+
+  useEffect(() => {
+    toggleShowStartHint(!seed);
+    toggleShowZHint(!!seed);
+  }, [seed]);
 
   return (
     <Box
@@ -33,7 +42,7 @@ export default function Home() {
       alignItems={"flex-start"}
       ref={mainRef}
     >
-      {seed ? <RoomMap seed={seed} setSeed={setSeed} /> : null}
+      {hasLoaded ? <RoomMap seed={seed} setSeed={setSeed} /> : null}
     </Box>
   );
 }

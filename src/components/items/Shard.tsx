@@ -12,7 +12,7 @@ interface Props {
   isStatic?: boolean;
 }
 
-export const Shovel = ({ cell, isStatic }: Props) => {
+export const Shard = ({ cell, isStatic }: Props) => {
   const itemRef = useRef<HTMLDivElement>();
   const requestRef = useRef(0);
   const { player, addItem } = useStore(playerStore);
@@ -79,11 +79,8 @@ export const Shovel = ({ cell, isStatic }: Props) => {
       tileRef={itemRef}
       className="itemKey"
       cell={cell as Cell}
-      customPath="images/Monochrome/Tilemap/shovel.png"
+      customPath="images/Monochrome/Tilemap/shard.png"
       noBackground
-      style={{
-        transform: "rotate(90deg) scale(1, -1)",
-      }}
     />
   );
 };

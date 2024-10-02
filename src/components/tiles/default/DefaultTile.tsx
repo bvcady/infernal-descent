@@ -6,7 +6,7 @@ import { CSSProperties, MutableRefObject, ReactNode } from "react";
 import { useStore } from "zustand";
 
 interface Props {
-  ref?: MutableRefObject<HTMLDivElement | undefined>;
+  tileRef?: MutableRefObject<HTMLDivElement | undefined>;
   className?: string;
   cell?: Cell;
   tileNumber?: number;
@@ -18,7 +18,7 @@ interface Props {
   children?: ReactNode;
 }
 export const DefaultTile = ({
-  ref,
+  tileRef,
   cell,
   tileNumber = -1,
   className = "",
@@ -39,7 +39,7 @@ export const DefaultTile = ({
   return (
     <Box
       onClick={() => onClick?.()}
-      ref={ref}
+      ref={tileRef}
       className={className}
       width={cellSize}
       height={cellSize}

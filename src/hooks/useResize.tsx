@@ -5,7 +5,10 @@ import { useStore } from "zustand";
 const maxDimension = 24;
 
 export const useResize = () => {
-  const { setCellSize } = useStore(windowStore, (state) => state);
+  const { setCellSize, hasLoaded, setHasLoaded } = useStore(
+    windowStore,
+    (state) => state
+  );
 
   const handleResize = () => {
     const deterministicSize =
@@ -15,6 +18,9 @@ export const useResize = () => {
 
     const newCellSize = Math.floor(deterministicSize / maxDimension / 4) * 4;
 
+    if (!hasLoaded) {
+      setHasLoaded(true);
+    }
     setCellSize(Math.min(newCellSize * 2, 40));
   };
 

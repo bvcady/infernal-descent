@@ -1,6 +1,10 @@
 import { Cell } from "@/types/Cell";
 import { Room } from "@/types/Room";
 import { DefaultTile } from "../default/DefaultTile";
+import { useStore } from "zustand";
+import { playerStore } from "@/stores/PlayerStore";
+import { useEffect, useMemo } from "react";
+import { windowStore } from "@/stores/WindowStore";
 
 type Direction = "top" | "bottom" | "left" | "right";
 
@@ -13,6 +17,17 @@ interface Props {
 const d = 17;
 
 export const Exit = ({ cell, side }: Props) => {
+  const { player } = useStore(playerStore);
+  const { toggleShowXHint } = useStore(windowStore);
+
+  const playerIsOn = useMemo(() => {
+    return player?.x === cell?.x && player?.y === cell?.y;
+  }, [player]);
+
+  useEffect(() => {
+    toggleShowXHint(playerIsOn);
+  }, [playerIsOn]);
+
   const defineRotation = () => {
     if (side === "top") {
       return "-90deg";

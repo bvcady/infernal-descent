@@ -14,6 +14,7 @@ import { DirectionalPad } from "../console/controls/buttons/DirectionalPad";
 import { LetterButton } from "../console/controls/buttons/LetterButton";
 import { LetterButtonContainer } from "../console/controls/buttons/LetterButtonStyles";
 import { SSButton } from "../console/controls/buttons/SSButton";
+import { SSButtonContainer } from "../console/controls/buttons/SSButtonStyles";
 import { BottomMap } from "../map/BottomMap";
 import { CombinedMap } from "../map/CombinedMap";
 import { ItemMap } from "../map/ItemMap";
@@ -22,7 +23,7 @@ import { TileMap } from "../map/TileMap";
 import { Viewer } from "../map/Viewer";
 import { WallMap } from "../map/WallMap";
 import { UIOverlay } from "../ui/containers/RoomsOverlay";
-import { SSButtonContainer } from "../console/controls/buttons/SSButtonStyles";
+import { WelcomeScreen } from "../ui/home/WelcomeScreen";
 
 interface Props {
   seed: string;
@@ -37,15 +38,14 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
     seed,
   });
 
-  const cells = grid?.cells || [];
-  const start = grid?.start;
-  const exits = grid?.exits;
-  const POI = grid?.POI;
-
   const updateSeed = () => {
     const r = (Math.random() + 1).toString(36).substring(4).toLocaleUpperCase();
     setSeed(r);
   };
+
+  const cells = grid?.cells || [];
+  const start = grid?.start;
+  const exits = grid?.exits;
 
   return (
     <>
@@ -59,45 +59,32 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
       >
         <Console p={cellSize / 2}>
           <ScreenPadding w={cellSize * 10}>
-            {/* <ViewPort> */}
             <Box
               bgcolor={"#252533"}
               position={"absolute"}
               sx={{ inset: 0, zIndex: -1 }}
             />
             <Viewer>
-              <CombinedMap>
-                <BottomMap
-                  rockEdges={[...cells].filter(
-                    (c) => c.neighbours?.top?.isWall && !c.isWall
-                  )}
-                  exits={exits}
-                />
+              {seed ? (
+                <CombinedMap>
+                  <BottomMap
+                    rockEdges={[...cells].filter(
+                      (c) => c.neighbours?.top?.isWall && !c.isWall
+                    )}
+                    exits={exits}
+                  />
 
-                <TileMap />
-
-                <ItemMap
-                  itemCells={[
-                    {
-                      type: "rubble",
-                      cells: [...cells].filter((c) => c.isObstacle),
-                    },
-                    { type: "poi", cells: POI ? [POI] : [] },
-                    {
-                      type: "skull",
-                      cells: [...cells].filter((c) => c.skull),
-                    },
-                  ]}
-                />
-
-                <PlayerMap startCell={start} allCells={[...cells]} />
-                <WallMap />
-              </CombinedMap>
-              <UIOverlay updateSeed={updateSeed} />
+                  <TileMap />
+                  <ItemMap />
+                  <PlayerMap startCell={start} />
+                  <WallMap />
+                </CombinedMap>
+              ) : null}
+              <UIOverlay />
             </Viewer>
-            {/* </ViewPort> */}
+            {!seed ? <WelcomeScreen setSeed={setSeed}></WelcomeScreen> : null}
           </ScreenPadding>
-          {/* <Grate /> */}
+
           <ButtonArea>
             <DirectionalPad>
               <ArrowButton
@@ -118,8 +105,12 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
               />
             </DirectionalPad>
             <SSButtonContainer w={cellSize}>
-              <SSButton callback={() => {}} />
-              <SSButton callback={() => {}} />
+              <SSButton
+                callback={() => {
+                  updateSeed();
+                }}
+              />
+              {/* <SSButton callback={() => {}} /> */}
             </SSButtonContainer>
             <LetterButtonContainer w={cellSize * 1.5}>
               <LetterButton letter="Z" color="blanchedalmond" />

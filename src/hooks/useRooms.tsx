@@ -1,4 +1,16 @@
+import { hazardSlime, hazardSpikes } from "@/resources/hazards/Hazard";
+import {
+  itemChest,
+  itemHeartHalf,
+  itemHeartTemporary,
+  itemHeartWhole,
+  itemKey,
+  itemShardOne,
+  itemShovel,
+} from "@/resources/items/Items";
 import { runStore } from "@/stores/RunStore";
+import { Obtainable, Unobtainable } from "@/types/Obtainable";
+import { PlayerEvent } from "@/types/PlayerEvent";
 import { Room } from "@/types/Room";
 import { generateNoise, shuffle } from "@/utils/noise";
 import { scale } from "@/utils/scale";
@@ -25,60 +37,167 @@ export const useRooms = ({ seed }: Props) => {
       .fill("")
       .map((_, y) =>
         new Array(7).fill("").map((_, x) => {
-          return { x, y, isCollapsed: false };
+          return {
+            x,
+            y,
+            isCollapsed: false,
+            maxExits: 0,
+            itemsToPlace: [],
+            hazardsToPlace: [],
+            neighbours: {},
+            size: 0,
+          };
         })
       )
       .flat() as Room[];
 
     const totalRooms = [] as Room[];
 
+    type IntroRoom = {
+      items?: (Obtainable | Unobtainable)[];
+      hazards?: Unobtainable[];
+      nextRoomRequirement?: (Obtainable | Unobtainable | PlayerEvent)[];
+      otherwiseEntryCost?: { name: string; amount: number };
+    };
+
+    const shovelRoom: IntroRoom = {
+      items: [itemShovel],
+      nextRoomRequirement: [],
+    };
+
+    const keyRoom: IntroRoom = {
+      items: [itemKey],
+      nextRoomRequirement: [itemKey],
+    };
+
+    const heartGainRoom: IntroRoom = {
+      items: [
+        shuffle([itemHeartHalf, itemHeartWhole, itemHeartTemporary], r)[0],
+      ],
+    };
+
+    const heartLossRoom: IntroRoom = {
+      items: [itemHeartWhole, itemHeartWhole],
+      hazards: [
+        shuffle([hazardSlime, hazardSpikes], r)[0],
+        shuffle([hazardSlime, hazardSpikes], r)[0],
+      ],
+      nextRoomRequirement: [{ name: "health_lost", type: "PlayerEvent" }],
+    };
+
+    const paymentRoom: IntroRoom = {
+      items: new Array(5).fill("").map(() => {
+        return itemShardOne;
+      }),
+    };
+
+    const chestOpenRoom = {
+      items: [itemKey, itemChest],
+    };
+
+    const introRoomSituations: IntroRoom[] = [
+      keyRoom,
+      heartGainRoom,
+      heartLossRoom,
+      chestOpenRoom,
+      paymentRoom,
+    ];
+    console.log({ introRoomSituations });
+    // while (totalRooms.length < 3) {
+    //   const remainingRooms = roomGrid.filter((room) => !room.isCollapsed);
+    //   const introRoom = shuffle(remainingRooms, r)[0];
+    //   const id = [...roomGrid].findIndex(
+    //     (room) => room.x === introRoom.x && room.y === introRoom.y
+    //   );
+
+    //   introRoom.size = 1;
+    //   introRoom.isBossRoom = false;
+    //   introRoom.maxExits = 2;
+    //   introRoom.isCollapsed = true;
+    //   introRoom.density = 0;
+    //   introRoom.emptiness = 0;
+
+    //   introRoom.itemsToPlace = [];
+    //   introRoom.hazardsToPlace = [];
+
+    //   roomGrid[id] = introRoom;
+    // }
+
     while (totalRooms.length < targetTotal) {
-      const options = [...roomGrid].filter((room) => {
-        const top = roomGrid.find(
-          (n) => room.x === n.x && room.y - 1 === n.y
-        )?.isCollapsed;
-        const bottom = roomGrid.find(
-          (n) => room.x === n.x && room.y + 1 === n.y
-        )?.isCollapsed;
-        const right = roomGrid.find(
-          (n) => room.x + 1 === n.x && room.y === n.y
-        )?.isCollapsed;
-        const left = roomGrid.find(
-          (n) => room.x - 1 === n.x && room.y === n.y
-        )?.isCollapsed;
+      if (totalRooms.length === 0) {
+        const remainingRooms = [...roomGrid].filter(
+          (room) => !room.isCollapsed
+        );
+        const introRoom = shuffle(remainingRooms, r)[0];
+        const id = [...roomGrid].findIndex(
+          (room) => room.x === introRoom.x && room.y === introRoom.y
+        );
+        introRoom.size = 1;
+        introRoom.isBossRoom = false;
+        introRoom.maxExits = 1;
+        introRoom.isCollapsed = true;
+        introRoom.density = 0;
+        introRoom.emptiness = 0;
+        introRoom.itemsToPlace = shovelRoom.items || [];
+        introRoom.hazardsToPlace = shovelRoom.hazards || [];
 
-        return !room.isCollapsed && (top || bottom || right || left);
-      });
+        roomGrid[id] = introRoom;
 
-      const nextRoom =
-        totalRooms.length === 0
-          ? shuffle([...roomGrid], r)[0]
-          : (shuffle(options, r)[0] as Room);
+        totalRooms.push(introRoom);
+      } else {
+        const options = [...roomGrid].filter((room) => {
+          const top = roomGrid.find(
+            (n) => room.x === n.x && room.y - 1 === n.y
+          )?.isCollapsed;
+          const bottom = roomGrid.find(
+            (n) => room.x === n.x && room.y + 1 === n.y
+          )?.isCollapsed;
+          const right = roomGrid.find(
+            (n) => room.x + 1 === n.x && room.y === n.y
+          )?.isCollapsed;
+          const left = roomGrid.find(
+            (n) => room.x - 1 === n.x && room.y === n.y
+          )?.isCollapsed;
 
-      const newSize = Math.floor(
-        scale(
-          [0, 1],
-          [1, 4]
-        )(
-          generateNoise({
-            random: r,
-          })
-        )
-      );
+          return !room.isCollapsed && (top || bottom || right || left);
+        });
 
-      nextRoom.isCollapsed = true;
-      nextRoom.size = totalRooms?.length > 0 ? newSize : 3;
-      if (nextRoom.size === 3 && !totalRooms?.some((room) => room.isBossRoom)) {
-        nextRoom.isBossRoom = true;
+        const nextRoom =
+          totalRooms.length === 0
+            ? shuffle([...roomGrid], r)[0]
+            : (shuffle(options, r)[0] as Room);
+
+        const newSize = Math.floor(
+          scale(
+            [0, 1],
+            [1, 4]
+          )(
+            generateNoise({
+              random: r,
+            })
+          )
+        );
+
+        nextRoom.isCollapsed = true;
+        nextRoom.size = totalRooms?.length > 0 ? newSize : 3;
+        nextRoom.maxExits = 2;
+        nextRoom.density = Math.floor(scale([0, 1], [0, 10])(r.next()));
+
+        if (
+          nextRoom.size === 3 &&
+          !totalRooms?.some((room) => room.isBossRoom)
+        ) {
+          nextRoom.isBossRoom = true;
+        }
+
+        const indexOfRoom = [...roomGrid].findIndex(
+          (room) => room.x === nextRoom.x && room.y === nextRoom.y
+        );
+
+        if (indexOfRoom >= 0) roomGrid[indexOfRoom] = nextRoom;
+
+        totalRooms.push(nextRoom);
       }
-
-      const indexOfRoom = [...roomGrid].findIndex(
-        (room) => room.x === nextRoom.x && room.y === nextRoom.y
-      );
-
-      if (indexOfRoom >= 0) roomGrid[indexOfRoom] = nextRoom;
-
-      totalRooms.push(nextRoom);
     }
 
     const roomsWithNeighbours = [...totalRooms].map((room) => {
@@ -91,17 +210,7 @@ export const useRooms = ({ seed }: Props) => {
       return { ...room, neighbours };
     });
 
-    const selectedRoom = [...roomsWithNeighbours].sort((a, b) => {
-      const nNeighbours = (room: Room) => {
-        const top = room?.neighbours?.top ? -1 : 0;
-        const bottom = room?.neighbours?.bottom ? -1 : 0;
-        const right = room?.neighbours?.right ? -1 : 0;
-        const left = room?.neighbours?.left ? -1 : 0;
-        return top + bottom + right + left;
-      };
-      return nNeighbours(a) - nNeighbours(b);
-    })[0];
-
+    const selectedRoom = roomsWithNeighbours[0];
     setCurrentRoom(selectedRoom);
     setRooms(
       roomsWithNeighbours.map((r) => {

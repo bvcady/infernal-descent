@@ -8,7 +8,7 @@ export const SSButtonContainer = styled(Box)<{w: number}>`
 
   border-radius: calc(var(--w) /4);
   width: calc(var(--w) * 2);
-  height: calc(var(--w));
+  /* height: calc(var(--w)); */
   padding: calc(var(--w) / 4);
   border-top-left-radius: 0;
   border-top-right-radius: 0;

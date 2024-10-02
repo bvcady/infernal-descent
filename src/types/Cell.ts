@@ -1,3 +1,4 @@
+import { Obtainable, Unobtainable } from "./Obtainable";
 import { Room } from "./Room";
 
 export type Cell = {
@@ -15,4 +16,5 @@ export type Cell = {
   isAccessible?: boolean;
   exit?: Room;
   skull?: boolean
+  item?: Obtainable | Unobtainable
 };

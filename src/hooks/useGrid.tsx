@@ -12,6 +12,7 @@ import { generateNoise, shuffle } from "@/utils/noise";
 import Alea from "alea";
 import { createNoise2D } from "simplex-noise";
 import { useStore } from "zustand";
+import { hazardRubble } from "@/resources/hazards/Hazard";
 
 interface Props {
   seed?: string;
@@ -56,9 +57,7 @@ export const useGrid = ({ seed }: Props) => {
 
     setDimensions({ width, height });
 
-    const densityNoise = generateNoise({ random: r });
-
-    const density = Math.floor(scale([0, 1], [0, 10])(densityNoise));
+    const density = currentRoom.density ?? 20;
 
     const noise2D = createNoise2D(r);
     const fillableCells = new Array(height)
@@ -142,33 +141,40 @@ export const useGrid = ({ seed }: Props) => {
       .filter((c) => c.isEdge)
       .sort((a, b) => b.n - a.n);
 
-    const exits = (Object.keys(currentRoom.neighbours) as Direction[])
-      .map((k) => {
-        return {
-          side: k,
-          exit: currentRoom.neighbours[k],
-          cell: {
-            ...edgeCells.sort((a, b) => {
-              if (k === "top") {
-                return a.y - b.y;
-              }
-              if (k === "bottom") {
-                return b.y - a.y;
-              }
-              if (k === "right") {
-                return b.x - a.x;
-              }
-              if (k === "left") {
-                return a.x - b.x;
-              }
-              return 1;
-            })[0],
-            isAccessible: true,
-            isCollapsed: true,
-          },
-        };
-      })
-      .filter((room) => room.exit);
+    const hasNeighbours =
+      currentRoom?.neighbours !== undefined
+        ? Object.keys(currentRoom.neighbours).filter((n) => !!n).length > 0
+        : false;
+
+    const exits = hasNeighbours
+      ? (Object.keys(currentRoom.neighbours) as Direction[])
+          .map((k) => {
+            return {
+              side: k,
+              exit: currentRoom.neighbours[k],
+              cell: {
+                ...edgeCells.sort((a, b) => {
+                  if (k === "top") {
+                    return a.y - b.y;
+                  }
+                  if (k === "bottom") {
+                    return b.y - a.y;
+                  }
+                  if (k === "right") {
+                    return b.x - a.x;
+                  }
+                  if (k === "left") {
+                    return a.x - b.x;
+                  }
+                  return 1;
+                })[0],
+                isAccessible: true,
+                isCollapsed: true,
+              },
+            };
+          })
+          .filter((room) => room.exit)
+      : [];
 
     const nonEdgeCells = [...roomCells]
       .filter((c) => !c.isEdge && !c.isOutside && !c.isWall)
@@ -183,6 +189,19 @@ export const useGrid = ({ seed }: Props) => {
           )(generateNoise({ random: r }))
         )
       ];
+    const poiId = roomCells.findIndex(
+      (c) => c.x === poiCell.x && c.y === poiCell.y
+    );
+
+    roomCells[poiId] = {
+      ...poiCell,
+      item: currentRoom.itemsToPlace[0],
+      isCollapsed: true,
+      isPath: true,
+      isOutside: false,
+      isAccessible: true,
+      isWall: false,
+    };
 
     const findPath = (startCell: Cell, route: Graph, endCell: Cell) => {
       return route.path(
@@ -223,7 +242,7 @@ export const useGrid = ({ seed }: Props) => {
       )
       .flat();
 
-    const poiPath = findPath(exits[0].cell, grid, poiCell);
+    const poiPath = exits?.length ? findPath(exits[0].cell, grid, poiCell) : [];
 
     if (poiPath?.length) setPOI(poiCell);
 
@@ -240,6 +259,7 @@ export const useGrid = ({ seed }: Props) => {
           isWall: false,
         };
       }
+
       const containsPath =
         !!allPaths?.find((p) => p === `${cell.x} - ${cell.y}`) ||
         !!poiPath?.find((p) => p === `${cell.x} - ${cell.y}`);
@@ -248,9 +268,9 @@ export const useGrid = ({ seed }: Props) => {
 
       return {
         ...cell,
-        isPath: containsPath,
+        isPath: cell.isPath ?? containsPath,
         isOutside: containsPath ? false : cell.isOutside,
-        isWall: containsPath ? false : cell.isWall,
+        isWall: containsPath || cell.item ? false : cell.isWall,
         isCollapsed,
       };
     });
@@ -309,7 +329,10 @@ export const useGrid = ({ seed }: Props) => {
         // current.isOutside = false;
         current.isPath = true;
         if (rockCount >= 0) {
-          current.isObstacle = generateNoise({ random: r }) < 0.05;
+          const shouldBeObstacle = generateNoise({ random: r }) < 0.05;
+          current.isObstacle = shouldBeObstacle;
+          current.item =
+            current.item || shouldBeObstacle ? hazardRubble : undefined;
         }
       }
       current.isCollapsed = true;
@@ -447,8 +470,14 @@ export const useGrid = ({ seed }: Props) => {
     setExits(exitsWithNeighbours);
 
     if (!previousRoom) {
-      setStart(exitsWithNeighbours[0]?.cell);
-    } else {
+      setStart(
+        shuffle(
+          withNeighbours?.filter((n) => n.isPath),
+          r
+        )[0]
+      );
+    }
+    if (previousRoom) {
       if (previousRoom.x < currentRoom.x) {
         setStart(
           exitsWithNeighbours.sort((a, b) => a.cell.x - b.cell.x)[0].cell
@@ -483,7 +512,8 @@ export const useGrid = ({ seed }: Props) => {
     setTiles(
       currentRoom?.tiles ?? [...cells].filter((c) => c.isPath || c.isObstacle)
     );
-    setItems(currentRoom?.items ?? []);
+    // @ts-expect-error Typemismatch while work in progress
+    setItems(currentRoom?.items ?? [...cells.filter((c) => c.item)]);
     setExitCells((exits || [])?.map((exit) => exit.cell));
 
     setPlayer(start);
