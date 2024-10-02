@@ -1,5 +1,4 @@
 import { windowStore } from "@/stores/WindowStore";
-import { cellSize } from "@/utils/defaultValues";
 import { useEffect } from "react";
 import { useStore } from "zustand";
 
