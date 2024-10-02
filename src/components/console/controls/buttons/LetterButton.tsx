@@ -21,6 +21,14 @@ export const LetterButton = ({ color, letter }: Props) => {
     <LetterButtonWrapper
       ref={keyboardRef}
       color={color}
+      onTouchStart={(e) => {
+        e.preventDefault();
+        handleClick(letter, "keydown");
+      }}
+      onTouchEnd={(e) => {
+        e.preventDefault();
+        handleClick(letter, "keyup");
+      }}
       onMouseDown={(e) => {
         e.preventDefault();
         handleClick(letter, "keydown");
