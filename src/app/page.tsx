@@ -1,7 +1,6 @@
 "use client";
 
 import { RoomMap } from "@/components/level/RoomMap";
-import { MobileMovement } from "@/components/ui/interactive/MobileMovement";
 import { useResize } from "@/hooks/useResize";
 import { Box } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
@@ -35,7 +34,6 @@ export default function Home() {
       ref={mainRef}
     >
       <RoomMap seed={seed} setSeed={setSeed} />
-      <MobileMovement />
     </Box>
   );
 }

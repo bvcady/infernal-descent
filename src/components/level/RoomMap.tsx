@@ -97,18 +97,18 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
           <ButtonArea>
             <DirectionalPad>
               <ArrowButton
-                position="left"
+                dir="ArrowLeft"
                 callback={() => {}}
                 rotation="270deg"
               />
-              <ArrowButton position="up" callback={() => {}} rotation="0deg" />
+              <ArrowButton dir="ArrowUp" callback={() => {}} rotation="0deg" />
               <ArrowButton
-                position="right"
+                dir="ArrowRight"
                 callback={() => {}}
                 rotation="90deg"
               />
               <ArrowButton
-                position="down"
+                dir="ArrowDown"
                 callback={() => {}}
                 rotation="180deg"
               />

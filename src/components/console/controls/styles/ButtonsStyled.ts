@@ -38,41 +38,47 @@ export const LetterButtonWrapper = styled(ButtonBase)<{ color?: string }>`
   }
 `;
 
-export const ArrowButtonWrapper = styled(ButtonBase)<{
+interface WrapperProps {
   rotation: string;
-  position: "up" | "left" | "right" | "down";
-}>`
+  position: "ArrowUp" | "ArrowDown" | "ArrowLeft" | "ArrowRight";
+}
+
+export const ArrowButtonWrapper = styled(ButtonBase)<WrapperProps>`
   height: 32px;
   width: 32px;
   display: grid;
   place-items: center;
   border-radius: 0.25rem;
-  border: 2px solid var(--lightColor);
+  border: 2px solid blanchedalmond;
   border-bottom: none;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
-  margin-bottom: -2px;
 
   ${({ rotation }) => css`
     transform: rotate(${rotation});
   `}
   ${({ position }) => css`
     grid-area: ${position};
-    ${position === "up" &&
+    ${position === "ArrowUp" &&
     css`
-      place-self: top;
+      grid-row: 1 / span 1;
+      grid-column: 2 / span 1;
+      transform: translateY(2px);
     `}
-    ${position === "left" &&
+    ${position === "ArrowLeft" &&
     css`
-      place-self: left;
+      grid-row: 2 / span 1;
+      grid-column: 1 / span 1;
     `}
-    ${position === "down" &&
+    ${position === "ArrowDown" &&
     css`
-      place-self: bottom;
+      grid-row: 3 / span 1;
+      grid-column: 2 / span 1;
     `}
-    ${position === "right" &&
+    ${position === "ArrowRight" &&
     css`
-      place-self: right;
+      grid-row: 2 / span 1;
+      grid-column: 3 / span 1;
     `}
   `}
 `;
