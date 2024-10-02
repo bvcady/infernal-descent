@@ -123,7 +123,7 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
             </SSButtonContainer>
             <LetterButtonContainer w={cellSize * 1.5}>
               <LetterButton letter="Z" color="blanchedalmond" />
-              <LetterButton letter="X" color="#252533" callback={() => null} />
+              <LetterButton letter="X" color="#252533" />
             </LetterButtonContainer>
           </ButtonArea>
         </Console>
