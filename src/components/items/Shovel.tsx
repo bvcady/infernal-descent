@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { useStore } from "zustand";
 import { DefaultTile } from "../tiles/default/DefaultTile";
 import { Cell } from "@/types/Cell";
+import { usePlaySound } from "@/hooks/usePlaySound";
 
 interface Props {
   cell: Item;
@@ -18,6 +19,14 @@ export const Shovel = ({ cell, isStatic }: Props) => {
   const { player, addItem } = useStore(playerStore);
   const { setItems, items } = useStore(levelStore);
   const { toggleShowXHint } = useStore(windowStore);
+
+  // public/Audio/Impact Sounds/Audio/impactMining_002.ogg
+  const { play } = usePlaySound({
+    soundFile: "../../Audio/Impact Sounds/Audio/impactMining_002.ogg",
+    options: {
+      volume: 0.4,
+    },
+  });
 
   const playerIsOn = useMemo(
     () => player?.x === cell?.x && player?.y === cell?.y,
@@ -35,6 +44,7 @@ export const Shovel = ({ cell, isStatic }: Props) => {
         setItems(
           items.filter((item) => !(item.x === cell?.x && item.y === cell.y))
         );
+        play();
         addItem(cell);
       }
     }
@@ -62,8 +72,12 @@ export const Shovel = ({ cell, isStatic }: Props) => {
         itemRef.current.style.zIndex = "unset";
       }
       itemRef.current.style.transform = isUp
-        ? `translateY(calc(${playerIsOn ? "-75%" : "0%"} ))`
-        : `translateY(calc(${playerIsOn ? "-75%" : "0%"} - 10%))`;
+        ? `translateY(calc(${
+            playerIsOn ? "-75%" : "0%"
+          } )) rotate(180deg) scale(-1, 1)`
+        : `translateY(calc(${
+            playerIsOn ? "-75%" : "0%"
+          } - 10%)) rotate(180deg) scale(-1, 1)`;
     }
 
     requestRef.current = requestAnimationFrame((time) => animate(time));
@@ -81,9 +95,6 @@ export const Shovel = ({ cell, isStatic }: Props) => {
       cell={cell as Cell}
       customPath="images/Monochrome/Tilemap/shovel.png"
       noBackground
-      style={{
-        transform: "rotate(90deg) scale(1, -1)",
-      }}
     />
   );
 };

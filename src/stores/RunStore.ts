@@ -25,7 +25,7 @@ export const runStore = createStore<RunStore>()((set) => ({
   rooms: [],
   setRooms: (rooms) => set({ rooms }),
   currentRoom: undefined,
-  setCurrentRoom: (currentRoom) => set({ currentRoom }),
+  setCurrentRoom: (currentRoom) => set({ currentRoom: {...currentRoom!, isVisited: true} }),
   previousRoom: undefined,
   setPreviousRoom: (previousRoom) => set({ previousRoom }),
   updateRooms: (currentRoom, { walls, tiles, items }) => {

@@ -72,8 +72,8 @@ export const MiniMap = () => {
       {showMap ? (
         <GridWrapper
           style={{
-            gridTemplateRows: `repeat(7, ${cellSize / 2}px)`,
-            gridTemplateColumns: `repeat(7, ${cellSize / 2}px)`,
+            gridTemplateRows: `repeat(12, ${cellSize / 2}px)`,
+            gridTemplateColumns: `repeat(12, ${cellSize / 2}px)`,
             position: "absolute",
             height: "fit-content",
             width: "fit-content",

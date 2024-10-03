@@ -4,7 +4,9 @@ import { Item } from "./Item";
 import { ItemType } from "./Obtainable";
 import { RoomRequirement } from "./RoomRequirement";
 
+
 export type Room = {
+  id: string;
   x: number;
   y: number;
   isCollapsed: boolean;
@@ -15,6 +17,10 @@ export type Room = {
     left?: Room;
     right?: Room;
   };
+  tbdNeighbours: (
+    | { requirement?: RoomRequirement[]; forcedEntry?: RoomRequirement }
+    | "to do"
+  )[];
   isBossRoom?: boolean;
   tiles?: Cell[];
   walls?: Cell[];
@@ -26,6 +32,9 @@ export type Room = {
   hazardsToPlace: ItemType[];
   density?: number;
   emptiness?: number;
-  entryRequirement?: RoomRequirement;
+  entryRequirement?: {
+    requirements?: RoomRequirement[];
+    forcedEntry?: RoomRequirement;
+  };
   opened?: boolean;
 };

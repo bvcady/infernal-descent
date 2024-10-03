@@ -20,7 +20,7 @@ export const BottomMap = ({ rockEdges, exits }: Props) => {
       {exits
         ?.filter((e) => !!e.exit)
         .map((e) => (
-          <Exit key={e.side} side={e.side} cell={e.cell} exit={e.exit} />
+          <Exit key={e.side} cell={e.cell} exit={e.exit} />
         ))}
     </GridWrapper>
   );

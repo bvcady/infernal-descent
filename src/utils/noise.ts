@@ -1,17 +1,7 @@
 import { createNoise2D, createNoise3D, createNoise4D } from "simplex-noise";
 import { scale } from "./scale";
+import { Random } from "@/types/Random";
 
-type Random = {
-  (): number;
-  next(): number;
-  uint32(): number;
-  fract53(): number;
-  version: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  args: any[];
-  exportState(): [number, number, number, number];
-  importState(state: [number, number, number, number]): void;
-};
 
 type NoiseDims = { x?: number; y?: number; z?: number; w?: number };
 

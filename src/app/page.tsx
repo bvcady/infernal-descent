@@ -19,7 +19,10 @@ export default function Home() {
   // useEffect(() => {
   //   setSeed((Math.random() + 1).toString(36).substring(7));
   // }, []);
-  const { play } = usePlaySound({ soundFile: "../../Audio/80bpm-piano.wav" });
+  const { play } = usePlaySound({
+    soundFile: "../../Audio/80bpm-piano.wav",
+    options: { playbackRate: 1, loop: true, volume: 0.2 },
+  });
 
   useEffect(() => {
     mainRef.current?.dispatchEvent(
@@ -28,7 +31,9 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    play();
+    if (seed) {
+      play();
+    }
     toggleShowStartHint(!seed);
     toggleShowZHint(!!seed);
   }, [seed]);

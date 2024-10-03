@@ -58,6 +58,7 @@ export const useGrid = ({ seed }: Props) => {
     setDimensions({ width, height });
 
     const density = currentRoom.density ?? 20;
+    const emptiness = currentRoom.emptiness ?? 20;
 
     const noise2D = createNoise2D(r);
     const fillableCells = new Array(height)
@@ -393,7 +394,7 @@ export const useGrid = ({ seed }: Props) => {
         }
         const emptyPath =
           cell.isPath &&
-          scale([0, 1], [0, 100])(generateNoise({ random: r })) < density * 2 &&
+          scale([0, 1], [0, 100])(generateNoise({ random: r })) < emptiness &&
           !cellIsImportant(cell)
             ? true
             : cell.isOutside;

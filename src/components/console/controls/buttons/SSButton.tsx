@@ -10,16 +10,14 @@ export const SSButton = ({ callback }: Props) => {
 
   useEffect(() => {
     addEventListener("keyup", (e) => {
+      e.preventDefault();
+      if (e.repeat) {
+        return;
+      }
       if (e.key === "s") {
         keyboardRef?.current?.click();
       }
     });
-    return () =>
-      removeEventListener("keyup", (e) => {
-        if (e.key === "s") {
-          keyboardRef?.current?.click();
-        }
-      });
   }, []);
 
   return (

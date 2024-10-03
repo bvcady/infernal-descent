@@ -1,30 +1,47 @@
 import { scale } from "@/utils/scale";
-import { useCallback, useState } from "react";
-import useSound from "use-sound";
+import { Howl } from "howler";
+import { useEffect, useState } from "react";
 
 interface Props {
   soundFile: string;
-  options?: { playbackRate?: number; loop?: boolean; volume?: number };
+  options?: {
+    playbackRate?: number;
+    loop?: boolean;
+    volume?: number;
+    autoPlay?: boolean;
+    shouldInterupt?: boolean;
+  };
 }
 
 export const usePlaySound = ({ soundFile, options }: Props) => {
-  const [increment, setIncrement] = useState(0);
+  const [playbackRate, setPlaybackRate] = useState(options?.playbackRate || 1);
 
-  const [playbackRate, setPlaybackRate] = useState(1);
+  const [sound, setSound] = useState<Howl | undefined>();
 
-  const [play] = useSound(soundFile, {
-    interrupt: true,
-    playbackRate,
-    volume: options?.volume || 1,
-  });
+  useEffect(() => {
+    setSound(
+      new Howl({
+        src: soundFile,
+        autoplay: options?.autoPlay,
+        volume: options?.volume,
+        loop: options?.loop,
+        rate: playbackRate,
+      })
+    );
+    return () => {
+      sound?.stop();
+    };
+  }, [soundFile]);
 
-  const handlePlay = useCallback(() => {
-    setIncrement((prev) => (prev += 0.5));
-    if (!options?.playbackRate)
+  const handlePlay = () => {
+    if (options?.playbackRate) {
       setPlaybackRate(scale([0, 1], [0.9, 1.1])(Math.random()));
-    // stop();
-    play();
-  }, [increment, setIncrement, setPlaybackRate, playbackRate]);
+    }
+    if (!options?.shouldInterupt && sound?.playing()) {
+      return;
+    }
+    sound?.play();
+  };
 
   return { play: handlePlay };
 };

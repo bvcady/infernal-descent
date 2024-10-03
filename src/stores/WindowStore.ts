@@ -7,9 +7,11 @@ type WindowStoreState = {
   showZHint: boolean;
   showStartHint: boolean;
   showSelectHint: boolean;
+  volume: number;
 };
 
 type WindowStoreActions = {
+  setVolume: (nextVolume: number) => void;
   setCellSize: (nextPosition: WindowStoreState["cellSize"]) => void;
   setHasLoaded: (next: boolean) => void;
   toggleShowXHint: (nextShowHint: WindowStoreState["showXHint"]) => void;
@@ -31,8 +33,18 @@ export const windowStore = createStore<WindowStore>()((set) => ({
   showZHint: true,
   showStartHint: false,
   showSelectHint: false,
+  volume: 0.5,
+  setVolume: (num: number) => {
+    if (num > 1) {
+      return set({ volume: 1 });
+    }
+    if (num < 0) {
+      return set({ volume: 0 });
+    }
+    set({ volume: num });
+  },
   setHasLoaded: (next: boolean) => {
-    return set({hasLoaded: next})
+    return set({ hasLoaded: next });
   },
   toggleShowXHint: (next: boolean) => {
     return set({ showXHint: next });

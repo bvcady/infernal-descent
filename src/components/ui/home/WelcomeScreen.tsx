@@ -1,26 +1,6 @@
 import { Box } from "@mui/material";
-import { useEffect } from "react";
 
-interface Props {
-  setSeed: (s: string) => void;
-}
-
-export const WelcomeScreen = ({ setSeed }: Props) => {
-  const updateSeed = (e: KeyboardEvent) => {
-    if (e.key === "s") {
-      const r = (Math.random() + 1)
-        .toString(36)
-        .substring(4)
-        .toLocaleUpperCase();
-      setSeed(r);
-    }
-  };
-
-  useEffect(() => {
-    addEventListener("keyup", (e) => updateSeed(e));
-    return () => removeEventListener("keyup", (e) => updateSeed(e));
-  }, []);
-
+export const WelcomeScreen = () => {
   return (
     <>
       <Box

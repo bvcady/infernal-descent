@@ -11,10 +11,8 @@ export const useEnterRoom = () => {
 
   const handleKeyUp = (e: KeyboardEvent) => {
     if (e.key === "x") {
-      if (player?.exit) {
-        const nextRoom = [...rooms].find(
-          (r) => r.x === player?.exit?.x && r.y === player?.exit.y
-        );
+      if (player?.exit?.id) {
+        const nextRoom = [...rooms].find((r) => r.id === player?.exit?.id);
         if (nextRoom) updateRooms(nextRoom, { walls, items, tiles });
       }
     }

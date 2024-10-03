@@ -82,7 +82,7 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
               ) : null}
               <UIOverlay />
             </Viewer>
-            {!seed ? <WelcomeScreen setSeed={setSeed}></WelcomeScreen> : null}
+            {!seed ? <WelcomeScreen /> : null}
           </ScreenPadding>
 
           <ButtonArea>
@@ -110,7 +110,6 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
                   updateSeed();
                 }}
               />
-              {/* <SSButton callback={() => {}} /> */}
             </SSButtonContainer>
             <LetterButtonContainer w={cellSize * 1.5}>
               <LetterButton letter="Z" color="blanchedalmond" />
