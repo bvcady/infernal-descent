@@ -9,8 +9,8 @@ import {
   itemShovel,
 } from "@/resources/items/Items";
 import { runStore } from "@/stores/RunStore";
-import { Obtainable, Unobtainable } from "@/types/Obtainable";
-import { PlayerEvent } from "@/types/PlayerEvent";
+import { RoomRequirement } from "@/types/RoomRequirement";
+import { ItemType } from "@/types/Obtainable";
 import { Room } from "@/types/Room";
 import { generateNoise, shuffle } from "@/utils/noise";
 import { scale } from "@/utils/scale";
@@ -54,26 +54,40 @@ export const useRooms = ({ seed }: Props) => {
     const totalRooms = [] as Room[];
 
     type IntroRoom = {
-      items?: (Obtainable | Unobtainable)[];
-      hazards?: Unobtainable[];
-      nextRoomRequirement?: (Obtainable | Unobtainable | PlayerEvent)[];
+      items?: ItemType[];
+      hazards?: ItemType[];
+      nextRoomRequirement?: {
+        requirements?: RoomRequirement[];
+        forcedEntry?: RoomRequirement;
+      };
       otherwiseEntryCost?: { name: string; amount: number };
     };
 
     const shovelRoom: IntroRoom = {
       items: [itemShovel],
-      nextRoomRequirement: [],
+      nextRoomRequirement: {
+        requirements: [
+          { name: "shovel", type: "Item", amount: 1, exact: true },
+        ],
+      },
     };
 
     const keyRoom: IntroRoom = {
       items: [itemKey],
-      nextRoomRequirement: [itemKey],
+      nextRoomRequirement: {
+        requirements: [{ name: "key", type: "Item", amount: 1 }],
+        forcedEntry: { name: "heart", type: "Stat", amount: 1 },
+      },
     };
 
     const heartGainRoom: IntroRoom = {
       items: [
         shuffle([itemHeartHalf, itemHeartWhole, itemHeartTemporary], r)[0],
       ],
+      hazards: [hazardSpikes, hazardSpikes],
+      nextRoomRequirement: {
+        requirements: [{ name: "health_gain", type: "Stat" }],
+      },
     };
 
     const heartLossRoom: IntroRoom = {
@@ -82,13 +96,24 @@ export const useRooms = ({ seed }: Props) => {
         shuffle([hazardSlime, hazardSpikes], r)[0],
         shuffle([hazardSlime, hazardSpikes], r)[0],
       ],
-      nextRoomRequirement: [{ name: "health_lost", type: "PlayerEvent" }],
+      nextRoomRequirement: {
+        requirements: [{ name: "health_lost", type: "Stat", amount: 1 }],
+      },
     };
 
     const paymentRoom: IntroRoom = {
       items: new Array(5).fill("").map(() => {
         return itemShardOne;
       }),
+      nextRoomRequirement: {
+        requirements: [{ name: "shards", type: "Item", amount: 5, reduce: 3 }],
+      },
+    };
+
+    const barredRoom: IntroRoom = {
+      nextRoomRequirement: {
+        forcedEntry: { name: "health", type: "Stat", amount: 1 },
+      },
     };
 
     const chestOpenRoom = {
@@ -101,7 +126,9 @@ export const useRooms = ({ seed }: Props) => {
       heartLossRoom,
       chestOpenRoom,
       paymentRoom,
+      barredRoom,
     ];
+
     console.log({ introRoomSituations });
     // while (totalRooms.length < 3) {
     //   const remainingRooms = roomGrid.filter((room) => !room.isCollapsed);
@@ -123,81 +150,77 @@ export const useRooms = ({ seed }: Props) => {
     //   roomGrid[id] = introRoom;
     // }
 
+    // Fist place a room with a shovel, to introduce the user to exit requirements
+
+    if (totalRooms.length === 0) {
+      const remainingRooms = [...roomGrid].filter((room) => !room.isCollapsed);
+      const introRoom = shuffle(remainingRooms, r)[0];
+      const id = [...roomGrid].findIndex(
+        (room) => room.x === introRoom.x && room.y === introRoom.y
+      );
+      introRoom.size = 1;
+      introRoom.isBossRoom = false;
+      introRoom.maxExits = r.next() < 0.5 ? 1 : 2;
+      introRoom.isCollapsed = true;
+      introRoom.density = 0;
+      introRoom.emptiness = 0;
+      introRoom.itemsToPlace = shovelRoom.items || [];
+      introRoom.hazardsToPlace = shovelRoom.hazards || [];
+      roomGrid[id] = introRoom;
+      totalRooms.push(introRoom);
+      introRoom.entryRequirement = undefined;
+    }
+
     while (totalRooms.length < targetTotal) {
-      if (totalRooms.length === 0) {
-        const remainingRooms = [...roomGrid].filter(
-          (room) => !room.isCollapsed
-        );
-        const introRoom = shuffle(remainingRooms, r)[0];
-        const id = [...roomGrid].findIndex(
-          (room) => room.x === introRoom.x && room.y === introRoom.y
-        );
-        introRoom.size = 1;
-        introRoom.isBossRoom = false;
-        introRoom.maxExits = 1;
-        introRoom.isCollapsed = true;
-        introRoom.density = 0;
-        introRoom.emptiness = 0;
-        introRoom.itemsToPlace = shovelRoom.items || [];
-        introRoom.hazardsToPlace = shovelRoom.hazards || [];
+      const options = [...roomGrid].filter((room) => {
+        const top = roomGrid.find(
+          (n) => room.x === n.x && room.y - 1 === n.y
+        )?.isCollapsed;
+        const bottom = roomGrid.find(
+          (n) => room.x === n.x && room.y + 1 === n.y
+        )?.isCollapsed;
+        const right = roomGrid.find(
+          (n) => room.x + 1 === n.x && room.y === n.y
+        )?.isCollapsed;
+        const left = roomGrid.find(
+          (n) => room.x - 1 === n.x && room.y === n.y
+        )?.isCollapsed;
 
-        roomGrid[id] = introRoom;
+        return !room.isCollapsed && (top || bottom || right || left);
+      });
 
-        totalRooms.push(introRoom);
-      } else {
-        const options = [...roomGrid].filter((room) => {
-          const top = roomGrid.find(
-            (n) => room.x === n.x && room.y - 1 === n.y
-          )?.isCollapsed;
-          const bottom = roomGrid.find(
-            (n) => room.x === n.x && room.y + 1 === n.y
-          )?.isCollapsed;
-          const right = roomGrid.find(
-            (n) => room.x + 1 === n.x && room.y === n.y
-          )?.isCollapsed;
-          const left = roomGrid.find(
-            (n) => room.x - 1 === n.x && room.y === n.y
-          )?.isCollapsed;
+      const nextRoom =
+        totalRooms.length === 0
+          ? shuffle([...roomGrid], r)[0]
+          : (shuffle(options, r)[0] as Room);
 
-          return !room.isCollapsed && (top || bottom || right || left);
-        });
+      const newSize = Math.floor(
+        scale(
+          [0, 1],
+          [1, 4]
+        )(
+          generateNoise({
+            random: r,
+          })
+        )
+      );
 
-        const nextRoom =
-          totalRooms.length === 0
-            ? shuffle([...roomGrid], r)[0]
-            : (shuffle(options, r)[0] as Room);
+      nextRoom.isCollapsed = true;
+      nextRoom.size = totalRooms?.length > 0 ? newSize : 3;
+      nextRoom.maxExits = 2;
+      nextRoom.density = Math.floor(scale([0, 1], [0, 10])(r.next()));
 
-        const newSize = Math.floor(
-          scale(
-            [0, 1],
-            [1, 4]
-          )(
-            generateNoise({
-              random: r,
-            })
-          )
-        );
-
-        nextRoom.isCollapsed = true;
-        nextRoom.size = totalRooms?.length > 0 ? newSize : 3;
-        nextRoom.maxExits = 2;
-        nextRoom.density = Math.floor(scale([0, 1], [0, 10])(r.next()));
-
-        if (
-          nextRoom.size === 3 &&
-          !totalRooms?.some((room) => room.isBossRoom)
-        ) {
-          nextRoom.isBossRoom = true;
-        }
-
-        const indexOfRoom = [...roomGrid].findIndex(
-          (room) => room.x === nextRoom.x && room.y === nextRoom.y
-        );
-
-        if (indexOfRoom >= 0) roomGrid[indexOfRoom] = nextRoom;
-
-        totalRooms.push(nextRoom);
+      if (nextRoom.size === 3 && !totalRooms?.some((room) => room.isBossRoom)) {
+        nextRoom.isBossRoom = true;
       }
+
+      const indexOfRoom = [...roomGrid].findIndex(
+        (room) => room.x === nextRoom.x && room.y === nextRoom.y
+      );
+
+      if (indexOfRoom >= 0) roomGrid[indexOfRoom] = nextRoom;
+
+      totalRooms.push(nextRoom);
     }
 
     const roomsWithNeighbours = [...totalRooms].map((room) => {

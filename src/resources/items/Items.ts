@@ -1,70 +1,80 @@
-import { Obtainable, Unobtainable } from "@/types/Obtainable";
+import { ItemType } from "@/types/Obtainable";
 
-export const itemShovel: Obtainable = {
+export const itemShovel: ItemType = {
   name: "shovel",
   rarity: 1000,
   type: "Obtainable",
   canShovel: false,
+  description:
+    "The shovel allows you to pick up tiles from the floor. The item remains ontop of the tile.",
 };
-export const itemKey: Obtainable = {
+export const itemKey: ItemType = {
   name: "key",
   rarity: 3,
   weight: 0.5,
-  type: "Obtainable", 
+  type: "Obtainable",
   canShovel: true,
+  description: "Required to open chests or doors.",
 };
-export const itemChest: Unobtainable = {
+export const itemChest: ItemType = {
   name: "chest",
   rarity: 5,
-  weight: 4, 
+  weight: 4,
   canShovel: true,
   type: "Unobtainable",
+  description: "Usually, a key is needed to get the valuables from this chest.",
 };
-export const itemHeartHalf: Obtainable = {
+export const itemHeartHalf: ItemType = {
   name: "heart_half",
   rarity: 2,
   type: "Obtainable",
   weight: 1,
   canShovel: true,
+  description: "When not at full health, heals you by half a heart.",
 };
-export const itemHeartWhole: Obtainable = {
+export const itemHeartWhole: ItemType = {
   name: "heart_whole",
   rarity: 4,
   type: "Obtainable",
   weight: 0.5,
   canShovel: true,
+  description: "When not at full health, heals you by a full heart.",
 };
-export const itemHeartTemporary: Obtainable = {
+export const itemHeartTemporary: ItemType = {
   name: "heart_temporary",
   rarity: 6,
   type: "Obtainable",
   weight: 2,
   canShovel: true,
-};
-
-export const itemShardOne: Obtainable = {
-  name: "heart_temporary",
-  rarity: 6,
-  type: "Obtainable",
-  weight: 2,
-  canShovel: true,
-  value: 1
+  description: "Provides you an extra heart on top of our max health.",
 };
 
-export const itemShardFive: Obtainable = {
+export const itemShardOne: ItemType = {
   name: "heart_temporary",
   rarity: 6,
   type: "Obtainable",
   weight: 2,
   canShovel: true,
-  value: 5
+  value: 1,
+  description: "A volcanic shard that seems to influence your environment.",
 };
 
-export const itemShardTen: Obtainable = {
+export const itemShardFive: ItemType = {
   name: "heart_temporary",
   rarity: 6,
   type: "Obtainable",
   weight: 2,
   canShovel: true,
-  value: 10
+  value: 5,
+  description: "Five volcanic shard that seems to influence your environment.",
+};
+
+export const itemShardTen: ItemType = {
+  name: "heart_temporary",
+  rarity: 6,
+  type: "Obtainable",
+  weight: 2,
+  canShovel: true,
+  value: 10,
+  description: "Ten volcanic shard that seems to influence your environment.",
 };

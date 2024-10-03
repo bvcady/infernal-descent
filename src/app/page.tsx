@@ -1,6 +1,7 @@
 "use client";
 
 import { RoomMap } from "@/components/level/RoomMap";
+import { usePlaySound } from "@/hooks/usePlaySound";
 import { useResize } from "@/hooks/useResize";
 import { windowStore } from "@/stores/WindowStore";
 import { Box } from "@mui/material";
@@ -18,6 +19,7 @@ export default function Home() {
   // useEffect(() => {
   //   setSeed((Math.random() + 1).toString(36).substring(7));
   // }, []);
+  const { play } = usePlaySound({ soundFile: "../../Audio/80bpm-piano.wav" });
 
   useEffect(() => {
     mainRef.current?.dispatchEvent(
@@ -26,6 +28,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    play();
     toggleShowStartHint(!seed);
     toggleShowZHint(!!seed);
   }, [seed]);

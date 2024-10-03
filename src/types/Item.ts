@@ -1,4 +1,4 @@
 import { Cell } from "./Cell";
-import { Obtainable, Unobtainable } from "./Obtainable";
+import { ItemType } from "./Obtainable";
 
-export type Item = {item: (Obtainable | Unobtainable) }& Partial<Cell>
+export type Item = {item: ItemType }& Partial<Cell>

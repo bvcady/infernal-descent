@@ -1,16 +1,9 @@
-export type Obtainable = {
+export type ItemType = {
     name: string
     rarity: number
-    type: "Obtainable"
+    type: "Obtainable" | 'Unobtainable'
     weight?: number
     canShovel?: boolean
     value?: number
-}
-
-export type Unobtainable = {
-    name: string
-    rarity: number
-    type: "Unobtainable"
-    weight?: number
-    canShovel?: boolean
+    description?: string
 }
