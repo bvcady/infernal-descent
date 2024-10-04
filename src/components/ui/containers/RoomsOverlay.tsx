@@ -84,19 +84,14 @@ export const UIOverlay = () => {
         gap={`${cellSize / 5}px`}
       >
         <PressHint
-          label="[S]TART"
-          letter="S"
-          toggle={showStartHint}
-          // style={{ marginRight: "auto" }}
-        />
-        <PressHint
-          letter="A"
+          letter="B"
           icon={<Map />}
-          toggle={showAHint}
-          // style={{ marginRight: "auto" }}
+          toggle={showBHint}
+          style={{ marginRight: "auto" }}
         />
-        <PressHint letter="B" icon={<Shovel />} toggle={showBHint} />
-        <PressHint letter="Z" toggle={showZHint} />
+        <PressHint label="[S]TART" letter="S" toggle={showStartHint} />
+        <PressHint letter="A" toggle={showAHint} />
+        <PressHint letter="Z" icon={<Shovel />} toggle={showZHint} />
         <PressHint letter="X" toggle={showXHint} />
       </Box>
     </Box>

@@ -11,6 +11,11 @@ type PlayerStoreState = {
     tiles: { tile: Cell; item?: Item; hazard?: Hazard }[];
   };
   canMove: boolean;
+  stats: {
+    health: number,
+    shards: number,
+    steps: number
+  }
 };
 
 type PlayerStoreActions = {
@@ -20,11 +25,13 @@ type PlayerStoreActions = {
   setPlayer: (nextPosition: PlayerStoreState["player"]) => void;
   moveInDirection: (nextCell: Cell) => void;
   setCanMove: (check: boolean) => void;
+  resetInventory: () => void;
 };
 
 type PlayerStore = PlayerStoreState & PlayerStoreActions;
 
 export const playerStore = createStore<PlayerStore>()((set) => ({
+  stats: {health: 6, steps: 0, shards: 0},
   canMove: true,
   inventory: {
     items: [
@@ -48,6 +55,7 @@ export const playerStore = createStore<PlayerStore>()((set) => ({
     if (!nextCell) {
       return;
     }
+    set({stats: {...playerStore.getState().stats, steps: playerStore.getState().stats.steps + 1}})
     set({ player: nextCell });
   },
   removeItem: (item: Item) => {
@@ -101,4 +109,7 @@ export const playerStore = createStore<PlayerStore>()((set) => ({
   setCanMove: (check: boolean) => {
     set({ canMove: check });
   },
+  resetInventory: () => {
+    set({inventory: {items: [], tiles: []}})
+  }
 }));

@@ -3,6 +3,7 @@
 import { RoomMap } from "@/components/level/RoomMap";
 import { usePlaySound } from "@/hooks/usePlaySound";
 import { useResize } from "@/hooks/useResize";
+import { playerStore } from "@/stores/PlayerStore";
 import { windowStore } from "@/stores/WindowStore";
 import { Box } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
@@ -16,6 +17,7 @@ export default function Home() {
   const { toggleShowStartHint, toggleShowBHint, hasLoaded } =
     useStore(windowStore);
 
+  const { setPlayer, resetInventory } = useStore(playerStore);
   // useEffect(() => {
   //   setSeed((Math.random() + 1).toString(36).substring(7));
   // }, []);
@@ -33,6 +35,8 @@ export default function Home() {
   useEffect(() => {
     if (seed) {
       play();
+      setPlayer(undefined);
+      resetInventory();
     }
     toggleShowStartHint(!seed);
     toggleShowBHint(!!seed);

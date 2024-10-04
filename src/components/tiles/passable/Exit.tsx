@@ -1,11 +1,11 @@
 import { playerStore } from "@/stores/PlayerStore";
+import { runStore } from "@/stores/RunStore";
 import { windowStore } from "@/stores/WindowStore";
 import { Cell } from "@/types/Cell";
 import { Room } from "@/types/Room";
 import { useEffect, useMemo } from "react";
 import { useStore } from "zustand";
 import { DefaultTile } from "../default/DefaultTile";
-import { runStore } from "@/stores/RunStore";
 
 interface Props {
   cell?: Cell;
@@ -29,31 +29,18 @@ export const Exit = ({ cell, exit }: Props) => {
     console.log(actualExit?.entryRequirement);
   }, [playerIsOn]);
 
-  // const defineRotation = () => {
-  //   if (side === "top") {
-  //     return "-90deg";
-  //   }
-  //   if (side === "right") {
-  //     return "0deg";
-  //   }
-  //   if (side === "bottom") {
-  //     return "90deg";
-  //   }
-  //   return "180deg";
-  // };
-
   return (
     <DefaultTile
       cell={cell}
-      // public/images/Monochrome/Tilemap/ok.png
       customPath={
-        actualExit?.entryRequirement && !actualExit.isVisited
+        actualExit?.entryRequirement &&
+        actualExit?.entryRequirement !== "to do" &&
+        !actualExit.isVisited
           ? "../../images/Monochrome/Tilemap/no_access.png"
           : "../../images/Monochrome/Tilemap/ok.png"
       }
       tileNumber={16 + 4 * d}
       noBackground
-      // style={{ transform: `rotate(${defineRotation()})` }}
     />
   );
 };
