@@ -28,7 +28,6 @@ export const useDig = () => {
         (t) => t.x === player?.x && t.y === player.y
       );
       if (e.repeat || !currentTile || e.key !== "z") {
-        console.log(e);
         return;
       }
       if (inventory.items.some((item) => item.item.name === "shovel")) {
@@ -58,6 +57,7 @@ export const useDig = () => {
       }
       if (inventory.items.some((item) => item.item.name === "shovel")) {
         console.log("start digging");
+        console.log("set no movement");
         return setCanMove(false);
       }
     },

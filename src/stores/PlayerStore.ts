@@ -12,27 +12,46 @@ type PlayerStoreState = {
   };
   canMove: boolean;
   stats: {
-    health: number,
-    shards: number,
-    steps: number
-  }
+    health: number;
+    shards: number;
+    steps: number;
+  };
+  futureTile?: {
+    position: { x: number; y: number };
+    tile?: Cell;
+    item?: Item;
+    hazard?: Hazard;
+  };
+  placeKeyIsDown?: boolean;
 };
 
 type PlayerStoreActions = {
+  setPlaceKeyIsDown: (input: boolean) => void;
   removeItem: (item: Item) => void;
   addItem: (item: Item) => void;
   addTile: (next: { tile: Cell; item?: Item; hazard?: Hazard }) => void;
+  removeTile: (next: { tile: Cell; item?: Item; hazard?: Hazard }) => void;
   setPlayer: (nextPosition: PlayerStoreState["player"]) => void;
   moveInDirection: (nextCell: Cell) => void;
   setCanMove: (check: boolean) => void;
   resetInventory: () => void;
+  setFutureTile: (ft?: {
+    position: { x: number; y: number };
+    tile?: Cell;
+    item?: Item;
+    hazard?: Hazard;
+  }) => void;
 };
 
 type PlayerStore = PlayerStoreState & PlayerStoreActions;
 
 export const playerStore = createStore<PlayerStore>()((set) => ({
-  stats: {health: 6, steps: 0, shards: 0},
+  stats: { health: 6, steps: 0, shards: 0 },
   canMove: true,
+  futureTile: undefined,
+  setFutureTile: (newTile) => {
+    set({ futureTile: newTile });
+  },
   inventory: {
     items: [
       {
@@ -55,7 +74,12 @@ export const playerStore = createStore<PlayerStore>()((set) => ({
     if (!nextCell) {
       return;
     }
-    set({stats: {...playerStore.getState().stats, steps: playerStore.getState().stats.steps + 1}})
+    set({
+      stats: {
+        ...playerStore.getState().stats,
+        steps: playerStore.getState().stats.steps + 1,
+      },
+    });
     set({ player: nextCell });
   },
   removeItem: (item: Item) => {
@@ -95,13 +119,16 @@ export const playerStore = createStore<PlayerStore>()((set) => ({
       },
     });
   },
-  removeTile: (tile: Cell) => {
+  setPlaceKeyIsDown: (input: boolean) => {
+    return set({ placeKeyIsDown: input });
+  },
+  removeTile: (tile: { tile: Cell; item?: Item; hazard?: Hazard }) => {
     const prevInventory = playerStore.getState().inventory;
     set({
       inventory: {
         ...prevInventory,
         tiles: prevInventory?.tiles?.filter(
-          (t) => t.tile.x !== tile.x && t.tile.y !== tile.y
+          (t) => t.tile.x !== tile.tile.x && t.tile.y !== tile.tile.y
         ),
       },
     });
@@ -110,6 +137,6 @@ export const playerStore = createStore<PlayerStore>()((set) => ({
     set({ canMove: check });
   },
   resetInventory: () => {
-    set({inventory: {items: [], tiles: []}})
-  }
+    set({ inventory: { items: [], tiles: [] } });
+  },
 }));

@@ -2,7 +2,7 @@ import { levelStore } from "@/stores/LevelStore";
 import { playerStore } from "@/stores/PlayerStore";
 import { windowStore } from "@/stores/WindowStore";
 import { Item } from "@/types/Item";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { CSSProperties, useCallback, useEffect, useMemo, useRef } from "react";
 import { useStore } from "zustand";
 import { DefaultTile } from "../tiles/default/DefaultTile";
 import { Cell } from "@/types/Cell";
@@ -11,16 +11,15 @@ import { usePlaySound } from "@/hooks/usePlaySound";
 interface Props {
   cell?: Item;
   isStatic?: boolean;
+  style?: CSSProperties;
 }
 
-export const Shovel = ({ cell, isStatic }: Props) => {
+export const Shovel = ({ cell, isStatic, style = {} }: Props) => {
   const itemRef = useRef<HTMLDivElement>();
   const requestRef = useRef(0);
-  const { player, addItem } = useStore(playerStore);
+  const { player, addItem, inventory } = useStore(playerStore);
   const { setItems, items } = useStore(levelStore);
   const { toggleShowAHint } = useStore(windowStore);
-
-  console.log("im still here");
 
   // public/Audio/Impact Sounds/Audio/impactMining_002.ogg
   const { play } = usePlaySound({
@@ -36,7 +35,8 @@ export const Shovel = ({ cell, isStatic }: Props) => {
   );
 
   useEffect(() => {
-    toggleShowAHint(!!playerIsOn);
+    if (!inventory.items.find((item) => item.item.name === "shovel"))
+      toggleShowAHint(!!playerIsOn);
   }, [playerIsOn]);
 
   const handleGrab = useCallback(
@@ -95,6 +95,7 @@ export const Shovel = ({ cell, isStatic }: Props) => {
 
   return (
     <DefaultTile
+      style={{ ...style }}
       tileRef={itemRef}
       className="itemKey"
       cell={cell as Cell}

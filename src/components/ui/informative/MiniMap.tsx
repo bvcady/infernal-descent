@@ -63,7 +63,7 @@ export const MiniMap = () => {
   }, []);
 
   useEffect(() => {
-    // setCanMove(!showMap);
+    setCanMove(!showMap);
     toggleShowBHint(!showMap);
   }, [showMap]);
 

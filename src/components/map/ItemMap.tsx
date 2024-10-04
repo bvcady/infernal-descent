@@ -8,8 +8,6 @@ import { Cell } from "@/types/Cell";
 export const ItemMap = () => {
   const { items } = useStore(levelStore);
 
-  console.log({ items });
-
   return (
     <GridWrapper>
       {items.map((item) => {
