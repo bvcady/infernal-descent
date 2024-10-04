@@ -12,7 +12,7 @@ export const MiniMap = () => {
   const [showMap, toggleShowMap] = useState(false);
   const { rooms, currentRoom } = useStore(runStore);
   const { cellSize, toggleShowBHint } = useStore(windowStore);
-  const { setCanMove } = useStore(playerStore);
+  const { setCanMove, digKeyIsDown, placeKeyIsDown } = useStore(playerStore);
 
   const undiscoveredNeighbours = [...rooms].filter((r) => {
     if (r.isVisited) {
@@ -35,7 +35,7 @@ export const MiniMap = () => {
   });
 
   const handleKeyUp = (e: KeyboardEvent) => {
-    if (e.repeat) {
+    if (e.repeat || digKeyIsDown || placeKeyIsDown) {
       return;
     }
     if (e.key === "b") {
@@ -44,7 +44,7 @@ export const MiniMap = () => {
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.repeat) {
+    if (e.repeat || digKeyIsDown || placeKeyIsDown) {
       return;
     }
 

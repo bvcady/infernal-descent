@@ -15,30 +15,40 @@ export const usePlace = () => {
   const { setItems, items, setTiles, tiles, walls } = useStore(levelStore);
   const {
     player,
-    setCanMove,
     inventory,
     setFutureTile,
     futureTile,
     removeTile,
     placeKeyIsDown,
+    digKeyIsDown,
     setPlaceKeyIsDown,
   } = useStore(playerStore);
 
-  useEffect(() => {
-    console.log({ futureTile });
-  }, [futureTile]);
-
   const handleKeyUp = useCallback(
     (e: KeyboardEvent) => {
+      if (digKeyIsDown) {
+        return;
+      }
       if (e.repeat || !player || !inventory?.tiles?.length) {
         return;
       }
 
       const { x, y } = player;
-      if (e.key === "x") {
-        console.log("Start Placing Tile...");
-        setCanMove(false);
 
+      if ((e.key === "b" || e.key === "z") && placeKeyIsDown) {
+        setFutureTile(undefined);
+        return setPlaceKeyIsDown(false);
+      }
+
+      if (e.key === "x" && !placeKeyIsDown) {
+        setPlaceKeyIsDown(true);
+      }
+
+      if (!placeKeyIsDown) {
+        return;
+      }
+
+      if (e.key === "x" || e.key === "a") {
         if (futureTile) {
           if (futureTile?.tile) {
             setTiles([
@@ -62,17 +72,14 @@ export const usePlace = () => {
             ]);
           }
 
-          if (futureTile) removeTile(inventory.tiles[0]);
+          removeTile(inventory.tiles[0]);
           setFutureTile(undefined);
-          setCanMove(true);
           return setPlaceKeyIsDown(false);
-        } else {
-          return setPlaceKeyIsDown(true);
         }
+        return setPlaceKeyIsDown(false);
       }
 
       if (e.key === "ArrowUp") {
-        console.log("Arrow Up");
         const isPossible =
           !tiles.find((t) => t.x === player.x && t.y === player.y - 1) &&
           !walls.find((t) => t.x === player.x && t.y === player.y - 1);
@@ -87,7 +94,6 @@ export const usePlace = () => {
         }
       }
       if (e.key === "ArrowDown") {
-        console.log("Arrow Down");
         const isPossible =
           !tiles.find((t) => t.x === player.x && t.y === player.y + 1) &&
           !walls.find((t) => t.x === player.x && t.y === player.y + 1);
@@ -129,15 +135,9 @@ export const usePlace = () => {
           setFutureTile(undefined);
         }
       }
-      if (e.key === "b") {
-        setPlaceKeyIsDown(false);
-        return setFutureTile(undefined);
-      }
-      if (!placeKeyIsDown) {
-        setFutureTile(undefined);
-      }
     },
     [
+      digKeyIsDown,
       placeKeyIsDown,
       player,
       tiles,
@@ -147,12 +147,13 @@ export const usePlace = () => {
       items,
       setItems,
       setTiles,
+      playerStore,
+      removeTile,
     ]
   );
 
   useEffect(() => {
     addEventListener("keyup", handleKeyUp);
-
     return () => {
       removeEventListener("keyup", handleKeyUp);
     };

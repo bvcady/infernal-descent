@@ -1,6 +1,7 @@
 import { levelStore } from "@/stores/LevelStore";
 import { playerStore } from "@/stores/PlayerStore";
 import { windowStore } from "@/stores/WindowStore";
+import { Cell } from "@/types/Cell";
 import { useCallback, useEffect, useState } from "react";
 import { useStore } from "zustand";
 
@@ -10,7 +11,6 @@ export const useDig = () => {
     inventory,
     player,
     addTile,
-    setCanMove,
     placeKeyIsDown,
     digKeyIsDown,
     setDigKeyIsDown,
@@ -19,20 +19,29 @@ export const useDig = () => {
   } = useStore(playerStore);
   const { toggleShowZHint, showZHint } = useStore(windowStore);
 
-  const top = player
-    ? tiles.find((t) => t.x === player?.x && t.y === player?.y - 1)
-    : null;
-  const bottom = player
-    ? tiles.find((t) => t.x === player?.x && t.y === player?.y + 1)
-    : false;
-  const left = player
-    ? tiles.find((t) => t.x === player?.x - 1 && t.y === player?.y)
-    : null;
-  const right = player
-    ? tiles.find((t) => t.x === player?.x + 1 && t.y === player?.y)
-    : null;
-
+  const [dirs, setDirs] = useState<{
+    [key: string]: Cell | undefined;
+  }>({
+    top: undefined,
+    bottom: undefined,
+    left: undefined,
+    right: undefined,
+  });
   useEffect(() => {
+    const top = player
+      ? tiles.find((t) => t.x === player?.x && t.y === player?.y - 1)
+      : undefined;
+    const bottom = player
+      ? tiles.find((t) => t.x === player?.x && t.y === player?.y + 1)
+      : undefined;
+    const left = player
+      ? tiles.find((t) => t.x === player?.x - 1 && t.y === player?.y)
+      : undefined;
+    const right = player
+      ? tiles.find((t) => t.x === player?.x + 1 && t.y === player?.y)
+      : undefined;
+    setDirs({ top, bottom, left, right });
+
     if (
       (top || bottom || left || right) &&
       inventory.items.some((item) => item.item.name === "shovel")
@@ -43,80 +52,92 @@ export const useDig = () => {
         toggleShowZHint(false);
       }
     }
-  }, [player, inventory, tiles, top, bottom, left, right]);
+  }, [player, inventory, tiles]);
 
-  useEffect(() => {
-    if (targetDiggingTile) console.log({ targetDiggingTile });
-  }, [targetDiggingTile]);
+  const handleUpdateTiles = useCallback(() => {
+    if (!targetDiggingTile) {
+      return;
+    }
+
+    const foundTile = [...tiles].find(
+      (t) => t.x === targetDiggingTile.x && t.y === targetDiggingTile.y
+    );
+    const foundItem = [...items].find(
+      (i) => i.x === targetDiggingTile.x && i.y === targetDiggingTile.y
+    );
+
+    if (foundTile) {
+      addTile({ tile: foundTile, item: foundItem });
+      setTiles(
+        tiles.filter((t) => !(t.x === foundTile.x && t.y === foundTile.y))
+      );
+      setItems(
+        items.filter((i) => !(i.x === foundTile.x && i.y === foundTile.y))
+      );
+      setTargetDiggingTile(undefined);
+      return setDigKeyIsDown(false);
+    }
+  }, [tiles, items, digKeyIsDown, targetDiggingTile]);
 
   const handleDig = useCallback(
     (e: KeyboardEvent) => {
-      console.log("A key was pressed");
-      if (e.repeat || !(top || bottom || left || right) || placeKeyIsDown) {
-        console.log("No surrounding tile or is placing");
+      if (placeKeyIsDown) {
         return;
       }
-      if (!inventory.items.some((item) => item.item.name === "shovel")) {
-        console.log("No shovel");
-        return setDigKeyIsDown(false);
+      if (e.repeat || !(dirs.top || dirs.bottom || dirs.left || dirs.right)) {
+        return;
       }
 
-      if (e.key === "b") {
-        setCanMove(true);
+      //  Do nothing when no shovel
+      if (!inventory.items.some((item) => item.item.name === "shovel")) {
         setTargetDiggingTile(undefined);
         return setDigKeyIsDown(false);
       }
 
-      if (e.key === "z") {
-        console.log("Z was pressed");
-        if (!digKeyIsDown) {
-          console.log("Start digging...");
-          setDigKeyIsDown(true);
-          return setCanMove(false);
-        }
-        if (!targetDiggingTile) {
-          console.log("Stopped digging...");
-          setCanMove(true);
-          return setDigKeyIsDown(false);
-        }
-        if (targetDiggingTile) {
-          console.log("Diggin tile at ", targetDiggingTile);
-          const foundTile = tiles.find(
-            (t) => t.x === targetDiggingTile.x && t.y === targetDiggingTile.y
-          );
-          const foundItem = items.find(
-            (i) => i.x === targetDiggingTile.x && i.y === targetDiggingTile.y
-          );
+      //  Handles canceling
+      if ((e.key === "b" || e.key === "x") && digKeyIsDown) {
+        setTargetDiggingTile(undefined);
+        return setDigKeyIsDown(false);
+      }
 
-          if (foundTile) {
-            addTile({ tile: foundTile, item: foundItem });
-
-            setTiles(
-              tiles.filter((t) => !(t.x === foundTile.x && t.y === foundTile.y))
-            );
-            setItems(
-              items.filter((i) => !(i.x === foundTile.x && i.y === foundTile.y))
-            );
-          }
-          setCanMove(true);
-          return setDigKeyIsDown(false);
-        }
+      // Handles starting the digging face by pressing z
+      if (e.key === "z" && !digKeyIsDown) {
+        return setDigKeyIsDown(true);
       }
 
       if (!digKeyIsDown) {
         return;
       }
-      if (e.key === "ArrowUp" && top) {
-        return setTargetDiggingTile({ x: top.x, y: top.y });
+
+      //  Handles confirming when pressin a
+      if (e.key === "a" || e.key === "z") {
+        if (!targetDiggingTile) {
+          return setDigKeyIsDown(false);
+        }
+        if (targetDiggingTile) {
+          return handleUpdateTiles();
+        }
       }
-      if (e.key === "ArrowDown" && bottom) {
-        return setTargetDiggingTile({ x: bottom.x, y: bottom.y });
+
+      const { top, left, bottom, right } = dirs;
+
+      if (e.key === "ArrowUp") {
+        return setTargetDiggingTile(top ? { x: top.x, y: top.y } : undefined);
       }
-      if (e.key === "ArrowLeft" && left) {
-        return setTargetDiggingTile({ x: left.x, y: left.y });
+      if (e.key === "ArrowDown") {
+        return setTargetDiggingTile(
+          bottom ? { x: bottom.x, y: bottom.y } : undefined
+        );
+      }
+      if (e.key === "ArrowLeft") {
+        return setTargetDiggingTile(
+          left ? { x: left.x, y: left.y } : undefined
+        );
       }
       if (e.key === "ArrowRight" && right) {
-        return setTargetDiggingTile({ x: right.x, y: right.y });
+        return setTargetDiggingTile(
+          right ? { x: right.x, y: right.y } : undefined
+        );
       }
     },
     [
@@ -126,10 +147,7 @@ export const useDig = () => {
       items,
       tiles,
       placeKeyIsDown,
-      top,
-      left,
-      bottom,
-      right,
+      dirs,
       digKeyIsDown,
       targetDiggingTile,
     ]
@@ -137,9 +155,8 @@ export const useDig = () => {
 
   useEffect(() => {
     addEventListener("keyup", handleDig);
-
     return () => {
       removeEventListener("keyup", handleDig);
     };
-  }, [, handleDig]);
+  }, [handleDig]);
 };

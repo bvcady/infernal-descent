@@ -13,7 +13,7 @@ export const useMovement = ({ moveDirection, setMoveDirection }: Props) => {
   const requestRef = useRef(0);
 
   const { tiles, exits } = useStore(levelStore);
-  const { player, moveInDirection, canMove, placeKeyIsDown } =
+  const { player, moveInDirection, canMove, placeKeyIsDown, digKeyIsDown } =
     useStore(playerStore);
 
   const [shouldDoNextMove, setShouldDoNextMove] = useState(false);
@@ -51,7 +51,7 @@ export const useMovement = ({ moveDirection, setMoveDirection }: Props) => {
   const handleMoveInDirection = useCallback(
     (dir: KeyboardDirection) => {
       const cellCheck = neighbouringCells?.[dir];
-      if (cellCheck && canMove && !placeKeyIsDown) {
+      if (cellCheck && canMove && !placeKeyIsDown && !digKeyIsDown) {
         moveInDirection(cellCheck);
       }
     },

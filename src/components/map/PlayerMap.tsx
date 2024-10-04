@@ -5,7 +5,7 @@ import { levelStore } from "@/stores/LevelStore";
 import { playerStore } from "@/stores/PlayerStore";
 import { Cell } from "@/types/Cell";
 import { KeyboardDirection } from "@/types/KeyboardDirections";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useStore } from "zustand";
 import { GridWrapper } from "../level/GridWrapper";
 import { Player } from "../player/Player";
@@ -29,7 +29,6 @@ export const PlayerMap = ({ startCell }: Props) => {
     futureTile,
     placeKeyIsDown,
     player,
-    inventory,
     digKeyIsDown,
     targetDiggingTile,
   } = useStore(playerStore);
@@ -41,30 +40,29 @@ export const PlayerMap = ({ startCell }: Props) => {
     setPlayer(tiles.find((c) => c.x === startCell?.x && c.y === startCell?.y));
   }, [startCell]);
 
-  const handleKeyUp = (e: KeyboardEvent) => {
-    if (cardinals.includes(e.key)) {
-      if (canMove) setMoveDirection(e.key as KeyboardDirection);
-    }
-  };
+  const handleKeyUp = useCallback(
+    (e: KeyboardEvent) => {
+      if (cardinals.includes(e.key)) {
+        if (!digKeyIsDown && !placeKeyIsDown && canMove)
+          setMoveDirection(e.key as KeyboardDirection);
+      }
+    },
+    [canMove, digKeyIsDown, placeKeyIsDown]
+  );
 
   useEffect(() => {
     addEventListener("keyup", handleKeyUp);
     return () => removeEventListener("keyup", handleKeyUp);
-  }, [setMoveDirection, canMove]);
+  }, [handleKeyUp]);
 
   useMovement({ moveDirection, setMoveDirection });
+  useEnterRoom();
   useDig();
   usePlace();
 
-  useEnterRoom();
-
-  const cell = futureTile
-    ? {
-        ...futureTile?.tile,
-        x: futureTile?.position.x,
-        y: futureTile?.position?.y,
-      }
-    : undefined;
+  const shovelCell = targetDiggingTile
+    ? { ...player, x: targetDiggingTile.x, y: targetDiggingTile.y }
+    : player;
 
   return (
     <GridWrapper>
@@ -78,24 +76,23 @@ export const PlayerMap = ({ startCell }: Props) => {
             border: "4px solid black",
             borderRadius: "2px",
           }}
-          cell={cell as Cell}
+          cell={player}
+        />
+      ) : null}
+      {placeKeyIsDown && futureTile?.tile ? (
+        <FloorTile
+          style={{ zoom: 0.66 }}
+          cell={
+            {
+              ...futureTile.tile,
+              x: futureTile.position.x,
+              y: futureTile.position.y,
+            } as Cell
+          }
         />
       ) : null}
       {digKeyIsDown && player ? (
-        <Shovel
-          cell={
-            (targetDiggingTile
-              ? tiles?.find(
-                  (t) =>
-                    t.x === targetDiggingTile?.x && t.y === targetDiggingTile.y
-                )
-              : player) as Item
-          }
-          style={{ marginTop: "125%" }}
-        />
-      ) : null}
-      {futureTile?.tile ? (
-        <FloorTile style={{ zoom: 0.66 }} cell={futureTile.tile as Cell} />
+        <Shovel cell={shovelCell as Item} style={{ marginTop: "125%" }} />
       ) : null}
     </GridWrapper>
   );

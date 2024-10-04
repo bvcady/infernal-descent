@@ -136,12 +136,13 @@ export const playerStore = createStore<PlayerStore>()((set) => ({
     return set({ digKeyIsDown: input });
   },
   removeTile: (tile: { tile: Cell; item?: Item; hazard?: Hazard }) => {
+    console.log({tile})
     const prevInventory = playerStore.getState().inventory;
     set({
       inventory: {
         ...prevInventory,
         tiles: prevInventory?.tiles?.filter(
-          (t) => t.tile.x !== tile.tile.x && t.tile.y !== tile.tile.y
+          (t) => !(tile.tile.x === t.tile.x && tile.tile.y === t.tile.y )
         ),
       },
     });

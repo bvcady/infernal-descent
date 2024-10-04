@@ -26,7 +26,6 @@ export const Exit = ({ cell, exit }: Props) => {
 
   useEffect(() => {
     toggleShowAHint(playerIsOn);
-    console.log(actualExit?.entryRequirement);
   }, [playerIsOn]);
 
   useEffect(() => {}, []);
