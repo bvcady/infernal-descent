@@ -22,11 +22,14 @@ type PlayerStoreState = {
     item?: Item;
     hazard?: Hazard;
   };
-  placeKeyIsDown?: boolean;
+  digKeyIsDown: boolean,
+  placeKeyIsDown: boolean;
+  targetDiggingTile?: {x: number, y: number}
 };
 
 type PlayerStoreActions = {
   setPlaceKeyIsDown: (input: boolean) => void;
+  setDigKeyIsDown: (input: boolean) => void;
   removeItem: (item: Item) => void;
   addItem: (item: Item) => void;
   addTile: (next: { tile: Cell; item?: Item; hazard?: Hazard }) => void;
@@ -41,13 +44,20 @@ type PlayerStoreActions = {
     item?: Item;
     hazard?: Hazard;
   }) => void;
+  setTargetDiggingTile: (tar?: {x: number, y: number}) => void;
 };
 
 type PlayerStore = PlayerStoreState & PlayerStoreActions;
 
 export const playerStore = createStore<PlayerStore>()((set) => ({
+  digKeyIsDown: false,
+  placeKeyIsDown: false,
   stats: { health: 6, steps: 0, shards: 0 },
   canMove: true,
+  targetDiggingTile: undefined,
+  setTargetDiggingTile: (tar) => {
+    set({targetDiggingTile: tar})
+  },
   futureTile: undefined,
   setFutureTile: (newTile) => {
     set({ futureTile: newTile });
@@ -121,6 +131,9 @@ export const playerStore = createStore<PlayerStore>()((set) => ({
   },
   setPlaceKeyIsDown: (input: boolean) => {
     return set({ placeKeyIsDown: input });
+  },
+  setDigKeyIsDown: (input: boolean) => {
+    return set({ digKeyIsDown: input });
   },
   removeTile: (tile: { tile: Cell; item?: Item; hazard?: Hazard }) => {
     const prevInventory = playerStore.getState().inventory;

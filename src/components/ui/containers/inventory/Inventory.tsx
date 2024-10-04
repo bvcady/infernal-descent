@@ -35,10 +35,10 @@ export const Inventory = () => {
             height={cellSize / 2}
           >
             {inventory?.items?.map((item, index) => {
-              if (item.item.name === "shovel") {
+              if (item.item?.name === "shovel") {
                 return <Shovel key={index} isStatic />;
               }
-              if (item.item.name === "shard") {
+              if (item.item?.name === "shard") {
                 return <Shard key={index} isStatic />;
               }
             })}

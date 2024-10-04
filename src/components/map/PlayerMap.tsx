@@ -23,8 +23,16 @@ interface Props {
 const cardinals = ["ArrowUp", "ArrowDown", "ArrowRight", "ArrowLeft"];
 
 export const PlayerMap = ({ startCell }: Props) => {
-  const { setPlayer, canMove, futureTile, placeKeyIsDown, player, inventory } =
-    useStore(playerStore);
+  const {
+    setPlayer,
+    canMove,
+    futureTile,
+    placeKeyIsDown,
+    player,
+    inventory,
+    digKeyIsDown,
+    targetDiggingTile,
+  } = useStore(playerStore);
   const { tiles } = useStore(levelStore);
 
   const [moveDirection, setMoveDirection] = useState<KeyboardDirection>();
@@ -62,15 +70,32 @@ export const PlayerMap = ({ startCell }: Props) => {
     <GridWrapper>
       <Player />
       {placeKeyIsDown && player && !futureTile ? (
+        <FloorTile
+          style={{
+            zoom: 0.5,
+            zIndex: 100,
+            transform: "translateY(-100%)",
+            border: "4px solid black",
+            borderRadius: "2px",
+          }}
+          cell={cell as Cell}
+        />
+      ) : null}
+      {digKeyIsDown && player ? (
         <Shovel
-          style={{ zoom: 0.5, zIndex: 100, transform: "translateY(-100%)" }}
           cell={
-            { ...inventory.tiles[0].tile, x: player?.x, y: player.y } as Item
+            (targetDiggingTile
+              ? tiles?.find(
+                  (t) =>
+                    t.x === targetDiggingTile?.x && t.y === targetDiggingTile.y
+                )
+              : player) as Item
           }
+          style={{ marginTop: "125%" }}
         />
       ) : null}
       {futureTile?.tile ? (
-        <FloorTile style={{ zoom: 0.66 }} cell={cell as Cell} />
+        <FloorTile style={{ zoom: 0.66 }} cell={futureTile.tile as Cell} />
       ) : null}
     </GridWrapper>
   );
