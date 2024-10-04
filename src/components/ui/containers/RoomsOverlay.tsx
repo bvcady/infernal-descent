@@ -4,6 +4,8 @@ import { useStore } from "zustand";
 import { MiniMap } from "../informative/MiniMap";
 import { PressHint } from "../informative/PressHint";
 import { Inventory } from "./inventory/Inventory";
+import { Shovel } from "@/components/items/Shovel";
+import { Map } from "@/components/items/Map";
 // import { Metronome } from "../informative/Metronome";
 
 // const RoomsWrapper = styled(Box)`
@@ -12,8 +14,14 @@ import { Inventory } from "./inventory/Inventory";
 // `;
 
 export const UIOverlay = () => {
-  const { cellSize, showXHint, showZHint, showStartHint } =
-    useStore(windowStore);
+  const {
+    cellSize,
+    showAHint,
+    showBHint,
+    showXHint,
+    showZHint,
+    showStartHint,
+  } = useStore(windowStore);
 
   return (
     <Box
@@ -76,15 +84,19 @@ export const UIOverlay = () => {
         gap={`${cellSize / 5}px`}
       >
         <PressHint
-          letter="Z"
-          toggle={showZHint}
-          // style={{ marginRight: "auto" }}
-        />
-        <PressHint
+          label="[S]TART"
           letter="S"
           toggle={showStartHint}
           // style={{ marginRight: "auto" }}
         />
+        <PressHint
+          letter="A"
+          icon={<Map />}
+          toggle={showAHint}
+          // style={{ marginRight: "auto" }}
+        />
+        <PressHint letter="B" icon={<Shovel />} toggle={showBHint} />
+        <PressHint letter="Z" toggle={showZHint} />
         <PressHint letter="X" toggle={showXHint} />
       </Box>
     </Box>

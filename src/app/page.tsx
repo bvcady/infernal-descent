@@ -13,7 +13,7 @@ export default function Home() {
   const mainRef = useRef<HTMLElement>(null);
 
   const [seed, setSeed] = useState<string>("");
-  const { toggleShowStartHint, toggleShowZHint, hasLoaded } =
+  const { toggleShowStartHint, toggleShowBHint, hasLoaded } =
     useStore(windowStore);
 
   // useEffect(() => {
@@ -35,7 +35,7 @@ export default function Home() {
       play();
     }
     toggleShowStartHint(!seed);
-    toggleShowZHint(!!seed);
+    toggleShowBHint(!!seed);
   }, [seed]);
 
   return (

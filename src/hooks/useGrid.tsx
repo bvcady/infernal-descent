@@ -385,7 +385,7 @@ export const useGrid = ({ seed }: Props) => {
               Math.pow(exit.cell.x - c.x, 2) + Math.pow(exit.cell.y - c.y, 2)
             );
 
-            return dist < 2.5 ? true : false;
+            return dist < 3.5 ? true : false;
           });
         };
 

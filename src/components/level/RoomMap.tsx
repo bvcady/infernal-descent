@@ -111,10 +111,20 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
                 }}
               />
             </SSButtonContainer>
-            <LetterButtonContainer w={cellSize * 1.5}>
-              <LetterButton letter="Z" color="blanchedalmond" />
-              <LetterButton letter="X" color="#252533" />
-            </LetterButtonContainer>
+            <Box display={"flex"} flexDirection={"column"}>
+              <LetterButtonContainer
+                w={cellSize * 1.33}
+                marginLeft={"-20%"}
+                mt={"10%"}
+              >
+                <LetterButton letter="X" color="#e24e4e" />
+                <LetterButton letter="Z" color="#5454a7" />
+              </LetterButtonContainer>
+              <LetterButtonContainer w={cellSize * 1.33}>
+                <LetterButton letter="B" color="#c89a3f" />
+                <LetterButton letter="A" color="#399a4e" />
+              </LetterButtonContainer>
+            </Box>
           </ButtonArea>
         </Console>
       </Box>

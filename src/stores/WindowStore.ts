@@ -5,8 +5,9 @@ type WindowStoreState = {
   cellSize: number;
   showXHint: boolean;
   showZHint: boolean;
+  showAHint: boolean;
+  showBHint: boolean;
   showStartHint: boolean;
-  showSelectHint: boolean;
   volume: number;
 };
 
@@ -16,12 +17,12 @@ type WindowStoreActions = {
   setHasLoaded: (next: boolean) => void;
   toggleShowXHint: (nextShowHint: WindowStoreState["showXHint"]) => void;
   toggleShowZHint: (nextShowHint: WindowStoreState["showZHint"]) => void;
+  toggleShowAHint: (nextShowHint: WindowStoreState["showAHint"]) => void;
+  toggleShowBHint: (nextShowHint: WindowStoreState["showBHint"]) => void;
   toggleShowStartHint: (
     nextShowHint: WindowStoreState["showStartHint"]
   ) => void;
-  toggleShowSelectHint: (
-    nextShowHint: WindowStoreState["showSelectHint"]
-  ) => void;
+
 };
 
 type WindowStore = WindowStoreState & WindowStoreActions;
@@ -30,7 +31,9 @@ export const windowStore = createStore<WindowStore>()((set) => ({
   hasLoaded: false,
   cellSize: 16,
   showXHint: false,
-  showZHint: true,
+  showZHint: false,
+  showAHint: false,
+  showBHint: true,
   showStartHint: false,
   showSelectHint: false,
   volume: 0.5,
@@ -52,12 +55,16 @@ export const windowStore = createStore<WindowStore>()((set) => ({
   toggleShowZHint: (next: boolean) => {
     return set({ showZHint: next });
   },
+  toggleShowAHint: (next: boolean) => {
+    return set({ showAHint: next });
+  },
+  toggleShowBHint: (next: boolean) => {
+    return set({ showBHint: next });
+  },
   toggleShowStartHint: (next: boolean) => {
     return set({ showStartHint: next });
   },
-  toggleShowSelectHint: (next: boolean) => {
-    return set({ showSelectHint: next });
-  },
+ 
   setCellSize: (cellSize) => {
     set({ cellSize });
   },

@@ -9,7 +9,7 @@ import { Cell } from "@/types/Cell";
 import { usePlaySound } from "@/hooks/usePlaySound";
 
 interface Props {
-  cell: Item;
+  cell?: Item;
   isStatic?: boolean;
 }
 
@@ -18,7 +18,7 @@ export const Shovel = ({ cell, isStatic }: Props) => {
   const requestRef = useRef(0);
   const { player, addItem } = useStore(playerStore);
   const { setItems, items } = useStore(levelStore);
-  const { toggleShowXHint } = useStore(windowStore);
+  const { toggleShowAHint } = useStore(windowStore);
 
   // public/Audio/Impact Sounds/Audio/impactMining_002.ogg
   const { play } = usePlaySound({
@@ -29,20 +29,20 @@ export const Shovel = ({ cell, isStatic }: Props) => {
   });
 
   const playerIsOn = useMemo(
-    () => player?.x === cell?.x && player?.y === cell?.y,
+    () => cell && player?.x === cell?.x && player?.y === cell?.y,
     [player]
   );
 
   useEffect(() => {
-    toggleShowXHint(playerIsOn);
+    toggleShowAHint(!!playerIsOn);
   }, [playerIsOn]);
 
   const handleGrab = (e: KeyboardEvent) => {
-    if (playerIsOn && e) {
-      if (e.key === "x") {
-        toggleShowXHint(false);
+    if (playerIsOn && e && cell) {
+      if (e.key === "a") {
+        toggleShowAHint(false);
         setItems(
-          items.filter((item) => !(item.x === cell?.x && item.y === cell.y))
+          items.filter((item) => !(item.x === cell?.x && item.y === cell?.y))
         );
         play();
         addItem(cell);

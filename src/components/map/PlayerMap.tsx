@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { useStore } from "zustand";
 import { GridWrapper } from "../level/GridWrapper";
 import { Player } from "../player/Player";
+import { useDig } from "@/hooks/useDig";
 // @ts-ignore
 
 interface Props {
@@ -18,7 +19,7 @@ interface Props {
 const cardinals = ["ArrowUp", "ArrowDown", "ArrowRight", "ArrowLeft"];
 
 export const PlayerMap = ({ startCell }: Props) => {
-  const { setPlayer } = useStore(playerStore);
+  const { setPlayer, canMove } = useStore(playerStore);
   const { tiles } = useStore(levelStore);
 
   const [moveDirection, setMoveDirection] = useState<KeyboardDirection>();
@@ -29,16 +30,18 @@ export const PlayerMap = ({ startCell }: Props) => {
 
   const handleKeyUp = (e: KeyboardEvent) => {
     if (cardinals.includes(e.key)) {
-      setMoveDirection(e.key as KeyboardDirection);
+      if (canMove) setMoveDirection(e.key as KeyboardDirection);
     }
   };
 
   useEffect(() => {
     addEventListener("keyup", handleKeyUp);
     return () => removeEventListener("keyup", handleKeyUp);
-  }, [setMoveDirection]);
+  }, [setMoveDirection, canMove]);
 
   useMovement({ moveDirection, setMoveDirection });
+  useDig();
+
   useEnterRoom();
 
   return <GridWrapper>{<Player />}</GridWrapper>;

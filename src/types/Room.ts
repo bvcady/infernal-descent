@@ -18,7 +18,7 @@ export type Room = {
     right?: Room;
   };
   tbdNeighbours: (
-    | { requirement?: RoomRequirement[]; forcedEntry?: RoomRequirement }
+    | { requirements?: RoomRequirement[]; forcedEntry?: RoomRequirement }
     | "to do"
   )[];
   isBossRoom?: boolean;
@@ -35,6 +35,6 @@ export type Room = {
   entryRequirement?: {
     requirements?: RoomRequirement[];
     forcedEntry?: RoomRequirement;
-  };
+  } | 'to do';
   opened?: boolean;
 };

@@ -57,7 +57,7 @@ export const useRooms = ({ seed }: Props) => {
       const introRoom = shuffle([...roomGrid], r)[0];
       const id = [...roomGrid].findIndex((room) => introRoom.id === room.id);
       // Take into account the edges that dont allow an exit.
-      introRoom.maxExits = 1;
+      introRoom.maxExits = 2;
       const exitRequirements = new Array(introRoom.maxExits).fill("to do");
       exitRequirements[0] = shovelRoom.nextRoomRequirement || "to do";
 
@@ -81,45 +81,52 @@ export const useRooms = ({ seed }: Props) => {
       // Find all rooms that border another already collapsed room that still allows a room to be placed next to it.
       console.log(totalRooms.length);
 
-      const options = shuffle(
-        [...roomGrid]
-          .map((r) => {
-            const top = [...totalRooms]?.find(
-              (c) =>
-                c.x === r.x &&
-                c.y === r.y - 1 &&
-                c.isCollapsed &&
-                c.tbdNeighbours.length
-            );
-            const bottom = [...totalRooms]?.find(
-              (c) =>
-                c.x === r.x &&
-                c.y === r.y + 1 &&
-                c.isCollapsed &&
-                c.tbdNeighbours.length
-            );
-            const left = [...totalRooms]?.find(
-              (c) =>
-                c.x === r.x - 1 &&
-                c.y === r.y &&
-                c.isCollapsed &&
-                c.tbdNeighbours.length
-            );
-            const right = [...totalRooms]?.find(
-              (c) =>
-                c.x === r.x + 1 &&
-                c.y === r.y &&
-                c.isCollapsed &&
-                c.tbdNeighbours.length
-            );
-            return { top, bottom, left, right, middle: r };
-          })
-          .filter(({ top, bottom, left, right, middle }) => {
-            return (top || bottom || left || right) && !middle.isCollapsed;
-          }),
+      let nNeighbours = 0;
+
+      const options = [...roomGrid]
+        .map((r) => {
+          const top = [...totalRooms]?.find(
+            (c) => c.x === r.x && c.y === r.y - 1 && c.isCollapsed
+          );
+          const bottom = [...totalRooms]?.find(
+            (c) => c.x === r.x && c.y === r.y + 1 && c.isCollapsed
+          );
+          const left = [...totalRooms]?.find(
+            (c) => c.x === r.x - 1 && c.y === r.y && c.isCollapsed
+          );
+          const right = [...totalRooms]?.find(
+            (c) => c.x === r.x + 1 && c.y === r.y && c.isCollapsed
+          );
+
+          const count =
+            Number(+!!top) +
+            Number(+!!bottom) +
+            Number(+!!left) +
+            Number(+!!right);
+
+          return { top, bottom, left, right, middle: r, count };
+        })
+        .filter(({ top, bottom, left, right, middle }) => {
+          return (top || bottom || left || right) && !middle.isCollapsed;
+        })
+        .filter(
+          ({ top, bottom, left, right }) =>
+            top?.tbdNeighbours.length !== 0 &&
+            bottom?.tbdNeighbours.length !== 0 &&
+            left?.tbdNeighbours.length !== 0 &&
+            right?.tbdNeighbours?.length !== 0
+        )
+        .sort((a, b) => {
+          return a.count - b.count;
+        });
+
+      nNeighbours = options[0].count;
+
+      const pickedOption = shuffle(
+        options.filter((o) => o.count === nNeighbours),
         r
-      );
-      const pickedOption = options[0];
+      )[0];
+
       if (!pickedOption) {
         return [...totalRooms];
       }
@@ -133,7 +140,7 @@ export const useRooms = ({ seed }: Props) => {
       const isHallWay = r.next() > 0.75;
 
       if (!isHallWay) {
-        if (totalRooms.length < 7) {
+        if (totalRooms.length < targetTotal / 2) {
           const rs = shuffle(introRoomSituations, r)[0];
           // what is the theme of the room?
           nextRoom.itemsToPlace = rs.items || [];
@@ -194,53 +201,10 @@ export const useRooms = ({ seed }: Props) => {
         const randDirs = new Array(nextRoom.maxExits - 1).fill("to do");
         nextRoom.tbdNeighbours = randDirs;
       }
-      const randDirs = new Array(nextRoom.maxExits - 1).fill("to do");
 
-      const entryRequirementsFromNeighbours = shuffle(neighbouringRooms, r)[0]
+      const randDirs = new Array(nextRoom.maxExits).fill("to do");
+      const tbdFromNeighbour = shuffle([...neighbouringRooms], r)[0]
         .tbdNeighbours[0];
-      // neighbouringRooms.reduce(
-      //   (acc, cur) => {
-      //     if (cur.tbdNeighbours?.length) {
-      //       const first = cur.tbdNeighbours[0];
-
-      //       if (first !== "to do" && first) {
-      //         if (acc === "to do") {
-      //           return {
-      //             requirements: [...(first.requirement || [])],
-      //             forcedEntry: first?.forcedEntry,
-      //           };
-      //         }
-      //         return {
-      //           ...acc,
-      //           requirements: [
-      //             ...(acc.requirements || []),
-      //             ...(first.requirement || []),
-      //           ],
-      //           forcedEntry: first.forcedEntry,
-      //         };
-      //       }
-      //       return acc;
-      //     }
-      //     return acc;
-      //   },
-      //   "to do" as
-      //     | {
-      //         requirements?: RoomRequirement[];
-      //         forcedEntry?: RoomRequirement;
-      //       }
-      //     | "to do"
-      // );
-
-      randDirs[0] = entryRequirementsFromNeighbours;
-
-      nextRoom.tbdNeighbours = randDirs;
-
-      nextRoom.entryRequirement =
-        entryRequirementsFromNeighbours !== "to do"
-          ? entryRequirementsFromNeighbours
-          : undefined;
-
-      nextRoom.isCollapsed = true;
 
       for (const n of neighbouringRooms) {
         n.tbdNeighbours = n.tbdNeighbours.slice(1);
@@ -250,6 +214,13 @@ export const useRooms = ({ seed }: Props) => {
         totalRooms[totId] = n;
         roomGrid[gridId] = n;
       }
+
+      randDirs[0] = tbdFromNeighbour;
+      if (!nextRoom.entryRequirement) {
+        nextRoom.entryRequirement = tbdFromNeighbour;
+      }
+      nextRoom.tbdNeighbours = randDirs.slice(1) || [];
+      nextRoom.isCollapsed = true;
 
       const indexOfRoom = [...roomGrid].findIndex(
         (room) => room.id === nextRoom.id
@@ -278,7 +249,7 @@ export const useRooms = ({ seed }: Props) => {
       return { ...room, neighbours };
     });
 
-    console.log({ roomsWithNeighbours });
+    console.log(roomsWithNeighbours.map((r) => r.entryRequirement));
     const selectedRoom = roomsWithNeighbours[0];
     setCurrentRoom(selectedRoom);
     setRooms(

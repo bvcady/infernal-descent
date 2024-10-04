@@ -6,35 +6,45 @@ import { useEffect, useMemo, useRef } from "react";
 import { useStore } from "zustand";
 import { DefaultTile } from "../tiles/default/DefaultTile";
 import { Cell } from "@/types/Cell";
+import { usePlaySound } from "@/hooks/usePlaySound";
 
 interface Props {
-  cell: Item;
+  cell?: Item;
   isStatic?: boolean;
 }
 
-export const Shard = ({ cell, isStatic }: Props) => {
+export const Map = ({ cell, isStatic }: Props) => {
   const itemRef = useRef<HTMLDivElement>();
   const requestRef = useRef(0);
   const { player, addItem } = useStore(playerStore);
   const { setItems, items } = useStore(levelStore);
   const { toggleShowAHint } = useStore(windowStore);
 
+  // public/Audio/Impact Sounds/Audio/impactMining_002.ogg
+  const { play } = usePlaySound({
+    soundFile: "../../Audio/Impact Sounds/Audio/impactMining_002.ogg",
+    options: {
+      volume: 0.4,
+    },
+  });
+
   const playerIsOn = useMemo(
-    () => player?.x === cell?.x && player?.y === cell?.y,
+    () => cell && player?.x === cell?.x && player?.y === cell?.y,
     [player]
   );
 
   useEffect(() => {
-    toggleShowAHint(playerIsOn);
+    toggleShowAHint(!!playerIsOn);
   }, [playerIsOn]);
 
   const handleGrab = (e: KeyboardEvent) => {
-    if (playerIsOn && e) {
+    if (playerIsOn && e && cell) {
       if (e.key === "a") {
         toggleShowAHint(false);
         setItems(
-          items.filter((item) => !(item.x === cell?.x && item.y === cell.y))
+          items.filter((item) => !(item.x === cell?.x && item.y === cell?.y))
         );
+        play();
         addItem(cell);
       }
     }
@@ -62,8 +72,12 @@ export const Shard = ({ cell, isStatic }: Props) => {
         itemRef.current.style.zIndex = "unset";
       }
       itemRef.current.style.transform = isUp
-        ? `translateY(calc(${playerIsOn ? "-75%" : "0%"} ))`
-        : `translateY(calc(${playerIsOn ? "-75%" : "0%"} - 10%))`;
+        ? `translateY(calc(${
+            playerIsOn ? "-75%" : "0%"
+          } )) rotate(180deg) scale(-1, 1)`
+        : `translateY(calc(${
+            playerIsOn ? "-75%" : "0%"
+          } - 10%)) rotate(180deg) scale(-1, 1)`;
     }
 
     requestRef.current = requestAnimationFrame((time) => animate(time));
@@ -79,7 +93,7 @@ export const Shard = ({ cell, isStatic }: Props) => {
       tileRef={itemRef}
       className="itemKey"
       cell={cell as Cell}
-      customPath="images/Monochrome/Tilemap/shard.png"
+      customPath="images/Monochrome/Tilemap/map.png"
       noBackground
     />
   );

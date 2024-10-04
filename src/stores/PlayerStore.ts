@@ -1,17 +1,22 @@
 import { Cell } from "@/types/Cell";
+import { Hazard } from "@/types/Hazard";
 import { Item } from "@/types/Item";
 
 import { createStore } from "zustand";
 
 type PlayerStoreState = {
   player?: Cell;
-  inventory: { items: Item[]; tiles: Cell[] };
+  inventory: {
+    items: Item[];
+    tiles: { tile: Cell; item?: Item; hazard?: Hazard }[];
+  };
   canMove: boolean;
 };
 
 type PlayerStoreActions = {
   removeItem: (item: Item) => void;
   addItem: (item: Item) => void;
+  addTile: (next: { tile: Cell; item?: Item; hazard?: Hazard }) => void;
   setPlayer: (nextPosition: PlayerStoreState["player"]) => void;
   moveInDirection: (nextCell: Cell) => void;
   setCanMove: (check: boolean) => void;
@@ -62,6 +67,34 @@ export const playerStore = createStore<PlayerStore>()((set) => ({
       inventory: {
         ...prevInventory,
         items: [...prevInventory.items, item],
+      },
+    });
+  },
+  addTile: ({
+    tile,
+    item,
+    hazard,
+  }: {
+    tile: Cell;
+    item?: Item;
+    hazard?: Hazard;
+  }) => {
+    const prevInventory = playerStore.getState().inventory;
+    set({
+      inventory: {
+        ...prevInventory,
+        tiles: [...prevInventory.tiles, { tile, item, hazard }],
+      },
+    });
+  },
+  removeTile: (tile: Cell) => {
+    const prevInventory = playerStore.getState().inventory;
+    set({
+      inventory: {
+        ...prevInventory,
+        tiles: prevInventory?.tiles?.filter(
+          (t) => t.tile.x !== tile.x && t.tile.y !== tile.y
+        ),
       },
     });
   },

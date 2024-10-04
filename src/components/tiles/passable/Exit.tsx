@@ -16,7 +16,7 @@ const d = 17;
 
 export const Exit = ({ cell, exit }: Props) => {
   const { player } = useStore(playerStore);
-  const { toggleShowXHint } = useStore(windowStore);
+  const { toggleShowAHint } = useStore(windowStore);
   const { rooms } = useStore(runStore);
   const actualExit = rooms.find((r) => r.id === exit?.id);
 
@@ -25,7 +25,7 @@ export const Exit = ({ cell, exit }: Props) => {
   }, [player]);
 
   useEffect(() => {
-    toggleShowXHint(playerIsOn);
+    toggleShowAHint(playerIsOn);
     console.log(actualExit?.entryRequirement);
   }, [playerIsOn]);
 

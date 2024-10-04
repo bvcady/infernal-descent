@@ -10,7 +10,7 @@ export const useEnterRoom = () => {
   const { walls, items, tiles } = useStore(levelStore);
 
   const handleKeyUp = (e: KeyboardEvent) => {
-    if (e.key === "x") {
+    if (e.key === "a") {
       if (player?.exit?.id) {
         const nextRoom = [...rooms].find((r) => r.id === player?.exit?.id);
         if (nextRoom) updateRooms(nextRoom, { walls, items, tiles });

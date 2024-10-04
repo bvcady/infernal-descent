@@ -11,7 +11,7 @@ const d = 17;
 export const MiniMap = () => {
   const [showMap, toggleShowMap] = useState(false);
   const { rooms, currentRoom } = useStore(runStore);
-  const { cellSize, toggleShowZHint } = useStore(windowStore);
+  const { cellSize, toggleShowBHint } = useStore(windowStore);
   const { setCanMove } = useStore(playerStore);
 
   const undiscoveredNeighbours = [...rooms].filter((r) => {
@@ -38,7 +38,7 @@ export const MiniMap = () => {
     if (e.repeat) {
       return;
     }
-    if (e.key === "z") {
+    if (e.key === "b") {
       toggleShowMap(false);
     }
   };
@@ -48,7 +48,7 @@ export const MiniMap = () => {
       return;
     }
 
-    if (e.key === "z") {
+    if (e.key === "b") {
       toggleShowMap(true);
     }
   };
@@ -64,7 +64,7 @@ export const MiniMap = () => {
 
   useEffect(() => {
     setCanMove(!showMap);
-    toggleShowZHint(!showMap);
+    toggleShowBHint(!showMap);
   }, [showMap]);
 
   return (
