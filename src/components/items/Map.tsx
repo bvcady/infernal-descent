@@ -28,17 +28,10 @@ export const Map = ({ cell, isStatic }: Props) => {
     },
   });
 
-  const playerIsOn = useMemo(
-    () => cell && player?.x === cell?.x && player?.y === cell?.y,
-    [player]
-  );
-
-  useEffect(() => {
-    toggleShowAHint(!!playerIsOn);
-  }, [playerIsOn]);
+  const playerIsOn = !!cell;
 
   const handleGrab = (e: KeyboardEvent) => {
-    if (playerIsOn && e && cell) {
+    if (cell) {
       if (e.key === "a") {
         toggleShowAHint(false);
         setItems(
@@ -53,17 +46,11 @@ export const Map = ({ cell, isStatic }: Props) => {
   useEffect(() => {
     addEventListener("keyup", handleGrab);
     return () => removeEventListener("keyup", handleGrab);
-  }, [playerIsOn]);
+  }, []);
 
   const animate = (time: number) => {
     const speed = 1500;
     const isUp = time % speed < speed / 2;
-
-    // if (playSound) {
-    //   setShouldPlay(true);
-    // } else {
-    //   setShouldPlay(false);
-    // }
 
     if (itemRef.current && !isStatic) {
       if (playerIsOn) {
@@ -86,7 +73,7 @@ export const Map = ({ cell, isStatic }: Props) => {
   useEffect(() => {
     requestRef.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(requestRef.current);
-  }, [playerIsOn]);
+  }, []);
 
   return (
     <DefaultTile

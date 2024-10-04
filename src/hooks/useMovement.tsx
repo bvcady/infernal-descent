@@ -1,7 +1,7 @@
 import { levelStore } from "@/stores/LevelStore";
 import { playerStore } from "@/stores/PlayerStore";
 import { KeyboardDirection } from "@/types/KeyboardDirections";
-import { Dispatch, useEffect, useRef, useState } from "react";
+import { Dispatch, useCallback, useEffect, useRef, useState } from "react";
 import { useStore } from "zustand";
 
 interface Props {
@@ -47,12 +47,15 @@ export const useMovement = ({ moveDirection, setMoveDirection }: Props) => {
       }
     : {};
 
-  const handleMoveInDirection = (dir: KeyboardDirection) => {
-    const cellCheck = neighbouringCells?.[dir];
-    if (cellCheck && canMove) {
-      moveInDirection(cellCheck);
-    }
-  };
+  const handleMoveInDirection = useCallback(
+    (dir: KeyboardDirection) => {
+      const cellCheck = neighbouringCells?.[dir];
+      if (cellCheck && canMove) {
+        moveInDirection(cellCheck);
+      }
+    },
+    [canMove, neighbouringCells, moveDirection]
+  );
 
   useEffect(() => {
     if (shouldDoNextMove && moveDirection) {

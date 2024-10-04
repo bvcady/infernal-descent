@@ -29,6 +29,8 @@ export const Exit = ({ cell, exit }: Props) => {
     console.log(actualExit?.entryRequirement);
   }, [playerIsOn]);
 
+  useEffect(() => {}, []);
+
   return (
     <DefaultTile
       cell={cell}

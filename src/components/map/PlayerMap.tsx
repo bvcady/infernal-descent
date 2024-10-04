@@ -10,6 +10,7 @@ import { useStore } from "zustand";
 import { GridWrapper } from "../level/GridWrapper";
 import { Player } from "../player/Player";
 import { useDig } from "@/hooks/useDig";
+import { usePlace } from "@/hooks/usePlace";
 // @ts-ignore
 
 interface Props {
@@ -41,6 +42,7 @@ export const PlayerMap = ({ startCell }: Props) => {
 
   useMovement({ moveDirection, setMoveDirection });
   useDig();
+  usePlace();
 
   useEnterRoom();
 

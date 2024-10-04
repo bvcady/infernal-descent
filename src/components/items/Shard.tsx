@@ -8,7 +8,7 @@ import { DefaultTile } from "../tiles/default/DefaultTile";
 import { Cell } from "@/types/Cell";
 
 interface Props {
-  cell: Item;
+  cell?: Item;
   isStatic?: boolean;
 }
 
@@ -29,7 +29,7 @@ export const Shard = ({ cell, isStatic }: Props) => {
   }, [playerIsOn]);
 
   const handleGrab = (e: KeyboardEvent) => {
-    if (playerIsOn && e) {
+    if (playerIsOn && cell) {
       if (e.key === "a") {
         toggleShowAHint(false);
         setItems(

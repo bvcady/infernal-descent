@@ -29,7 +29,7 @@ export const useDig = () => {
       );
       if (e.repeat || !currentTile || e.key !== "z") {
         console.log(e);
-        return setCanMove(true);
+        return;
       }
       if (inventory.items.some((item) => item.item.name === "shovel")) {
         console.log("has digged");

@@ -36,10 +36,10 @@ export const Inventory = () => {
           >
             {inventory?.items?.map((item, index) => {
               if (item.item.name === "shovel") {
-                return <Shovel key={index} cell={item} isStatic />;
+                return <Shovel key={index} isStatic />;
               }
               if (item.item.name === "shard") {
-                return <Shard key={index} cell={item} isStatic />;
+                return <Shard key={index} isStatic />;
               }
             })}
           </InventoryWrapper>

@@ -2,7 +2,7 @@ import { levelStore } from "@/stores/LevelStore";
 import { playerStore } from "@/stores/PlayerStore";
 import { windowStore } from "@/stores/WindowStore";
 import { Item } from "@/types/Item";
-import { useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useStore } from "zustand";
 import { DefaultTile } from "../tiles/default/DefaultTile";
 import { Cell } from "@/types/Cell";
@@ -19,6 +19,8 @@ export const Shovel = ({ cell, isStatic }: Props) => {
   const { player, addItem } = useStore(playerStore);
   const { setItems, items } = useStore(levelStore);
   const { toggleShowAHint } = useStore(windowStore);
+
+  console.log("im still here");
 
   // public/Audio/Impact Sounds/Audio/impactMining_002.ogg
   const { play } = usePlaySound({
@@ -37,23 +39,26 @@ export const Shovel = ({ cell, isStatic }: Props) => {
     toggleShowAHint(!!playerIsOn);
   }, [playerIsOn]);
 
-  const handleGrab = (e: KeyboardEvent) => {
-    if (playerIsOn && e && cell) {
-      if (e.key === "a") {
+  const handleGrab = useCallback(
+    (e: KeyboardEvent) => {
+      if (playerIsOn && cell && e.key === "a") {
         toggleShowAHint(false);
+        addItem(cell);
         setItems(
-          items.filter((item) => !(item.x === cell?.x && item.y === cell?.y))
+          items.filter(
+            (item) => !(item.x === player?.x && item.y === player?.y)
+          )
         );
         play();
-        addItem(cell);
       }
-    }
-  };
+    },
+    [playerIsOn, player, items, addItem, setItems]
+  );
 
   useEffect(() => {
     addEventListener("keyup", handleGrab);
     return () => removeEventListener("keyup", handleGrab);
-  }, [playerIsOn]);
+  }, [handleGrab]);
 
   const animate = (time: number) => {
     const speed = 1500;
@@ -86,7 +91,7 @@ export const Shovel = ({ cell, isStatic }: Props) => {
   useEffect(() => {
     requestRef.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(requestRef.current);
-  }, [playerIsOn]);
+  }, []);
 
   return (
     <DefaultTile
