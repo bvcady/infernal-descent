@@ -219,7 +219,7 @@ export const useRooms = ({ seed }: Props) => {
               Math.pow(nextRoom.y - totalRooms[0].y, 2)
           );
 
-          const mandatory = totalRooms.length > targetTotal;
+          let mandatory = totalRooms.length > targetTotal;
           if (
             mandatory ||
             (nextRoom.size >= 3 &&
@@ -244,13 +244,17 @@ export const useRooms = ({ seed }: Props) => {
               },
             };
           }
+          mandatory =
+            totalRooms.length > targetTotal &&
+            totalRooms.some((r) => r.isBossRoom);
           if (
-            !nextRoom.isBossRoom &&
-            totalRooms.filter((r) =>
-              r.itemsToPlace?.some((i) => i.name === "skull")
-            ).length < nBossRooms &&
-            distanceFromBeginning > 3 &&
-            r.next() < 0.25
+            mandatory ||
+            (!nextRoom.isBossRoom &&
+              totalRooms.filter((r) =>
+                r.itemsToPlace?.some((i) => i.name === "skull")
+              ).length < nBossRooms &&
+              distanceFromBeginning > 3 &&
+              r.next() < 0.25)
           ) {
             console.log("Adding skull to the items of this room");
             nextRoom.itemsToPlace?.push({
@@ -310,7 +314,9 @@ export const useRooms = ({ seed }: Props) => {
 
       if (
         totalRooms.length >= targetTotal &&
-        totalRooms.filter((r) => r.isBossRoom).length >= 1
+        totalRooms.filter(
+          (r) => r.isBossRoom && r.itemsToPlace.some((i) => i.name === "skull")
+        ).length >= 2
       ) {
         return [...totalRooms];
       }
