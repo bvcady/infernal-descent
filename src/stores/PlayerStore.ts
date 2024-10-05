@@ -52,7 +52,7 @@ type PlayerStore = PlayerStoreState & PlayerStoreActions;
 export const playerStore = createStore<PlayerStore>()((set) => ({
   digKeyIsDown: false,
   placeKeyIsDown: false,
-  stats: { health: 3, steps: 0, shards: 0 },
+  stats: { health: 6, steps: 0, shards: 5 },
   canMove: true,
   targetDiggingTile: undefined,
   setTargetDiggingTile: (tar) => {

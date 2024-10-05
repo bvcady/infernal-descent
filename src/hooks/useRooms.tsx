@@ -7,13 +7,21 @@ import Alea from "alea";
 import { getAllRoomOptions, shovelRoom } from "@/resources/rooms/RoomOptions";
 import { useEffect } from "react";
 import { useStore } from "zustand";
+import {
+  itemChest,
+  itemHeartTemporary,
+  itemHeartWhole,
+  itemKey,
+  itemShardOne,
+} from "@/resources/items/Items";
+import { hazardLava, hazardSpikes } from "@/resources/hazards/Hazard";
 
 interface Props {
   seed: string;
 }
 
 export const useRooms = ({ seed }: Props) => {
-  const [w, h] = [12, 12];
+  const [w, h] = [7, 5];
   const { setRooms, setCurrentRoom } = useStore(runStore, (state) => state);
 
   const generateRooms = () => {
@@ -27,7 +35,7 @@ export const useRooms = ({ seed }: Props) => {
 
     let introRoomsPicked = 0;
 
-    const targetTotal = Math.floor(scale([0, 1], [18, 24])(r.next()));
+    const targetTotal = Math.floor(scale([0, 1], [15, 20])(r.next()));
 
     const nBossRooms = Math.floor(targetTotal / 2 / 4);
 
@@ -60,6 +68,8 @@ export const useRooms = ({ seed }: Props) => {
 
     if (totalRooms.length === 0) {
       const introRoom = shuffle([...roomGrid], r)[0];
+      introRoom.x = 3;
+      introRoom.y = 2;
       const id = [...roomGrid].findIndex((room) => introRoom.id === room.id);
       // Take into account the edges that dont allow an exit.
       introRoom.maxExits = 2;
@@ -155,7 +165,6 @@ export const useRooms = ({ seed }: Props) => {
             ...introRoomSituations.slice(-(introRoomsPicked + 1)),
           ]?.[0];
           introRoomsPicked += 1;
-          // what is the theme of the room?
           nextRoom.itemsToPlace = rs.items || [];
 
           nextRoom.size = Math.floor(scale([0, 1], [1, 3])(r.next()));
@@ -164,15 +173,34 @@ export const useRooms = ({ seed }: Props) => {
             scale([0, targetTotal], [1, 5])(r.next() * targetTotal)
           );
 
-          nextRoom.maxExits = r.next() > 0.66 ? 3 : 2;
+          nextRoom.maxExits = 3;
 
           const randDirs = new Array(nextRoom.maxExits - 1).fill("to do");
           randDirs[0] = rs.nextRoomRequirement;
 
           nextRoom.tbdNeighbours = randDirs;
         } else {
-          nextRoom.size = Math.floor(scale([0, 1], [2, 4])(r.next()));
-          nextRoom.maxExits = r.next() > 0.66 ? 3 : 2;
+          nextRoom.size = Math.floor(scale([0, 1], [1, 4])(r.next()));
+
+          const amount = () =>
+            Math.floor(scale([0, 1], [0, nextRoom.size * 4])(r.next()));
+
+          nextRoom.itemsToPlace = [
+            ...(r.next() < 0.05 ? [itemChest] : []),
+            ...(r.next() < 0.05 ? [itemKey] : []),
+            ...(r.next() < 0.05 ? [itemHeartTemporary] : []),
+            ...(r.next() < 0.025 ? [itemHeartWhole] : []),
+            ...new Array(amount()).fill("").map((_) => {
+              return itemShardOne;
+            }),
+            ...new Array(amount()).fill("").map((_) => {
+              return hazardLava;
+            }),
+            ...new Array(amount()).fill("").map((_) => {
+              return hazardSpikes;
+            }),
+          ];
+          nextRoom.maxExits = 3;
           //TODO: Random assignment of room requirement
           //TODO: Add two - three 'boss' rooms
           nextRoom.emptiness = Math.floor(
@@ -191,14 +219,20 @@ export const useRooms = ({ seed }: Props) => {
               Math.pow(nextRoom.y - totalRooms[0].y, 2)
           );
 
+          const mandatory = totalRooms.length > targetTotal;
           if (
-            nextRoom.size >= 3 &&
-            totalRooms.filter((r) => r.isBossRoom).length < nBossRooms &&
-            distanceFromBeginning > 5
+            mandatory ||
+            (nextRoom.size >= 3 &&
+              totalRooms.filter((r) => r.isBossRoom).length < nBossRooms &&
+              distanceFromBeginning > 5)
           ) {
             console.log("Adding bossroom");
-
+            if (mandatory) {
+              nextRoom.size = 3;
+            }
+            nextRoom.maxExits = 4;
             nextRoom.isBossRoom = r.next() > 0.33;
+
             nextRoom.entryRequirement = {
               requirements: [{ name: "skull", type: "Item", amount: 1 }],
               forcedEntry: {
@@ -237,7 +271,7 @@ export const useRooms = ({ seed }: Props) => {
         }
       } else {
         nextRoom.size = 3;
-        nextRoom.maxExits = r.next() > 0.5 ? 2 : 3;
+        nextRoom.maxExits = 3;
         nextRoom.density = 100;
         nextRoom.emptiness = Math.floor(
           scale([0, targetTotal], [1, 40])(r.next() * targetTotal)
@@ -297,16 +331,6 @@ export const useRooms = ({ seed }: Props) => {
 
     const selectedRoom = roomsWithNeighbours[0];
 
-    console.log(
-      "bossrooms",
-      roomsWithNeighbours?.filter((r) => r.isBossRoom)
-    );
-    console.log(
-      "has skull",
-      roomsWithNeighbours?.filter((r) =>
-        r.itemsToPlace.some((r) => r.name === "skull")
-      )
-    );
     setCurrentRoom(selectedRoom);
 
     setRooms(

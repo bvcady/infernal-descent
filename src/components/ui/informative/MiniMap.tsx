@@ -72,8 +72,8 @@ export const MiniMap = () => {
       {showMap ? (
         <GridWrapper
           style={{
-            gridTemplateRows: `repeat(12, ${cellSize / 2}px)`,
-            gridTemplateColumns: `repeat(12, ${cellSize / 2}px)`,
+            gridTemplateRows: `repeat(5, ${cellSize / 2}px)`,
+            gridTemplateColumns: `repeat(7, ${cellSize / 2}px)`,
             position: "absolute",
             height: "fit-content",
             width: "fit-content",
@@ -87,7 +87,7 @@ export const MiniMap = () => {
           }}
         >
           {rooms
-            ?.filter((r) => r.isVisited)
+            // ?.filter((r) => r.isVisited)
             ?.map((room) => {
               const backgroundString = [
                 // currentRoom?.x === room.x && currentRoom?.y === room.y
@@ -142,7 +142,7 @@ export const MiniMap = () => {
               // }.png")`,
             }}
           />
-          {undiscoveredNeighbours?.map((n) => (
+          {/* {undiscoveredNeighbours?.map((n) => (
             <Box
               key={`mini - room - ${n.x} - ${n.y}`}
               // bgcolor={
@@ -160,7 +160,7 @@ export const MiniMap = () => {
                   'url("../../images/Monochrome/Tilemap/new_tile1.png")',
               }}
             />
-          ))}
+          ))} */}
         </GridWrapper>
       ) : null}
     </>
