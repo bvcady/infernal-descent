@@ -7,12 +7,12 @@ import { useEffect, useState } from "react";
 import { levelStore } from "@/stores/LevelStore";
 import { playerStore } from "@/stores/PlayerStore";
 import { runStore } from "@/stores/RunStore";
+import { Item } from "@/types/Item";
 import { Room } from "@/types/Room";
 import { generateNoise, shuffle } from "@/utils/noise";
 import Alea from "alea";
 import { createNoise2D } from "simplex-noise";
 import { useStore } from "zustand";
-import { hazardRubble } from "@/resources/hazards/Hazard";
 
 interface Props {
   seed?: string;
@@ -43,13 +43,16 @@ export const useGrid = ({ seed }: Props) => {
   const [POI, setPOI] = useState<Cell>();
 
   const [cells, setCells] = useState<Cell[]>([]);
+  const [tempItems, setTempItems] = useState<Item[]>([]);
 
   const currentSeed = `${seed} - ${currentRoom?.x} - ${currentRoom?.y}`;
 
   const resetGrid = () => {
+    const currentItems = [] as Item[];
     if (!currentRoom || !seed) {
       return;
     }
+
     const width = (currentRoom?.size + 1) * 10;
     const height = Math.floor(width * (9 / 16));
 
@@ -194,15 +197,25 @@ export const useGrid = ({ seed }: Props) => {
       (c) => c.x === poiCell.x && c.y === poiCell.y
     );
 
+    //TODO: find solution for adding items in use grid with
+
     roomCells[poiId] = {
       ...poiCell,
-      item: currentRoom.itemsToPlace[0],
+      // removed item for the poi cell for now
+      // item: currentRoom.itemsToPlace[0],
       isCollapsed: true,
       isPath: true,
       isOutside: false,
       isAccessible: true,
       isWall: false,
     };
+
+    currentItems.push({
+      ...currentRoom.itemsToPlace[0],
+      x: poiCell.x,
+      y: poiCell.y,
+      id: crypto.randomUUID(),
+    });
 
     const findPath = (startCell: Cell, route: Graph, endCell: Cell) => {
       return route.path(
@@ -213,13 +226,13 @@ export const useGrid = ({ seed }: Props) => {
 
     const makeGrid = (grid: Cell[]) => {
       const route = new Graph();
-      grid.forEach((item) => {
+      grid.forEach((gridItem) => {
         const connections = new Map();
         const neighbours = [
-          grid.find((g) => g.x === item.x && g.y === item.y - 1),
-          grid.find((g) => g.x === item.x && g.y === item.y + 1),
-          grid.find((g) => g.x === item.x - 1 && g.y === item.y),
-          grid.find((g) => g.x === item.x + 1 && g.y === item.y),
+          grid.find((g) => g.x === gridItem.x && g.y === gridItem.y - 1),
+          grid.find((g) => g.x === gridItem.x && g.y === gridItem.y + 1),
+          grid.find((g) => g.x === gridItem.x - 1 && g.y === gridItem.y),
+          grid.find((g) => g.x === gridItem.x + 1 && g.y === gridItem.y),
         ].filter((i) => !!i);
         // .filter((i) => !i.isOutside);
 
@@ -230,7 +243,7 @@ export const useGrid = ({ seed }: Props) => {
 
         const c = Object.fromEntries(connections);
 
-        return route.addNode(`${item.x} - ${item.y}`, c);
+        return route.addNode(`${gridItem.x} - ${gridItem.y}`, c);
       });
       return route;
     };
@@ -271,7 +284,8 @@ export const useGrid = ({ seed }: Props) => {
         ...cell,
         isPath: cell.isPath ?? containsPath,
         isOutside: containsPath ? false : cell.isOutside,
-        isWall: containsPath || cell.item ? false : cell.isWall,
+        //
+        isWall: containsPath ? false : cell.isWall,
         isCollapsed,
       };
     });
@@ -332,8 +346,21 @@ export const useGrid = ({ seed }: Props) => {
         if (rockCount >= 0) {
           const shouldBeObstacle = generateNoise({ random: r }) < 0.05;
           current.isObstacle = shouldBeObstacle;
-          current.item =
-            current.item || shouldBeObstacle ? hazardRubble : undefined;
+          if (
+            shouldBeObstacle &&
+            !tempItems.find((i) => i.x === current.x && i.y === current.y)
+          )
+            currentItems.push({
+              canShovel: true,
+              value: 0,
+              weight: 5,
+              type: "Unobtainable",
+              name: "rubble",
+              rarity: 0,
+              x: current.x,
+              y: current.y,
+              id: crypto.randomUUID(),
+            });
         }
       }
       current.isCollapsed = true;
@@ -499,6 +526,7 @@ export const useGrid = ({ seed }: Props) => {
     }
 
     setCells([...withNeighbours]);
+    setTempItems(currentItems);
   };
 
   useEffect(() => {
@@ -511,10 +539,14 @@ export const useGrid = ({ seed }: Props) => {
   useEffect(() => {
     setWalls(currentRoom?.walls ?? [...cells].filter((c) => c.isWall));
     setTiles(
-      currentRoom?.tiles ?? [...cells].filter((c) => c.isPath || c.isObstacle)
+      currentRoom?.tiles ??
+        [...cells]
+          .filter((c) => c.isPath || c.isObstacle)
+          .map((t) => {
+            return { ...t, item: undefined };
+          })
     );
-    // @ts-expect-error Typemismatch while work in progress
-    setItems(currentRoom?.items ?? [...cells.filter((c) => c.item)]);
+    setItems(currentRoom?.items ?? tempItems);
     setExitCells((exits || [])?.map((exit) => exit.cell));
 
     setPlayer(start);

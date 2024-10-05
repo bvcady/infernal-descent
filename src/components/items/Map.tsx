@@ -1,87 +1,11 @@
-import { levelStore } from "@/stores/LevelStore";
-import { playerStore } from "@/stores/PlayerStore";
-import { windowStore } from "@/stores/WindowStore";
 import { Item } from "@/types/Item";
-import { useEffect, useMemo, useRef } from "react";
-import { useStore } from "zustand";
-import { DefaultTile } from "../tiles/default/DefaultTile";
-import { Cell } from "@/types/Cell";
-import { usePlaySound } from "@/hooks/usePlaySound";
+import { DefaultItem } from "./default/DefaultItem";
 
 interface Props {
-  cell?: Item;
+  item?: Item;
   isStatic?: boolean;
 }
 
-export const Map = ({ cell, isStatic }: Props) => {
-  const itemRef = useRef<HTMLDivElement>();
-  const requestRef = useRef(0);
-  const { player, addItem } = useStore(playerStore);
-  const { setItems, items } = useStore(levelStore);
-  const { toggleShowAHint } = useStore(windowStore);
-
-  // public/Audio/Impact Sounds/Audio/impactMining_002.ogg
-  const { play } = usePlaySound({
-    soundFile: "../../Audio/Impact Sounds/Audio/impactMining_002.ogg",
-    options: {
-      volume: 0.4,
-    },
-  });
-
-  const playerIsOn = !!cell;
-
-  const handleGrab = (e: KeyboardEvent) => {
-    if (cell) {
-      if (e.key === "a") {
-        toggleShowAHint(false);
-        setItems(
-          items.filter((item) => !(item.x === cell?.x && item.y === cell?.y))
-        );
-        play();
-        addItem(cell);
-      }
-    }
-  };
-
-  useEffect(() => {
-    addEventListener("keyup", handleGrab);
-    return () => removeEventListener("keyup", handleGrab);
-  }, []);
-
-  const animate = (time: number) => {
-    const speed = 1500;
-    const isUp = time % speed < speed / 2;
-
-    if (itemRef.current && !isStatic) {
-      if (playerIsOn) {
-        itemRef.current.style.zIndex = "1000";
-      } else {
-        itemRef.current.style.zIndex = "unset";
-      }
-      itemRef.current.style.transform = isUp
-        ? `translateY(calc(${
-            playerIsOn ? "-75%" : "0%"
-          } )) rotate(180deg) scale(-1, 1)`
-        : `translateY(calc(${
-            playerIsOn ? "-75%" : "0%"
-          } - 10%)) rotate(180deg) scale(-1, 1)`;
-    }
-
-    requestRef.current = requestAnimationFrame((time) => animate(time));
-  };
-
-  useEffect(() => {
-    requestRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(requestRef.current);
-  }, []);
-
-  return (
-    <DefaultTile
-      tileRef={itemRef}
-      className="itemKey"
-      cell={cell as Cell}
-      customPath="images/Monochrome/Tilemap/map.png"
-      noBackground
-    />
-  );
+export const Map = ({ item }: Props) => {
+  return <DefaultItem isStatic item={item} />;
 };

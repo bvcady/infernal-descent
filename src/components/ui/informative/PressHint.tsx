@@ -1,3 +1,4 @@
+import { DefaultItem } from "@/components/items/default/DefaultItem";
 import { windowStore } from "@/stores/WindowStore";
 import { miniFont } from "@/utils/defaultValues";
 import { Box, styled } from "@mui/material";
@@ -7,7 +8,7 @@ import { useStore } from "zustand";
 interface Props {
   letter: string;
   label?: string;
-  icon?: ReactNode;
+  icon?: string;
   toggle?: unknown;
   style?: CSSProperties;
 }
@@ -47,7 +48,11 @@ export const PressHint = ({
           }}
         >
           <span style={{ marginLeft: "2px" }}>{label ?? letter}</span>
-          {icon ? <span className="icon">{icon}</span> : null}
+          {icon ? (
+            <span className="icon">
+              <DefaultItem customSpriteName={icon} />
+            </span>
+          ) : null}
         </Hint>
       ) : null}
     </>

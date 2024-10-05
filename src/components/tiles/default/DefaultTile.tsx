@@ -30,7 +30,6 @@ export const DefaultTile = ({
   children,
 }: Props) => {
   const { cellSize } = useStore(windowStore, (state) => state);
-
   const bgPath = customPath
     ? `url("../../${customPath}")`
     : tileNumber >= 0

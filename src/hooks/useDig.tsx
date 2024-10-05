@@ -44,7 +44,7 @@ export const useDig = () => {
 
     if (
       (top || bottom || left || right) &&
-      inventory.items.some((item) => item.item.name === "shovel")
+      inventory.items.some((item) => item.name === "shovel")
     ) {
       if (!showZHint) toggleShowZHint(true);
     } else {
@@ -89,7 +89,7 @@ export const useDig = () => {
       }
 
       //  Do nothing when no shovel
-      if (!inventory.items.some((item) => item.item.name === "shovel")) {
+      if (!inventory.items.some((item) => item.name === "shovel")) {
         setTargetDiggingTile(undefined);
         return setDigKeyIsDown(false);
       }

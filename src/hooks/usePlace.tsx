@@ -1,15 +1,15 @@
 import { levelStore } from "@/stores/LevelStore";
 import { playerStore } from "@/stores/PlayerStore";
 import { Cell } from "@/types/Cell";
-import { Hazard } from "@/types/Hazard";
+import { Item } from "@/types/Item";
+
 import { useCallback, useEffect, useState } from "react";
 import { useStore } from "zustand";
 
 export const usePlace = () => {
   const [selectedTile, setSelectedTiles] = useState<{
     tile: Cell;
-    item: Cell;
-    hazard: Hazard;
+    item: Item;
   }>();
 
   const { setItems, items, setTiles, tiles, walls } = useStore(levelStore);

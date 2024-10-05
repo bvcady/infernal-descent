@@ -1,4 +1,3 @@
-import { ItemType } from "@/types/Obtainable";
 import { RoomRequirement } from "@/types/RoomRequirement";
 import {
   itemChest,
@@ -12,10 +11,10 @@ import {
 import { shuffle } from "@/utils/noise";
 import { hazardSlime, hazardSpikes } from "../hazards/Hazard";
 import { Random } from "@/types/Random";
+import { Item } from "@/types/Item";
 
 type IntroRoom = {
-  items?: ItemType[];
-  hazards?: ItemType[];
+  items?: Item[];
   nextRoomRequirement?: {
     requirements?: RoomRequirement[];
     forcedEntry?: RoomRequirement;
@@ -39,19 +38,24 @@ export const getAllRoomOptions = (r: Random) => {
   };
 
   const heartGainRoom: IntroRoom = {
-    items: [shuffle([itemHeartHalf, itemHeartWhole, itemHeartTemporary], r)[0]],
-    hazards: [hazardSpikes, hazardSpikes],
+    items: [
+      shuffle([itemHeartHalf, itemHeartWhole, itemHeartTemporary], r)[0],
+      hazardSpikes,
+      hazardSlime,
+    ],
     nextRoomRequirement: {
       requirements: [{ name: "health_gain", type: "Stat" }],
     },
   };
 
   const heartLossRoom: IntroRoom = {
-    items: [itemHeartWhole, itemHeartWhole],
-    hazards: [
+    items: [
+      itemHeartWhole,
+      itemHeartWhole,
       shuffle([hazardSlime, hazardSpikes], r)[0],
       shuffle([hazardSlime, hazardSpikes], r)[0],
     ],
+
     nextRoomRequirement: {
       requirements: [{ name: "health_lost", type: "Stat", amount: 1 }],
     },
@@ -84,6 +88,5 @@ export const getAllRoomOptions = (r: Random) => {
     paymentRoom,
     barredRoom,
   ];
-  return {introRoomSituations}
+  return { introRoomSituations };
 };
-

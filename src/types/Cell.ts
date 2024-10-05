@@ -1,4 +1,3 @@
-import { ItemType } from "./Obtainable";
 import { Room } from "./Room";
 
 export type Cell = {
@@ -16,5 +15,4 @@ export type Cell = {
   isAccessible?: boolean;
   exit?: Room;
   skull?: boolean
-  item?: ItemType
 };

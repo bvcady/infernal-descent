@@ -14,6 +14,7 @@ import { usePlace } from "@/hooks/usePlace";
 import { FloorTile } from "../tiles/passable/FloorTile";
 import { Shovel } from "../items/Shovel";
 import { Item } from "@/types/Item";
+import { DefaultItem } from "../items/default/DefaultItem";
 // @ts-ignore
 
 interface Props {
@@ -92,7 +93,12 @@ export const PlayerMap = ({ startCell }: Props) => {
         />
       ) : null}
       {digKeyIsDown && player ? (
-        <Shovel cell={shovelCell as Item} style={{ marginTop: "125%" }} />
+        <DefaultItem
+          isStatic
+          customSpriteName="shovel"
+          positionOverride={shovelCell}
+          itemStyle={{ zoom: 0.75, zIndex: 1000 }}
+        />
       ) : null}
     </GridWrapper>
   );

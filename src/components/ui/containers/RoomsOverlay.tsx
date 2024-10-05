@@ -85,13 +85,13 @@ export const UIOverlay = () => {
       >
         <PressHint
           letter="B"
-          icon={<Map />}
+          icon={"map"}
           toggle={showBHint}
           style={{ marginRight: "auto" }}
         />
         <PressHint label="[S]TART" letter="S" toggle={showStartHint} />
         <PressHint letter="A" toggle={showAHint} />
-        <PressHint letter="Z" icon={<Shovel />} toggle={showZHint} />
+        <PressHint letter="Z" icon={"shovel"} toggle={showZHint} />
         <PressHint letter="X" toggle={showXHint} />
       </Box>
     </Box>

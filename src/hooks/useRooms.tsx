@@ -69,7 +69,6 @@ export const useRooms = ({ seed }: Props) => {
       introRoom.density = 0;
       introRoom.emptiness = 0;
       introRoom.itemsToPlace = shovelRoom.items || [];
-      introRoom.hazardsToPlace = shovelRoom.hazards || [];
       introRoom.entryRequirement = undefined;
       introRoom.isCollapsed = true;
       roomGrid[id] = introRoom;
@@ -147,7 +146,6 @@ export const useRooms = ({ seed }: Props) => {
           const rs = shuffle(introRoomSituations, r)[0];
           // what is the theme of the room?
           nextRoom.itemsToPlace = rs.items || [];
-          nextRoom.hazardsToPlace = rs.hazards || [];
 
           nextRoom.size = Math.floor(scale([0, 1], [1, 3])(r.next()));
           nextRoom.density = scale([0, 3], [4, 25])(r.next() * nextRoom.size);

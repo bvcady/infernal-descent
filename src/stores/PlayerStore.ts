@@ -1,5 +1,4 @@
 import { Cell } from "@/types/Cell";
-import { Hazard } from "@/types/Hazard";
 import { Item } from "@/types/Item";
 
 import { createStore } from "zustand";
@@ -8,7 +7,7 @@ type PlayerStoreState = {
   player?: Cell;
   inventory: {
     items: Item[];
-    tiles: { tile: Cell; item?: Item; hazard?: Hazard }[];
+    tiles: { tile: Cell; item?: Item }[];
   };
   canMove: boolean;
   stats: {
@@ -20,11 +19,10 @@ type PlayerStoreState = {
     position: { x: number; y: number };
     tile?: Cell;
     item?: Item;
-    hazard?: Hazard;
   };
-  digKeyIsDown: boolean,
+  digKeyIsDown: boolean;
   placeKeyIsDown: boolean;
-  targetDiggingTile?: {x: number, y: number}
+  targetDiggingTile?: { x: number; y: number };
 };
 
 type PlayerStoreActions = {
@@ -32,8 +30,8 @@ type PlayerStoreActions = {
   setDigKeyIsDown: (input: boolean) => void;
   removeItem: (item: Item) => void;
   addItem: (item: Item) => void;
-  addTile: (next: { tile: Cell; item?: Item; hazard?: Hazard }) => void;
-  removeTile: (next: { tile: Cell; item?: Item; hazard?: Hazard }) => void;
+  addTile: (next: { tile: Cell; item?: Item }) => void;
+  removeTile: (next: { tile: Cell; item?: Item }) => void;
   setPlayer: (nextPosition: PlayerStoreState["player"]) => void;
   moveInDirection: (nextCell: Cell) => void;
   setCanMove: (check: boolean) => void;
@@ -42,9 +40,8 @@ type PlayerStoreActions = {
     position: { x: number; y: number };
     tile?: Cell;
     item?: Item;
-    hazard?: Hazard;
   }) => void;
-  setTargetDiggingTile: (tar?: {x: number, y: number}) => void;
+  setTargetDiggingTile: (tar?: { x: number; y: number }) => void;
 };
 
 type PlayerStore = PlayerStoreState & PlayerStoreActions;
@@ -56,24 +53,14 @@ export const playerStore = createStore<PlayerStore>()((set) => ({
   canMove: true,
   targetDiggingTile: undefined,
   setTargetDiggingTile: (tar) => {
-    set({targetDiggingTile: tar})
+    set({ targetDiggingTile: tar });
   },
   futureTile: undefined,
   setFutureTile: (newTile) => {
     set({ futureTile: newTile });
   },
   inventory: {
-    items: [
-      {
-        item: {
-          name: "shard",
-          type: "Obtainable",
-          canShovel: true,
-          value: 1,
-          rarity: 0,
-        },
-      },
-    ],
+    items: [],
     tiles: [],
   },
   player: undefined,
@@ -115,17 +102,15 @@ export const playerStore = createStore<PlayerStore>()((set) => ({
   addTile: ({
     tile,
     item,
-    hazard,
   }: {
     tile: Cell;
     item?: Item;
-    hazard?: Hazard;
   }) => {
     const prevInventory = playerStore.getState().inventory;
     set({
       inventory: {
         ...prevInventory,
-        tiles: [...prevInventory.tiles, { tile, item, hazard }],
+        tiles: [...prevInventory.tiles, { tile, item }],
       },
     });
   },
@@ -135,14 +120,14 @@ export const playerStore = createStore<PlayerStore>()((set) => ({
   setDigKeyIsDown: (input: boolean) => {
     return set({ digKeyIsDown: input });
   },
-  removeTile: (tile: { tile: Cell; item?: Item; hazard?: Hazard }) => {
-    console.log({tile})
+  removeTile: (tile: { tile: Cell; item?: Item }) => {
+    console.log({ tile });
     const prevInventory = playerStore.getState().inventory;
     set({
       inventory: {
         ...prevInventory,
         tiles: prevInventory?.tiles?.filter(
-          (t) => !(tile.tile.x === t.tile.x && tile.tile.y === t.tile.y )
+          (t) => !(tile.tile.x === t.tile.x && tile.tile.y === t.tile.y)
         ),
       },
     });

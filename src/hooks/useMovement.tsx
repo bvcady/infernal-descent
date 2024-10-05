@@ -12,7 +12,7 @@ interface Props {
 export const useMovement = ({ moveDirection, setMoveDirection }: Props) => {
   const requestRef = useRef(0);
 
-  const { tiles, exits } = useStore(levelStore);
+  const { tiles, exits, items } = useStore(levelStore);
   const { player, moveInDirection, canMove, placeKeyIsDown, digKeyIsDown } =
     useStore(playerStore);
 
@@ -22,28 +22,16 @@ export const useMovement = ({ moveDirection, setMoveDirection }: Props) => {
   const neighbouringCells = player
     ? {
         ArrowUp: tileOptions?.find(
-          (cell) =>
-            cell.x === player?.x &&
-            cell.y === player?.y - 1 &&
-            cell.item?.type !== "Unobtainable"
+          (cell) => cell.x === player?.x && cell.y === player?.y - 1
         ),
         ArrowDown: tileOptions?.find(
-          (cell) =>
-            cell.x === player?.x &&
-            cell.y === player?.y + 1 &&
-            cell.item?.type !== "Unobtainable"
+          (cell) => cell.x === player?.x && cell.y === player?.y + 1
         ),
         ArrowLeft: tileOptions?.find(
-          (cell) =>
-            cell.x === player?.x - 1 &&
-            cell.y === player?.y &&
-            cell.item?.type !== "Unobtainable"
+          (cell) => cell.x === player?.x - 1 && cell.y === player?.y
         ),
         ArrowRight: tileOptions?.find(
-          (cell) =>
-            cell.x === player?.x + 1 &&
-            cell.y === player?.y &&
-            cell.item?.type !== "Unobtainable"
+          (cell) => cell.x === player?.x + 1 && cell.y === player?.y
         ),
       }
     : {};
@@ -51,11 +39,23 @@ export const useMovement = ({ moveDirection, setMoveDirection }: Props) => {
   const handleMoveInDirection = useCallback(
     (dir: KeyboardDirection) => {
       const cellCheck = neighbouringCells?.[dir];
+
+      if (
+        items.find(
+          (item) =>
+            item.x === cellCheck?.x &&
+            item.y === cellCheck?.y &&
+            item.type === "Unobtainable"
+        )
+      ) {
+        return;
+      }
+
       if (cellCheck && canMove && !placeKeyIsDown && !digKeyIsDown) {
         moveInDirection(cellCheck);
       }
     },
-    [canMove, neighbouringCells, moveDirection]
+    [canMove, neighbouringCells, moveDirection, items]
   );
 
   useEffect(() => {

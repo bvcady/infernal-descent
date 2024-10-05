@@ -1,48 +1,14 @@
-import { Cell } from "@/types/Cell";
-import { useEffect, useRef } from "react";
-import { DefaultTile } from "../tiles/default/DefaultTile";
+import { Item } from "@/types/Item";
+import { CSSProperties } from "react";
+import { DefaultItem } from "./default/DefaultItem";
 
 interface Props {
-  cell?: Cell;
+  item: Item;
+  isStatic?: boolean;
+  itemStyle?: CSSProperties;
+  spriteStyle?: CSSProperties;
 }
 
-export const Key = ({ cell }: Props) => {
-  const keyRef = useRef<HTMLDivElement>();
-  const requestRef = useRef(0);
-
-  const animate = (time: number) => {
-    const speed = 1500;
-    const isUp = time % speed < speed / 2;
-
-    // if (playSound) {
-    //   setShouldPlay(true);
-    // } else {
-    //   setShouldPlay(false);
-    // }
-
-    if (keyRef.current) {
-      keyRef.current.style.transform = isUp
-        ? "translateY(0%)"
-        : "translateY(-5%)";
-    }
-
-    requestRef.current = requestAnimationFrame((time) => animate(time));
-  };
-
-  useEffect(() => {
-    requestRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(requestRef.current);
-  }, []);
-
-  return (
-    <DefaultTile
-      className="itemKey"
-      cell={cell}
-      customPath="images/Monochrome/Tilemap/threat3.png"
-      noBackground
-      style={{
-        transform: "rotate(90deg) scale(1, -1)",
-      }}
-    />
-  );
+export const Key = ({ item, ...props }: Props) => {
+  return <DefaultItem item={item} {...{ props }} />;
 };

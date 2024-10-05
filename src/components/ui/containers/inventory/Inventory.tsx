@@ -1,3 +1,4 @@
+import { DefaultItem } from "@/components/items/default/DefaultItem";
 import { Shard } from "@/components/items/Shard";
 import { Shovel } from "@/components/items/Shovel";
 import { FloorTile } from "@/components/tiles/passable/FloorTile";
@@ -34,13 +35,8 @@ export const Inventory = () => {
             padding={`${cellSize / 10}px`}
             height={cellSize / 2}
           >
-            {inventory?.items?.map((item, index) => {
-              if (item.item?.name === "shovel") {
-                return <Shovel key={index} isStatic />;
-              }
-              if (item.item?.name === "shard") {
-                return <Shard key={index} isStatic />;
-              }
+            {inventory?.items?.map((item) => {
+              return <DefaultItem key={item.id} item={item} isStatic />;
             })}
           </InventoryWrapper>
           <InventoryWrapper
@@ -57,10 +53,13 @@ export const Inventory = () => {
                     aspectRatio: 1,
                   }}
                 >
-                  <FloorTile cell={tile.tile} />
-                  {tile.item?.item?.name === "shovel" ? (
-                    <Box>
-                      <Shovel key={index} cell={tile.item} isStatic />
+                  <FloorTile
+                    style={{ position: "absolute", inset: 0 }}
+                    cell={tile.tile}
+                  />
+                  {tile.item ? (
+                    <Box sx={{ position: "absolute", inset: 0, zIndex: 2 }}>
+                      <DefaultItem key={index} item={tile.item} isStatic />
                     </Box>
                   ) : null}
                 </Box>

@@ -1,9 +1,8 @@
 import { Cell } from "./Cell";
 
 import { Item } from "./Item";
-import { ItemType } from "./Obtainable";
-import { RoomRequirement } from "./RoomRequirement";
 
+import { RoomRequirement } from "./RoomRequirement";
 
 export type Room = {
   id: string;
@@ -28,13 +27,14 @@ export type Room = {
   hazards?: Cell[];
   isVisited?: boolean;
   maxExits: number;
-  itemsToPlace: ItemType[];
-  hazardsToPlace: ItemType[];
+  itemsToPlace: Item[];
   density?: number;
   emptiness?: number;
-  entryRequirement?: {
-    requirements?: RoomRequirement[];
-    forcedEntry?: RoomRequirement;
-  } | 'to do';
+  entryRequirement?:
+    | {
+        requirements?: RoomRequirement[];
+        forcedEntry?: RoomRequirement;
+      }
+    | "to do";
   opened?: boolean;
 };
