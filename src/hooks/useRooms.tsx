@@ -20,11 +20,17 @@ export const useRooms = ({ seed }: Props) => {
     console.clear();
     const r = Alea(seed);
 
-    const { introRoomSituations } = getAllRoomOptions(r);
+    const introRoomSituations = shuffle(
+      getAllRoomOptions(r).introRoomSituations,
+      r
+    );
+
+    let introRoomsPicked = 0;
 
     const targetTotal = Math.floor(scale([0, 1], [18, 30])(r.next()));
 
     const nBossRooms = Math.floor(targetTotal - 7 / 4);
+
     const roomGrid = new Array(h)
       .fill("")
       .map((_, y) =>
@@ -134,7 +140,7 @@ export const useRooms = ({ seed }: Props) => {
       const nextRoom = pickedOption.middle;
       const neighbouringRooms = [top, left, bottom, right].filter((r) => !!r);
 
-      const isHallWay = r.next() > 0.75;
+      const isHallWay = r.next() > 0.8;
 
       const tbdFromNeighbour = shuffle([...neighbouringRooms], r)[0]
         .tbdNeighbours[0];
@@ -142,8 +148,14 @@ export const useRooms = ({ seed }: Props) => {
       nextRoom.entryRequirement = tbdFromNeighbour;
 
       if (!isHallWay) {
-        if (totalRooms.length < targetTotal / 2) {
-          const rs = shuffle(introRoomSituations, r)[0];
+        if (
+          totalRooms.length < targetTotal / 2 &&
+          introRoomsPicked <= introRoomSituations.length
+        ) {
+          const rs = [
+            ...introRoomSituations.slice(-(introRoomsPicked + 1)),
+          ]?.[0];
+          introRoomsPicked += 1;
           // what is the theme of the room?
           nextRoom.itemsToPlace = rs.items || [];
 
@@ -250,7 +262,6 @@ export const useRooms = ({ seed }: Props) => {
       return { ...room, neighbours };
     });
 
-    // console.log(roomsWithNeighbours.map((r) => r.entryRequirement));
     const selectedRoom = roomsWithNeighbours[0];
     setCurrentRoom(selectedRoom);
     setRooms(

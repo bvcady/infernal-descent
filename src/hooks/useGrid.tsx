@@ -525,6 +525,33 @@ export const useGrid = ({ seed }: Props) => {
       }
     }
 
+    if (currentRoom.itemsToPlace?.length > 1) {
+      const itemPlacementOptions = shuffle(
+        [...withNeighbours].filter(
+          (c) =>
+            c.isPath && !c.isWall && !c.isOutside && !c.isObstacle && !c.exit
+        ),
+        r
+      ).slice(0, currentRoom.itemsToPlace.length - 1);
+
+      console.log({ itemPlacementOptions });
+
+      [...itemPlacementOptions].forEach((cell, index) => {
+        if (index === 0) {
+          return;
+        }
+        const item = currentRoom.itemsToPlace[index];
+
+        currentItems.push({
+          ...item,
+          x: cell.x,
+          y: cell.y,
+          id: crypto.randomUUID(),
+        });
+      });
+    }
+
+    console.log(currentItems);
     setCells([...withNeighbours]);
     setTempItems(currentItems);
   };

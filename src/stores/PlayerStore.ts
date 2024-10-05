@@ -26,6 +26,9 @@ type PlayerStoreState = {
 };
 
 type PlayerStoreActions = {
+  heal: (input: number) => void;
+  updateShards: (input: number) => void;
+  addStep: (input: number) => void;
   setPlaceKeyIsDown: (input: boolean) => void;
   setDigKeyIsDown: (input: boolean) => void;
   removeItem: (item: Item) => void;
@@ -49,7 +52,7 @@ type PlayerStore = PlayerStoreState & PlayerStoreActions;
 export const playerStore = createStore<PlayerStore>()((set) => ({
   digKeyIsDown: false,
   placeKeyIsDown: false,
-  stats: { health: 6, steps: 0, shards: 0 },
+  stats: { health: 3, steps: 0, shards: 0 },
   canMove: true,
   targetDiggingTile: undefined,
   setTargetDiggingTile: (tar) => {
@@ -121,7 +124,6 @@ export const playerStore = createStore<PlayerStore>()((set) => ({
     return set({ digKeyIsDown: input });
   },
   removeTile: (tile: { tile: Cell; item?: Item }) => {
-    console.log({ tile });
     const prevInventory = playerStore.getState().inventory;
     set({
       inventory: {
@@ -138,4 +140,17 @@ export const playerStore = createStore<PlayerStore>()((set) => ({
   resetInventory: () => {
     set({ inventory: { items: [], tiles: [] } });
   },
+  heal: (amount: number) => {
+    const stats = playerStore.getState().stats;
+    return set({stats: {...stats, health: Math.min(stats.health + amount, 6)}})
+  },
+  addStep: (amount: number) => {
+    const stats = playerStore.getState().stats;
+    return set({stats: {...stats, steps: stats.steps + amount}})
+  },
+  
+  updateShards:(amount: number)=> {
+    const stats = playerStore.getState().stats;
+    return set({stats: {...stats, shards: stats.shards + amount}})
+  }
 }));

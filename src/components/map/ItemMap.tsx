@@ -6,7 +6,6 @@ import { GridWrapper } from "../level/GridWrapper";
 export const ItemMap = () => {
   const { items } = useStore(levelStore);
 
-  console.log({ items });
   return (
     <GridWrapper>
       {items.map((item) => (

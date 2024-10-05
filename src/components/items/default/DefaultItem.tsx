@@ -42,7 +42,8 @@ export const DefaultItem = ({
   const requestRef = useRef(0);
 
   const { cellSize, toggleShowAHint } = useStore(windowStore);
-  const { player, inventory, addItem } = useStore(playerStore);
+  const { player, inventory, addItem, heal, updateShards } =
+    useStore(playerStore);
   const { setItems, items } = useStore(levelStore);
 
   const bgPath = `url("../../images/Monochrome/Tilemap/${
@@ -90,7 +91,19 @@ export const DefaultItem = ({
     (e: KeyboardEvent) => {
       if (playerIsOn && e.key === "a" && item && !isStatic) {
         toggleShowAHint(false);
-        addItem(item);
+        if (item.type === "Obtainable") {
+          addItem(item);
+        } else if (item.type === "Stat") {
+          if (item.name === "heart_whole") {
+            heal(2);
+          }
+          if (item.name === "heart_half") {
+            heal(1);
+          }
+          if (item.name === "shard_one") {
+            updateShards(1);
+          }
+        }
         setItems(
           items.filter(
             (item) => !(item.x === player?.x && item.y === player?.y)

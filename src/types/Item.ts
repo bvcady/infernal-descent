@@ -4,7 +4,7 @@ export type Item = {
   y: number;
   name: string;
   rarity: number;
-  type: "Obtainable" | "Unobtainable";
+  type: "Obtainable" | "Unobtainable" | "Stat" | "Hurtful";
   weight?: number;
   canShovel?: boolean;
   value?: number;

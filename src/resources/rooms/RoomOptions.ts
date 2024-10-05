@@ -9,7 +9,7 @@ import {
   itemShovel,
 } from "../items/Items";
 import { shuffle } from "@/utils/noise";
-import { hazardSlime, hazardSpikes } from "../hazards/Hazard";
+import { hazardLava, hazardSpikes } from "../hazards/Hazard";
 import { Random } from "@/types/Random";
 import { Item } from "@/types/Item";
 
@@ -41,7 +41,7 @@ export const getAllRoomOptions = (r: Random) => {
     items: [
       shuffle([itemHeartHalf, itemHeartWhole, itemHeartTemporary], r)[0],
       hazardSpikes,
-      hazardSlime,
+      hazardLava,
     ],
     nextRoomRequirement: {
       requirements: [{ name: "health_gain", type: "Stat" }],
@@ -52,8 +52,8 @@ export const getAllRoomOptions = (r: Random) => {
     items: [
       itemHeartWhole,
       itemHeartWhole,
-      shuffle([hazardSlime, hazardSpikes], r)[0],
-      shuffle([hazardSlime, hazardSpikes], r)[0],
+      shuffle([hazardLava, hazardSpikes], r)[0],
+      shuffle([hazardLava, hazardSpikes], r)[0],
     ],
 
     nextRoomRequirement: {

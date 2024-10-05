@@ -4,11 +4,13 @@ import { Shovel } from "@/components/items/Shovel";
 import { FloorTile } from "@/components/tiles/passable/FloorTile";
 import { playerStore } from "@/stores/PlayerStore";
 import { windowStore } from "@/stores/WindowStore";
+import { miniFont } from "@/utils/defaultValues";
 import { Box, styled } from "@mui/material";
+import { minify } from "next/dist/build/swc";
 import { useStore } from "zustand";
 
 const InventoryWrapper = styled(Box)`
-  width: 100%;
+  max-width: 100%;
   background-color: rgba(0, 0, 0, 0.8);
   display: flex;
   > div {
@@ -17,7 +19,7 @@ const InventoryWrapper = styled(Box)`
 `;
 
 export const Inventory = () => {
-  const { inventory } = useStore(playerStore);
+  const { inventory, stats } = useStore(playerStore);
   const { cellSize } = useStore(windowStore);
   return (
     <Box
@@ -29,45 +31,64 @@ export const Inventory = () => {
       borderBottom={"2px solid rgba(0, 0, 0, 0.4)"}
       sx={{ backdropFilter: "blur(12px)" }}
     >
-      {inventory?.items.length > 0 || inventory.tiles?.length > 0 ? (
-        <>
-          <InventoryWrapper
-            padding={`${cellSize / 10}px`}
-            height={cellSize / 2}
-          >
-            {inventory?.items?.map((item) => {
-              return <DefaultItem key={item.id} item={item} isStatic />;
-            })}
-          </InventoryWrapper>
-          <InventoryWrapper
-            padding={`${cellSize / 10}px`}
-            height={cellSize / 2}
-          >
-            {inventory?.tiles?.map((tile, index) => {
-              return (
-                <Box
-                  key={`${tile.tile.x} - ${tile.tile.y}`}
-                  sx={{
-                    position: "relative",
-                    width: `${cellSize}px`,
-                    aspectRatio: 1,
-                  }}
-                >
-                  <FloorTile
-                    style={{ position: "absolute", inset: 0 }}
-                    cell={tile.tile}
+      <>
+        <InventoryWrapper padding={`${cellSize / 10}px`} height={cellSize / 2}>
+          {inventory?.items?.map((item) => {
+            return <DefaultItem key={item.id} item={item} isStatic />;
+          })}
+          <Box ml={"auto"} display={"flex"} alignItems={"center"}>
+            <Box display={"flex"} alignItems={"center"}>
+              {new Array(Math.floor(stats.health / 2))
+                .fill("")
+                .map((_, index) => (
+                  <DefaultItem
+                    key={index}
+                    isStatic
+                    customSpriteName="heart_whole"
                   />
-                  {tile.item ? (
-                    <Box sx={{ position: "absolute", inset: 0, zIndex: 2 }}>
-                      <DefaultItem key={index} item={tile.item} isStatic />
-                    </Box>
-                  ) : null}
-                </Box>
-              );
-            })}
-          </InventoryWrapper>
-        </>
-      ) : null}
+                ))}
+              {stats.health % 2 === 1 ? (
+                <DefaultItem isStatic customSpriteName="heart_half" />
+              ) : null}
+            </Box>
+            <Box display={"flex"} alignItems={"center"}>
+              <DefaultItem isStatic customSpriteName="shard_one"></DefaultItem>
+              <span
+                style={{
+                  color: "white",
+                  fontFamily: miniFont.style.fontFamily,
+                }}
+              >
+                x {stats.shards}
+              </span>
+            </Box>
+          </Box>
+        </InventoryWrapper>
+        <InventoryWrapper padding={`${cellSize / 10}px`} height={cellSize / 2}>
+          {inventory?.tiles?.map((tile, index) => {
+            return (
+              <Box
+                key={`${tile.tile.x} - ${tile.tile.y}`}
+                sx={{
+                  position: "relative",
+                  width: `${cellSize}px`,
+                  aspectRatio: 1,
+                }}
+              >
+                <FloorTile
+                  style={{ position: "absolute", inset: 0 }}
+                  cell={tile.tile}
+                />
+                {tile.item ? (
+                  <Box sx={{ position: "absolute", inset: 0, zIndex: 2 }}>
+                    <DefaultItem key={index} item={tile.item} isStatic />
+                  </Box>
+                ) : null}
+              </Box>
+            );
+          })}
+        </InventoryWrapper>
+      </>
     </Box>
   );
 };
