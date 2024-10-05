@@ -38,15 +38,22 @@ export const Inventory = () => {
           })}
           <Box ml={"auto"} display={"flex"} alignItems={"center"}>
             <Box display={"flex"} alignItems={"center"}>
-              {new Array(Math.floor(stats.health / 2))
-                .fill("")
-                .map((_, index) => (
-                  <DefaultItem
-                    key={index}
-                    isStatic
-                    customSpriteName="heart_whole"
-                  />
-                ))}
+              {stats.health > 0
+                ? new Array(Math.floor(stats.health / 2))
+                    .fill("")
+                    .map((_, index) => (
+                      <DefaultItem
+                        key={index}
+                        isStatic
+                        customSpriteName={
+                          stats.health > 6 &&
+                          Math.floor(stats.health / 2) - index < 3
+                            ? "heart_temporary"
+                            : "heart_whole"
+                        }
+                      />
+                    ))
+                : null}
               {stats.health % 2 === 1 ? (
                 <DefaultItem isStatic customSpriteName="heart_half" />
               ) : null}

@@ -27,9 +27,9 @@ export const useRooms = ({ seed }: Props) => {
 
     let introRoomsPicked = 0;
 
-    const targetTotal = Math.floor(scale([0, 1], [18, 30])(r.next()));
+    const targetTotal = Math.floor(scale([0, 1], [18, 24])(r.next()));
 
-    const nBossRooms = Math.floor(targetTotal - 7 / 4);
+    const nBossRooms = Math.floor(targetTotal / 2 / 4);
 
     const roomGrid = new Array(h)
       .fill("")
@@ -123,7 +123,7 @@ export const useRooms = ({ seed }: Props) => {
           return a.count - b.count;
         });
 
-      nNeighbours = options[0].count;
+      nNeighbours = options[0]?.count;
 
       const pickedOption = shuffle(
         options.filter((o) => o.count === nNeighbours),
@@ -134,7 +134,6 @@ export const useRooms = ({ seed }: Props) => {
         return [...totalRooms];
       }
 
-      // debugger;
       const { top, bottom, right, left } = pickedOption;
 
       const nextRoom = pickedOption.middle;
@@ -172,7 +171,7 @@ export const useRooms = ({ seed }: Props) => {
 
           nextRoom.tbdNeighbours = randDirs;
         } else {
-          nextRoom.size = Math.floor(scale([0, 1], [2, 5])(r.next()));
+          nextRoom.size = Math.floor(scale([0, 1], [2, 4])(r.next()));
           nextRoom.maxExits = r.next() > 0.66 ? 3 : 2;
           //TODO: Random assignment of room requirement
           //TODO: Add two - three 'boss' rooms
@@ -187,10 +186,18 @@ export const useRooms = ({ seed }: Props) => {
           const randDirs = new Array(nextRoom.maxExits - 1).fill("to do");
           nextRoom.tbdNeighbours = randDirs;
 
+          const distanceFromBeginning = Math.sqrt(
+            Math.pow(nextRoom.x - totalRooms[0].x, 2) +
+              Math.pow(nextRoom.y - totalRooms[0].y, 2)
+          );
+
           if (
-            nextRoom.size === 3 &&
-            totalRooms?.filter((room) => room.isBossRoom).length < 3
+            nextRoom.size >= 3 &&
+            totalRooms.filter((r) => r.isBossRoom).length < nBossRooms &&
+            distanceFromBeginning > 5
           ) {
+            console.log("Adding bossroom");
+
             nextRoom.isBossRoom = r.next() > 0.33;
             nextRoom.entryRequirement = {
               requirements: [{ name: "skull", type: "Item", amount: 1 }],
@@ -202,6 +209,30 @@ export const useRooms = ({ seed }: Props) => {
                 lessThan: true,
               },
             };
+          }
+          if (
+            !nextRoom.isBossRoom &&
+            totalRooms.filter((r) =>
+              r.itemsToPlace?.some((i) => i.name === "skull")
+            ).length < nBossRooms &&
+            distanceFromBeginning > 3 &&
+            r.next() < 0.25
+          ) {
+            console.log("Adding skull to the items of this room");
+            nextRoom.itemsToPlace?.push({
+              name: "skull",
+              id: "",
+              x: -1,
+              y: -1,
+              type: "Obtainable",
+              rarity: 10,
+              canShovel: true,
+              description:
+                "A skull is a requirement to open very specific rooms.",
+              weight: 0,
+              value: 100,
+              damage: 1,
+            });
           }
         }
       } else {
@@ -243,14 +274,16 @@ export const useRooms = ({ seed }: Props) => {
 
       totalRooms.push(nextRoom);
 
-      if (totalRooms.length >= targetTotal) {
+      if (
+        totalRooms.length >= targetTotal &&
+        totalRooms.filter((r) => r.isBossRoom).length >= 1
+      ) {
         return [...totalRooms];
       }
       return collapseNextRoom();
     };
 
     const collapsedRooms = collapseNextRoom();
-    // const collapseRoom = () => {R
 
     const roomsWithNeighbours = [...collapsedRooms].map((room) => {
       const neighbours = {
@@ -263,7 +296,19 @@ export const useRooms = ({ seed }: Props) => {
     });
 
     const selectedRoom = roomsWithNeighbours[0];
+
+    console.log(
+      "bossrooms",
+      roomsWithNeighbours?.filter((r) => r.isBossRoom)
+    );
+    console.log(
+      "has skull",
+      roomsWithNeighbours?.filter((r) =>
+        r.itemsToPlace.some((r) => r.name === "skull")
+      )
+    );
     setCurrentRoom(selectedRoom);
+
     setRooms(
       roomsWithNeighbours.map((r) => {
         if (r.x === selectedRoom?.x && r.y === selectedRoom?.y) {

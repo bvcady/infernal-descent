@@ -100,6 +100,9 @@ export const DefaultItem = ({
           if (item.name === "heart_half") {
             heal(1);
           }
+          if (item.name === "heart_temporary") {
+            heal(2, true);
+          }
           if (item.name === "shard_one") {
             updateShards(1);
           }

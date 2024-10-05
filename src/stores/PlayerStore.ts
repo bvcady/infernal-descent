@@ -26,7 +26,7 @@ type PlayerStoreState = {
 };
 
 type PlayerStoreActions = {
-  heal: (input: number) => void;
+  heal: (input: number, over?: boolean) => void;
   updateShards: (input: number) => void;
   addStep: (input: number) => void;
   setPlaceKeyIsDown: (input: boolean) => void;
@@ -140,9 +140,11 @@ export const playerStore = createStore<PlayerStore>()((set) => ({
   resetInventory: () => {
     set({ inventory: { items: [], tiles: [] } });
   },
-  heal: (amount: number) => {
+  heal: (amount: number, over?: boolean) => {
     const stats = playerStore.getState().stats;
-    return set({stats: {...stats, health: Math.min(stats.health + amount, 6)}})
+    const newVal = over ? stats.health + amount : Math.min(stats.health + amount, 6);
+
+    return set({stats: {...stats, health: newVal}})
   },
   addStep: (amount: number) => {
     const stats = playerStore.getState().stats;

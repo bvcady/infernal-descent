@@ -210,13 +210,6 @@ export const useGrid = ({ seed }: Props) => {
       isWall: false,
     };
 
-    currentItems.push({
-      ...currentRoom.itemsToPlace[0],
-      x: poiCell.x,
-      y: poiCell.y,
-      id: crypto.randomUUID(),
-    });
-
     const findPath = (startCell: Cell, route: Graph, endCell: Cell) => {
       return route.path(
         `${startCell.x} - ${startCell.y}`,
@@ -525,21 +518,16 @@ export const useGrid = ({ seed }: Props) => {
       }
     }
 
-    if (currentRoom.itemsToPlace?.length > 1) {
+    if (currentRoom.itemsToPlace?.length) {
       const itemPlacementOptions = shuffle(
         [...withNeighbours].filter(
           (c) =>
             c.isPath && !c.isWall && !c.isOutside && !c.isObstacle && !c.exit
         ),
         r
-      ).slice(0, currentRoom.itemsToPlace.length - 1);
-
-      console.log({ itemPlacementOptions });
+      ).slice(0, currentRoom.itemsToPlace.length);
 
       [...itemPlacementOptions].forEach((cell, index) => {
-        if (index === 0) {
-          return;
-        }
         const item = currentRoom.itemsToPlace[index];
 
         currentItems.push({
@@ -551,7 +539,6 @@ export const useGrid = ({ seed }: Props) => {
       });
     }
 
-    console.log(currentItems);
     setCells([...withNeighbours]);
     setTempItems(currentItems);
   };

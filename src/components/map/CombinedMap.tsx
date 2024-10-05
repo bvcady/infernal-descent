@@ -4,7 +4,7 @@ import { runStore } from "@/stores/RunStore";
 import { windowStore } from "@/stores/WindowStore";
 import { scale } from "@/utils/scale";
 import { Box, css, styled } from "@mui/material";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 
 import { useStore } from "zustand";
 

@@ -3,7 +3,7 @@ import { runStore } from "@/stores/RunStore";
 import { windowStore } from "@/stores/WindowStore";
 import { Cell } from "@/types/Cell";
 import { Room } from "@/types/Room";
-import { useEffect, useMemo } from "react";
+import { act, useEffect, useMemo } from "react";
 import { useStore } from "zustand";
 import { DefaultTile } from "../default/DefaultTile";
 
@@ -28,7 +28,13 @@ export const Exit = ({ cell, exit }: Props) => {
     toggleShowAHint(playerIsOn);
   }, [playerIsOn]);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    if (actualExit?.entryRequirement !== "to do") {
+      if (actualExit?.entryRequirement?.requirements) {
+        console.log(actualExit?.entryRequirement?.requirements);
+      }
+    }
+  }, [playerIsOn]);
 
   return (
     <DefaultTile

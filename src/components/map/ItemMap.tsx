@@ -2,15 +2,20 @@ import { levelStore } from "@/stores/LevelStore";
 import { useStore } from "zustand";
 import { DefaultItem } from "../items/default/DefaultItem";
 import { GridWrapper } from "../level/GridWrapper";
+import { useEffect } from "react";
 
 export const ItemMap = () => {
   const { items } = useStore(levelStore);
+
+  useEffect(() => {
+    console.log(items.some((item) => item.name === "skull"));
+  }, [items]);
 
   return (
     <GridWrapper>
       {items.map((item) => (
         <DefaultItem
-          isStatic={item.type === "Unobtainable"}
+          isStatic={item.type === "Unobtainable" || item.type === "Hurtful"}
           itemStyle={
             item.name === "rubble"
               ? {

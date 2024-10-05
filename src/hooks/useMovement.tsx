@@ -13,8 +13,14 @@ export const useMovement = ({ moveDirection, setMoveDirection }: Props) => {
   const requestRef = useRef(0);
 
   const { tiles, exits, items } = useStore(levelStore);
-  const { player, moveInDirection, canMove, placeKeyIsDown, digKeyIsDown } =
-    useStore(playerStore);
+  const {
+    player,
+    moveInDirection,
+    canMove,
+    placeKeyIsDown,
+    digKeyIsDown,
+    heal,
+  } = useStore(playerStore);
 
   const [shouldDoNextMove, setShouldDoNextMove] = useState(false);
 
@@ -39,20 +45,19 @@ export const useMovement = ({ moveDirection, setMoveDirection }: Props) => {
   const handleMoveInDirection = useCallback(
     (dir: KeyboardDirection) => {
       const cellCheck = neighbouringCells?.[dir];
+      const itemInCell = items.find(
+        (item) => item.x === cellCheck?.x && item.y === cellCheck?.y
+      );
 
-      if (
-        items.find(
-          (item) =>
-            item.x === cellCheck?.x &&
-            item.y === cellCheck?.y &&
-            item.type === "Unobtainable"
-        )
-      ) {
+      if (itemInCell?.type === "Unobtainable") {
         return;
       }
 
       if (cellCheck && canMove && !placeKeyIsDown && !digKeyIsDown) {
         moveInDirection(cellCheck);
+        if (itemInCell?.type === "Hurtful") {
+          heal(-(itemInCell.damage || 0));
+        }
       }
     },
     [canMove, neighbouringCells, moveDirection, items]

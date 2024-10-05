@@ -9,5 +9,5 @@ export type Item = {
   canShovel?: boolean;
   value?: number;
   description?: string;
-  damage?: string
+  damage?: number 
 };
