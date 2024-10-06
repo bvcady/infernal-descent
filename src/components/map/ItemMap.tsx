@@ -7,10 +7,6 @@ import { useEffect } from "react";
 export const ItemMap = () => {
   const { items } = useStore(levelStore);
 
-  useEffect(() => {
-    console.log(items.some((item) => item.name === "skull"));
-  }, [items]);
-
   return (
     <GridWrapper>
       {items.map((item) => (

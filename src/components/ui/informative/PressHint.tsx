@@ -10,6 +10,7 @@ interface Props {
   label?: string;
   icon?: string;
   toggle?: unknown;
+  righty?: boolean;
   style?: CSSProperties;
 }
 
@@ -22,11 +23,14 @@ const Hint = styled(Box)`
 export const PressHint = ({
   letter,
   label,
-  icon,
   toggle,
+  righty,
   style = {},
+  ...props
 }: Props) => {
   const { cellSize } = useStore(windowStore);
+
+  const icon = typeof toggle === "string" ? toggle : props.icon;
 
   return (
     <>
@@ -41,16 +45,20 @@ export const PressHint = ({
           justifyContent={"center"}
           overflow={"visible"}
           sx={{
+            gap: "4px",
             backgroundColor: "white",
             fontFamily: miniFont.style.fontFamily,
             fontSize: "1rem",
+            zIndex: 2,
             ...style,
           }}
         >
-          <span style={{ marginLeft: "2px" }}>{label ?? letter}</span>
+          <span style={{ marginLeft: "2px", order: righty ? 100 : -1 }}>
+            {label ?? letter}
+          </span>
           {icon ? (
             <span className="icon">
-              <DefaultItem customSpriteName={icon} />
+              <DefaultItem customSpriteName={icon} isStatic />
             </span>
           ) : null}
         </Hint>

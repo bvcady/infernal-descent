@@ -2,9 +2,10 @@
 
 import { useGrid } from "@/hooks/useGrid";
 import { useRooms } from "@/hooks/useRooms";
+import { playerStore } from "@/stores/PlayerStore";
 import { windowStore } from "@/stores/WindowStore";
 import { Box } from "@mui/material";
-import { Dispatch } from "react";
+import { Dispatch, useEffect } from "react";
 import { useStore } from "zustand";
 import { ButtonArea } from "../console/ButtonArea";
 import { Console } from "../console/Console";
@@ -24,6 +25,7 @@ import { Viewer } from "../map/Viewer";
 import { WallMap } from "../map/WallMap";
 import { UIOverlay } from "../ui/containers/RoomsOverlay";
 import { WelcomeScreen } from "../ui/home/WelcomeScreen";
+import { Button } from "../ui/interactive/Button";
 
 interface Props {
   seed: string;
@@ -32,7 +34,15 @@ interface Props {
 
 export const RoomMap = ({ seed, setSeed }: Props) => {
   useRooms({ seed });
-  const { cellSize } = useStore(windowStore);
+  const { stats } = useStore(playerStore);
+  const {
+    cellSize,
+    toggleShowStartHint,
+    toggleShowAHint,
+    toggleShowBHint,
+    toggleShowXHint,
+    toggleShowZHint,
+  } = useStore(windowStore);
 
   const grid = useGrid({
     seed,
@@ -42,6 +52,16 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
     const r = (Math.random() + 1).toString(36).substring(4).toLocaleUpperCase();
     setSeed(r);
   };
+
+  useEffect(() => {
+    if (stats.health <= 0) {
+      toggleShowStartHint(true);
+      toggleShowAHint("");
+      toggleShowBHint(false);
+      toggleShowZHint(false);
+      toggleShowXHint(false);
+    }
+  }, [stats.health]);
 
   const cells = grid?.cells || [];
   const start = grid?.start;
@@ -54,9 +74,11 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
         width={11 * cellSize}
         height={"100%"}
         display={"flex"}
+        flexDirection={"column"}
         justifyContent={"center"}
         alignItems={"center"}
       >
+        <Button label="INFO" callback={() => {}} />
         <Console p={cellSize / 2}>
           <ScreenPadding w={cellSize * 10}>
             <Box
@@ -65,7 +87,7 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
               sx={{ inset: 0, zIndex: -1 }}
             />
             <Viewer>
-              {seed ? (
+              {seed && stats.health > 0 ? (
                 <CombinedMap>
                   <BottomMap
                     rockEdges={[...cells].filter(
@@ -82,7 +104,9 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
               ) : null}
               <UIOverlay />
             </Viewer>
-            {!seed ? <WelcomeScreen /> : null}
+            {!seed || stats.health <= 0 ? (
+              <WelcomeScreen dead={stats.health <= 0} />
+            ) : null}
           </ScreenPadding>
 
           <ButtonArea>

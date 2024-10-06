@@ -1,5 +1,6 @@
 import { levelStore } from "@/stores/LevelStore";
 import { playerStore } from "@/stores/PlayerStore";
+import { runStore } from "@/stores/RunStore";
 import { windowStore } from "@/stores/WindowStore";
 import { Item } from "@/types/Item";
 import { Box, styled } from "@mui/material";
@@ -41,10 +42,11 @@ export const DefaultItem = ({
   const itemRef = useRef<HTMLDivElement>();
   const requestRef = useRef(0);
 
-  const { cellSize, toggleShowAHint } = useStore(windowStore);
+  const { cellSize, toggleShowAHint, showAHint } = useStore(windowStore);
   const { player, inventory, addItem, heal, updateShards } =
     useStore(playerStore);
   const { setItems, items } = useStore(levelStore);
+  const { currentRoom, setCurrentRoom } = useStore(runStore);
 
   const bgPath = `url("../../images/Monochrome/Tilemap/${
     customSpriteName || item?.name || "key"
@@ -59,10 +61,21 @@ export const DefaultItem = ({
     if (
       !inventory.items.find(
         (i) => i.name === item?.name && item?.type === "Obtainable"
-      )
-    )
-      toggleShowAHint(!!playerIsOn);
-  }, [playerIsOn]);
+      ) &&
+      player &&
+      player?.x >= 0 &&
+      player?.y >= 0 &&
+      (item?.type === "Obtainable" || item?.type === "Stat")
+    ) {
+      const aHint = playerIsOn ? item?.name || "" : "";
+      if (aHint) {
+        toggleShowAHint(aHint);
+      }
+      if (!items.some((item) => item.x === player.x && item.y === player.y)) {
+        toggleShowAHint("");
+      }
+    }
+  }, [playerIsOn, inventory, items]);
 
   const animate = (time: number) => {
     const speed = 1500;
@@ -90,18 +103,21 @@ export const DefaultItem = ({
   const handleGrab = useCallback(
     (e: KeyboardEvent) => {
       if (playerIsOn && e.key === "a" && item && !isStatic) {
-        toggleShowAHint(false);
+        toggleShowAHint("");
         if (item.type === "Obtainable") {
           addItem(item);
         } else if (item.type === "Stat") {
           if (item.name === "heart_whole") {
             heal(2);
+            setCurrentRoom({ ...currentRoom!, health_gained: true });
           }
           if (item.name === "heart_half") {
             heal(1);
+            setCurrentRoom({ ...currentRoom!, health_gained: true });
           }
           if (item.name === "heart_temporary") {
             heal(2, true);
+            setCurrentRoom({ ...currentRoom!, health_gained: true });
           }
           if (item.name === "shard_one") {
             updateShards(1);
@@ -136,6 +152,7 @@ export const DefaultItem = ({
         gridRowEnd: "span 1",
         display: "grid",
         placeItems: "center",
+        overflow: "visible",
         ...itemStyle,
       }}
     >
@@ -146,6 +163,10 @@ export const DefaultItem = ({
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
           backgroundImage: bgPath,
+          transform:
+            item?.name === "lava"
+              ? `rotate(${Math.floor(Math.random() * 4) * 90}deg)`
+              : undefined,
           ...spriteStyle,
         }}
       />

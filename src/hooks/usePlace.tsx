@@ -19,6 +19,32 @@ export const usePlace = () => {
     setPlaceKeyIsDown,
   } = useStore(playerStore);
 
+  const { toggleShowXHint, showXHint } = useStore(windowStore);
+
+  useEffect(() => {
+    if (!player) return;
+    const top =
+      tiles.find((t) => t.x === player?.x && t.y === player?.y - 1) &&
+      !walls.find((t) => t.x === player?.x && t.y === player?.y - 1);
+    const bottom =
+      tiles.find((t) => t.x === player?.x && t.y === player?.y + 1) &&
+      !walls.find((t) => t.x === player?.x && t.y === player?.y + 1);
+    const left =
+      tiles.find((t) => t.x === player?.x - 1 && t.y === player?.y) &&
+      !walls.find((t) => t.x === player?.x - 1 && t.y === player?.y);
+    const right =
+      tiles.find((t) => t.x === player?.x + 1 && t.y === player?.y) &&
+      !walls.find((t) => t.x === player?.x + 1 && t.y === player?.y);
+
+    if ((top || bottom || left || right) && inventory.tiles.length) {
+      if (!showXHint) toggleShowXHint(true);
+    } else {
+      if (showXHint) {
+        toggleShowXHint(false);
+      }
+    }
+  }, [player, inventory, tiles, walls]);
+
   const handleKeyUp = useCallback(
     (e: KeyboardEvent) => {
       if (digKeyIsDown) {

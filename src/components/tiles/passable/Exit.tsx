@@ -6,6 +6,9 @@ import { Room } from "@/types/Room";
 import { act, useEffect, useMemo } from "react";
 import { useStore } from "zustand";
 import { DefaultTile } from "../default/DefaultTile";
+import { Box } from "@mui/material";
+import { createPortal } from "react-dom";
+import { ExitMenu } from "@/components/ui/interactive/ExitMenu";
 
 interface Props {
   cell?: Cell;
@@ -16,7 +19,7 @@ const d = 17;
 
 export const Exit = ({ cell, exit }: Props) => {
   const { player } = useStore(playerStore);
-  const { toggleShowAHint } = useStore(windowStore);
+  const { toggleShowAHint, showAHint } = useStore(windowStore);
   const { rooms } = useStore(runStore);
   const actualExit = rooms.find((r) => r.id === exit?.id);
 
@@ -25,29 +28,26 @@ export const Exit = ({ cell, exit }: Props) => {
   }, [player]);
 
   useEffect(() => {
-    toggleShowAHint(playerIsOn);
-  }, [playerIsOn]);
-
-  useEffect(() => {
-    if (actualExit?.entryRequirement !== "to do") {
-      if (actualExit?.entryRequirement?.requirements) {
-        console.log(actualExit?.entryRequirement?.requirements);
-      }
-    }
+    toggleShowAHint(playerIsOn ? "exit" : "");
   }, [playerIsOn]);
 
   return (
-    <DefaultTile
-      cell={cell}
-      customPath={
-        actualExit?.entryRequirement &&
-        actualExit?.entryRequirement !== "to do" &&
-        !actualExit.isVisited
-          ? "../../images/Monochrome/Tilemap/no_access.png"
-          : "../../images/Monochrome/Tilemap/ok.png"
-      }
-      tileNumber={16 + 4 * d}
-      noBackground
-    />
+    <>
+      <DefaultTile
+        cell={cell}
+        customPath={
+          actualExit?.entryRequirement &&
+          actualExit?.entryRequirement !== "to do" &&
+          !actualExit.isVisited
+            ? "../../images/Monochrome/Tilemap/no_access.png"
+            : "../../images/Monochrome/Tilemap/ok.png"
+        }
+        tileNumber={16 + 4 * d}
+        noBackground
+      />
+      {actualExit && !actualExit?.isVisited && playerIsOn ? (
+        <ExitMenu exit={actualExit} />
+      ) : null}
+    </>
   );
 };

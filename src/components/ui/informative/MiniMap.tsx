@@ -14,26 +14,6 @@ export const MiniMap = () => {
   const { cellSize, toggleShowBHint } = useStore(windowStore);
   const { setCanMove, digKeyIsDown, placeKeyIsDown } = useStore(playerStore);
 
-  const undiscoveredNeighbours = [...rooms].filter((r) => {
-    if (r.isVisited) {
-      return false;
-    }
-    const { top, left, right, bottom } = currentRoom?.neighbours || {};
-    if (top?.x === r.x && top?.y === r.y) {
-      return true;
-    }
-    if (bottom?.x === r.x && bottom?.y === r.y) {
-      return true;
-    }
-    if (left?.x === r.x && left?.y === r.y) {
-      return true;
-    }
-    if (right?.x === r.x && right?.y === r.y) {
-      return true;
-    }
-    return false;
-  });
-
   const handleKeyUp = (e: KeyboardEvent) => {
     if (e.repeat || digKeyIsDown || placeKeyIsDown) {
       return;
@@ -63,8 +43,10 @@ export const MiniMap = () => {
   }, []);
 
   useEffect(() => {
-    setCanMove(!showMap);
-    toggleShowBHint(!showMap);
+    if (currentRoom) {
+      setCanMove(!showMap);
+      toggleShowBHint(!showMap);
+    }
   }, [showMap]);
 
   return (
@@ -86,42 +68,40 @@ export const MiniMap = () => {
             margin: "auto",
           }}
         >
-          {rooms
-            // ?.filter((r) => r.isVisited)
-            ?.map((room) => {
-              const backgroundString = [
-                // currentRoom?.x === room.x && currentRoom?.y === room.y
-                //   ? `url("../../images/Monochrome/Tilemap/new_tile${
-                //       7 + 7 * d + 1
-                //     }.png")`
-                //   : "",
-                room?.isBossRoom
-                  ? `url("../../images/Monochrome/Tilemap/threat3.png")`
-                  : "",
-                `url("../../images/Monochrome/Tilemap/new_tile1.png")`,
-              ]
-                .filter((s) => !!s)
-                .join(", ");
+          {rooms?.map((room) => {
+            const backgroundString = [
+              // currentRoom?.x === room.x && currentRoom?.y === room.y
+              //   ? `url("../../images/Monochrome/Tilemap/new_tile${
+              //       7 + 7 * d + 1
+              //     }.png")`
+              //   : "",
+              room?.isBossRoom
+                ? `url("../../images/Monochrome/Tilemap/threat3.png")`
+                : "",
+              `url("../../images/Monochrome/Tilemap/new_tile1.png")`,
+            ]
+              .filter((s) => !!s)
+              .join(", ");
 
-              return (
-                <Box
-                  key={`mini - room - ${room.x} - ${room.y}`}
-                  // bgcolor={
-                  //   currentRoom?.x === room.x && currentRoom.y === room.y
-                  //     ? "grey"
-                  //     : "white"
-                  // }
-                  gridColumn={`${room.x + 1} / span 1`}
-                  gridRow={`${room.y + 1} / span 1`}
-                  width={cellSize / 2}
-                  height={cellSize / 2}
-                  sx={{
-                    backgroundSize: "contain",
-                    backgroundImage: backgroundString,
-                  }}
-                />
-              );
-            })}
+            return (
+              <Box
+                key={`mini - room - ${room.x} - ${room.y}`}
+                // bgcolor={
+                //   currentRoom?.x === room.x && currentRoom.y === room.y
+                //     ? "grey"
+                //     : "white"
+                // }
+                gridColumn={`${room.x + 1} / span 1`}
+                gridRow={`${room.y + 1} / span 1`}
+                width={cellSize / 2}
+                height={cellSize / 2}
+                sx={{
+                  backgroundSize: "contain",
+                  backgroundImage: backgroundString,
+                }}
+              />
+            );
+          })}
           <Box
             className="player"
             width={cellSize / 2.5}
@@ -142,25 +122,6 @@ export const MiniMap = () => {
               // }.png")`,
             }}
           />
-          {/* {undiscoveredNeighbours?.map((n) => (
-            <Box
-              key={`mini - room - ${n.x} - ${n.y}`}
-              // bgcolor={
-              //   currentRoom?.x === room.x && currentRoom.y === room.y
-              //     ? "grey"
-              //     : "white"
-              // }
-              gridColumn={`${n.x + 1} / span 1`}
-              gridRow={`${n.y + 1} / span 1`}
-              width={cellSize / 4}
-              height={cellSize / 4}
-              sx={{
-                backgroundSize: "contain",
-                backgroundImage:
-                  'url("../../images/Monochrome/Tilemap/new_tile1.png")',
-              }}
-            />
-          ))} */}
         </GridWrapper>
       ) : null}
     </>

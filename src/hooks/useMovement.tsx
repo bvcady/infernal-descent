@@ -1,5 +1,6 @@
 import { levelStore } from "@/stores/LevelStore";
 import { playerStore } from "@/stores/PlayerStore";
+import { runStore } from "@/stores/RunStore";
 import { KeyboardDirection } from "@/types/KeyboardDirections";
 import { Dispatch, useCallback, useEffect, useRef, useState } from "react";
 import { useStore } from "zustand";
@@ -13,6 +14,7 @@ export const useMovement = ({ moveDirection, setMoveDirection }: Props) => {
   const requestRef = useRef(0);
 
   const { tiles, exits, items } = useStore(levelStore);
+  const { currentRoom, setCurrentRoom } = useStore(runStore);
   const {
     player,
     moveInDirection,
@@ -57,6 +59,7 @@ export const useMovement = ({ moveDirection, setMoveDirection }: Props) => {
         moveInDirection(cellCheck);
         if (itemInCell?.type === "Hurtful") {
           heal(-(itemInCell.damage || 0));
+          setCurrentRoom({ ...currentRoom!, health_lost: true });
         }
       }
     },

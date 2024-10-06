@@ -170,6 +170,6 @@ export const playerStore = createStore<PlayerStore>()((set) => ({
 
   updateShards: (amount: number) => {
     const stats = playerStore.getState().stats;
-    return set({ stats: { ...stats, shards: stats.shards + amount } });
+    return set({ stats: { ...stats, shards: Math.max(stats.shards + amount, 0) } });
   },
 }));

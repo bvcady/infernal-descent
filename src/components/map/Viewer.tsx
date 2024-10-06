@@ -29,6 +29,7 @@ export const Viewer = ({ children }: Props) => {
 
   return (
     <StyledViewer
+      id="viewer"
       w={cellSize * 10}
       mb={dimensions.width < dimensions.height ? "auto" : undefined}
     >

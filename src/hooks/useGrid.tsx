@@ -559,7 +559,7 @@ export const useGrid = ({ seed }: Props) => {
     // then set the cells to the wall and floor cells from the storage (no need to include n-values and isComplete)
 
     if (currentRoom) resetGrid();
-  }, [seed, currentRoom]);
+  }, [seed, currentRoom?.id]);
 
   useEffect(() => {
     setWalls(currentRoom?.walls ?? [...cells].filter((c) => c.isWall));

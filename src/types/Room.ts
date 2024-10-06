@@ -17,10 +17,12 @@ export type Room = {
     right?: Room;
   };
   tbdNeighbours: (
-    | { requirements?: RoomRequirement[]; forcedEntry?: RoomRequirement }
+    | { requirements?: RoomRequirement; forcedEntry?: RoomRequirement }
     | "to do"
   )[];
   isBossRoom?: boolean;
+  health_gained?: boolean;
+  health_lost?: boolean;
   tiles?: Cell[];
   walls?: Cell[];
   items?: Item[];
@@ -32,7 +34,7 @@ export type Room = {
   emptiness?: number;
   entryRequirement?:
     | {
-        requirements?: RoomRequirement[];
+        requirements?: RoomRequirement;
         forcedEntry?: RoomRequirement;
       }
     | "to do";

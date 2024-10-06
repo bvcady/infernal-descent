@@ -33,11 +33,30 @@ export const useRooms = ({ seed }: Props) => {
       r
     );
 
+    const expertRoomSituations = shuffle(
+      [
+        ...getAllRoomOptions(r).expertRoomSituations,
+        ...getAllRoomOptions(r).introRoomSituations.map((r) => {
+          return {
+            ...r,
+            nextRoomRequirement: {
+              ...r.nextRoomRequirement,
+              requirements: {
+                ...r.nextRoomRequirement?.requirements,
+                hidden: true,
+              },
+            },
+          };
+        }),
+      ],
+      r
+    );
+
     let introRoomsPicked = 0;
 
     const targetTotal = Math.floor(scale([0, 1], [15, 20])(r.next()));
 
-    const nBossRooms = Math.floor(targetTotal / 2 / 4);
+    const nBossRooms = 1;
 
     const roomGrid = new Array(h)
       .fill("")
@@ -168,7 +187,7 @@ export const useRooms = ({ seed }: Props) => {
           nextRoom.itemsToPlace = rs.items || [];
 
           nextRoom.size = Math.floor(scale([0, 1], [1, 3])(r.next()));
-          nextRoom.density = scale([0, 3], [4, 25])(r.next() * nextRoom.size);
+          nextRoom.density = scale([0, 3], [4, 20])(r.next() * nextRoom.size);
           nextRoom.emptiness = Math.floor(
             scale([0, targetTotal], [1, 5])(r.next() * targetTotal)
           );
@@ -181,11 +200,20 @@ export const useRooms = ({ seed }: Props) => {
           nextRoom.tbdNeighbours = randDirs;
         } else {
           nextRoom.size = Math.floor(scale([0, 1], [1, 4])(r.next()));
+          introRoomsPicked = 0;
+          const rs = [
+            ...expertRoomSituations.slice(-(introRoomsPicked + 1)),
+          ]?.[0];
+
+          nextRoom.itemsToPlace = r.next() < 0.2 ? rs.items || [] : [];
+
+          introRoomsPicked += 1;
 
           const amount = () =>
             Math.floor(scale([0, 1], [0, nextRoom.size * 4])(r.next()));
 
           nextRoom.itemsToPlace = [
+            ...nextRoom.itemsToPlace,
             ...(r.next() < 0.05 ? [itemChest] : []),
             ...(r.next() < 0.05 ? [itemKey] : []),
             ...(r.next() < 0.05 ? [itemHeartTemporary] : []),
@@ -204,14 +232,16 @@ export const useRooms = ({ seed }: Props) => {
           //TODO: Random assignment of room requirement
           //TODO: Add two - three 'boss' rooms
           nextRoom.emptiness = Math.floor(
-            scale([0, targetTotal], [1, 40])(r.next() * targetTotal)
+            scale([0, targetTotal], [1, 25])(r.next() * targetTotal)
           );
           nextRoom.density = scale(
             [0, targetTotal],
-            [1, 25]
+            [1, 20]
           )(r.next() * targetTotal);
 
           const randDirs = new Array(nextRoom.maxExits - 1).fill("to do");
+          randDirs[0] = rs.nextRoomRequirement;
+
           nextRoom.tbdNeighbours = randDirs;
 
           const distanceFromBeginning = Math.sqrt(
@@ -219,14 +249,16 @@ export const useRooms = ({ seed }: Props) => {
               Math.pow(nextRoom.y - totalRooms[0].y, 2)
           );
 
-          let mandatory = totalRooms.length > targetTotal;
+          let mandatory =
+            totalRooms.length > targetTotal &&
+            totalRooms.filter((r) => r.isBossRoom).length < nBossRooms;
+
           if (
             mandatory ||
             (nextRoom.size >= 3 &&
               totalRooms.filter((r) => r.isBossRoom).length < nBossRooms &&
               distanceFromBeginning > 5)
           ) {
-            console.log("Adding bossroom");
             if (mandatory) {
               nextRoom.size = 3;
             }
@@ -234,19 +266,20 @@ export const useRooms = ({ seed }: Props) => {
             nextRoom.isBossRoom = r.next() > 0.33;
 
             nextRoom.entryRequirement = {
-              requirements: [{ name: "skull", type: "Item", amount: 1 }],
-              forcedEntry: {
-                name: "heart",
-                type: "Stat",
-                amount: 3,
-                reduce: 3,
-                lessThan: true,
+              requirements: {
+                name: "skull",
+                type: "Item",
+                amount: 1,
+                pretty: "Intimidating Skull",
               },
             };
           }
           mandatory =
             totalRooms.length > targetTotal &&
-            totalRooms.some((r) => r.isBossRoom);
+            totalRooms.some((r) => r.isBossRoom) &&
+            !totalRooms.some((r) =>
+              r.itemsToPlace.some((i) => i.name === "skull")
+            );
           if (
             mandatory ||
             (!nextRoom.isBossRoom &&
@@ -256,7 +289,6 @@ export const useRooms = ({ seed }: Props) => {
               distanceFromBeginning > 3 &&
               r.next() < 0.25)
           ) {
-            console.log("Adding skull to the items of this room");
             nextRoom.itemsToPlace?.push({
               name: "skull",
               id: "",
@@ -314,9 +346,10 @@ export const useRooms = ({ seed }: Props) => {
 
       if (
         totalRooms.length >= targetTotal &&
-        totalRooms.filter(
-          (r) => r.isBossRoom && r.itemsToPlace.some((i) => i.name === "skull")
-        ).length >= 2
+        totalRooms.filter((r) => r.isBossRoom).length === nBossRooms &&
+        totalRooms.filter((r) =>
+          r.itemsToPlace?.some((i) => i.name === "skull")
+        ).length >= nBossRooms
       ) {
         return [...totalRooms];
       }

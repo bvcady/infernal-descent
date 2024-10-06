@@ -1,12 +1,9 @@
 import { DefaultItem } from "@/components/items/default/DefaultItem";
-import { Shard } from "@/components/items/Shard";
-import { Shovel } from "@/components/items/Shovel";
 import { FloorTile } from "@/components/tiles/passable/FloorTile";
 import { playerStore } from "@/stores/PlayerStore";
 import { windowStore } from "@/stores/WindowStore";
 import { miniFont } from "@/utils/defaultValues";
 import { Box, styled } from "@mui/material";
-import { minify } from "next/dist/build/swc";
 import { useStore } from "zustand";
 
 const InventoryWrapper = styled(Box)`
@@ -72,7 +69,11 @@ export const Inventory = () => {
             </Box>
           </Box>
         </InventoryWrapper>
-        <InventoryWrapper padding={`${cellSize / 10}px`} height={cellSize / 2}>
+        <InventoryWrapper
+          padding={`${cellSize / 10}px`}
+          height={cellSize / 2}
+          justifyContent={"center"}
+        >
           {new Array(8).fill("").map((_, index) => {
             const tile = inventory?.tiles.find((t) => t?.n === index);
             if (!tile) {
@@ -95,7 +96,7 @@ export const Inventory = () => {
             }
             return (
               <Box
-                key={`${tile.tile.x} - ${tile.tile.y}`}
+                key={`${tile.tile.x} - ${tile.tile.y} - ${tile.n}`}
                 sx={{
                   position: "relative",
                   width: `${cellSize}px`,

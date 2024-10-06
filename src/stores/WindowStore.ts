@@ -5,7 +5,7 @@ type WindowStoreState = {
   cellSize: number;
   showXHint: boolean;
   showZHint: boolean;
-  showAHint: boolean;
+  showAHint: string;
   showBHint: boolean;
   showStartHint: boolean;
   volume: number;
@@ -33,8 +33,8 @@ export const windowStore = createStore<WindowStore>()((set) => ({
   cellSize: 16,
   showXHint: false,
   showZHint: false,
-  showAHint: false,
-  showBHint: true,
+  showAHint: '',
+  showBHint: false,
   showStartHint: false,
   showSelectHint: false,
   volume: 0.5,
@@ -56,7 +56,7 @@ export const windowStore = createStore<WindowStore>()((set) => ({
   toggleShowZHint: (next: boolean) => {
     return set({ showZHint: next });
   },
-  toggleShowAHint: (next: boolean) => {
+  toggleShowAHint: (next: string) => {
     return set({ showAHint: next });
   },
   toggleShowBHint: (next: boolean) => {

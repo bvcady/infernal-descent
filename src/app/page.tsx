@@ -38,9 +38,9 @@ export default function Home() {
       play();
       setPlayer(undefined);
       resetInventory();
+      toggleShowBHint(true);
     }
     toggleShowStartHint(!seed);
-    toggleShowBHint(!!seed);
   }, [seed]);
 
   return (

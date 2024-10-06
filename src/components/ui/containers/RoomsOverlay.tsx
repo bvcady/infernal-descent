@@ -4,14 +4,6 @@ import { useStore } from "zustand";
 import { MiniMap } from "../informative/MiniMap";
 import { PressHint } from "../informative/PressHint";
 import { Inventory } from "./inventory/Inventory";
-import { Shovel } from "@/components/items/Shovel";
-import { Map } from "@/components/items/Map";
-// import { Metronome } from "../informative/Metronome";
-
-// const RoomsWrapper = styled(Box)`
-//   color: white;
-//   font-family: ${miniFont.style.fontFamily};
-// `;
 
 export const UIOverlay = () => {
   const {
@@ -28,7 +20,7 @@ export const UIOverlay = () => {
       width={"100%"}
       height={"100%"}
       position={"absolute"}
-      sx={{ inset: 0 }}
+      sx={{ inset: 0, pointerEvents: "none" }}
       display={"flex"}
       gap={"1rem"}
     >
@@ -39,6 +31,7 @@ export const UIOverlay = () => {
         width={"50%"}
         bottom={0}
         sx={{
+          pointerEvents: "none",
           zIndex: 2,
           backgroundColor: "rgba(1, 1, 1, 0.7)",
           backdropFilter: "blur(4px)",
@@ -56,6 +49,7 @@ export const UIOverlay = () => {
         width={"50%"}
         bottom={0}
         sx={{
+          pointerEvents: "none",
           zIndex: 2,
           backgroundColor: "rgba(1, 1, 1, 0.7)",
           backdropFilter: "blur(4px)",
@@ -69,13 +63,10 @@ export const UIOverlay = () => {
       <Inventory />
       <MiniMap />
       <Box
-        sx={{ boxSizing: "border-box" }}
+        id={"ui-screen"}
+        sx={{ boxSizing: "border-box", inset: 0 }}
         position={"absolute"}
         width={"100%"}
-        // height={cellSize}
-        bottom={0}
-        left={0}
-        right={0}
         padding={`${cellSize / 2}px`}
         display={"flex"}
         justifyContent={"flex-end"}
@@ -83,16 +74,32 @@ export const UIOverlay = () => {
         overflow={"visible"}
         gap={`${cellSize / 5}px`}
       >
+        <Box
+          mr="auto"
+          mt="auto"
+          display={"flex"}
+          flexDirection={"column"}
+          gap="4px"
+        >
+          <PressHint letter="A" toggle={showAHint} />
+          <PressHint letter="B" icon={"map"} toggle={showBHint} />
+        </Box>
         <PressHint
-          letter="B"
-          icon={"map"}
-          toggle={showBHint}
-          style={{ marginRight: "auto" }}
+          label="[S]TART"
+          letter="S"
+          toggle={showStartHint}
+          style={{ marginTop: "auto" }}
         />
-        <PressHint label="[S]TART" letter="S" toggle={showStartHint} />
-        <PressHint letter="A" toggle={showAHint} />
-        <PressHint letter="Z" icon={"shovel"} toggle={showZHint} />
-        <PressHint letter="X" toggle={showXHint} />
+        <Box
+          ml={"auto"}
+          mt={"auto"}
+          display={"flex"}
+          flexDirection={"column"}
+          gap="4px"
+        >
+          <PressHint letter="X" icon={"place"} toggle={showXHint} righty />
+          <PressHint letter="Z" icon={"shovel"} toggle={showZHint} righty />
+        </Box>
       </Box>
     </Box>
   );

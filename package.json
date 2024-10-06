@@ -24,6 +24,7 @@
     "pathfinding": "^0.4.18",
     "react": "^18",
     "react-dom": "^18",
+    "react-type-animation": "^3.2.0",
     "simplex-noise": "^4.0.3",
     "use-sound": "^4.0.3",
     "zustand": "^5.0.0-rc.2"
