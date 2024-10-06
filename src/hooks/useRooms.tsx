@@ -262,11 +262,11 @@ export const useRooms = ({ seed }: Props) => {
               id: "",
               x: -1,
               y: -1,
-              type: "Obtainable",
+              type: "Unobtainable",
               rarity: 10,
               canShovel: true,
               description:
-                "A skull is a requirement to open very specific rooms.",
+                "This ancient artifact gives off a mysterious aura. It seems to have influence on the seismic factors of this volcano.",
               weight: 0,
               value: 100,
               damage: 1,

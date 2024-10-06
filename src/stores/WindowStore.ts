@@ -22,7 +22,8 @@ type WindowStoreActions = {
   toggleShowStartHint: (
     nextShowHint: WindowStoreState["showStartHint"]
   ) => void;
-
+  beat: number;
+  setBeat: (b: number) => void;
 };
 
 type WindowStore = WindowStoreState & WindowStoreActions;
@@ -68,4 +69,8 @@ export const windowStore = createStore<WindowStore>()((set) => ({
   setCellSize: (cellSize) => {
     set({ cellSize });
   },
+  beat: 0, 
+  setBeat: (n: number) => {
+    set({beat: n})
+  }
 }));

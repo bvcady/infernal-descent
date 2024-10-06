@@ -210,6 +210,16 @@ export const useGrid = ({ seed }: Props) => {
       isWall: false,
     };
 
+    const skullItem = currentRoom.itemsToPlace.find((i) => i.name === "skull");
+    if (skullItem) {
+      currentItems.push({
+        ...skullItem,
+        id: crypto.randomUUID(),
+        x: poiCell.x,
+        y: poiCell.y,
+      });
+    }
+
     const findPath = (startCell: Cell, route: Graph, endCell: Cell) => {
       return route.path(
         `${startCell.x} - ${startCell.y}`,
@@ -530,12 +540,13 @@ export const useGrid = ({ seed }: Props) => {
       [...itemPlacementOptions].forEach((cell, index) => {
         const item = currentRoom.itemsToPlace[index];
 
-        currentItems.push({
-          ...item,
-          x: cell.x,
-          y: cell.y,
-          id: crypto.randomUUID(),
-        });
+        if (item.name !== "skull")
+          currentItems.push({
+            ...item,
+            x: cell.x,
+            y: cell.y,
+            id: crypto.randomUUID(),
+          });
       });
     }
 

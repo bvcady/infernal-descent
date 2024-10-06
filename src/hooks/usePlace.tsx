@@ -1,17 +1,12 @@
 import { levelStore } from "@/stores/LevelStore";
 import { playerStore } from "@/stores/PlayerStore";
-import { Cell } from "@/types/Cell";
-import { Item } from "@/types/Item";
+import { windowStore } from "@/stores/WindowStore";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { useStore } from "zustand";
 
 export const usePlace = () => {
-  const [selectedTile, setSelectedTiles] = useState<{
-    tile: Cell;
-    item: Item;
-  }>();
-
+  const { beat } = useStore(windowStore);
   const { setItems, items, setTiles, tiles, walls } = useStore(levelStore);
   const {
     player,
@@ -50,31 +45,30 @@ export const usePlace = () => {
 
       if (e.key === "x" || e.key === "a") {
         if (futureTile) {
-          if (futureTile?.tile) {
+          const removedTile = removeTile(Math.floor(beat / 2));
+          if (removedTile) {
             setTiles([
               ...tiles,
               {
-                ...futureTile.tile,
+                ...removedTile.tile,
                 x: futureTile.position.x,
                 y: futureTile.position.y,
               },
             ]);
-          }
 
-          if (futureTile?.item) {
-            setItems([
-              ...items,
-              {
-                ...futureTile.item,
-                x: futureTile.position.x,
-                y: futureTile.position.y,
-              },
-            ]);
+            if (removedTile?.item) {
+              setItems([
+                ...items,
+                {
+                  ...removedTile.item,
+                  x: futureTile.position.x,
+                  y: futureTile.position.y,
+                },
+              ]);
+            }
+            setFutureTile(undefined);
+            return setPlaceKeyIsDown(false);
           }
-
-          removeTile(inventory.tiles[0]);
-          setFutureTile(undefined);
-          return setPlaceKeyIsDown(false);
         }
         return setPlaceKeyIsDown(false);
       }
@@ -86,8 +80,6 @@ export const usePlace = () => {
         if (isPossible) {
           setFutureTile({
             position: { x, y: y - 1 },
-            tile: inventory?.tiles[0].tile,
-            item: inventory?.tiles[0].item,
           });
         } else {
           setFutureTile(undefined);
@@ -100,8 +92,6 @@ export const usePlace = () => {
         if (isPossible) {
           setFutureTile({
             position: { x, y: y + 1 },
-            tile: inventory?.tiles[0].tile,
-            item: inventory?.tiles[0].item,
           });
         } else {
           setFutureTile(undefined);
@@ -114,8 +104,6 @@ export const usePlace = () => {
         if (isPossible) {
           setFutureTile({
             position: { x: x - 1, y },
-            tile: inventory?.tiles[0].tile,
-            item: inventory?.tiles[0].item,
           });
         } else {
           setFutureTile(undefined);
@@ -128,8 +116,6 @@ export const usePlace = () => {
         if (isPossible) {
           setFutureTile({
             position: { x: x + 1, y },
-            tile: inventory?.tiles[0].tile,
-            item: inventory?.tiles[0].item,
           });
         } else {
           setFutureTile(undefined);
@@ -149,6 +135,7 @@ export const usePlace = () => {
       setTiles,
       playerStore,
       removeTile,
+      beat,
     ]
   );
 

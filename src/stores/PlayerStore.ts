@@ -7,7 +7,7 @@ type PlayerStoreState = {
   player?: Cell;
   inventory: {
     items: Item[];
-    tiles: { tile: Cell; item?: Item }[];
+    tiles: ({ tile: Cell; item?: Item; n: number } | undefined)[];
   };
   canMove: boolean;
   stats: {
@@ -17,8 +17,6 @@ type PlayerStoreState = {
   };
   futureTile?: {
     position: { x: number; y: number };
-    tile?: Cell;
-    item?: Item;
   };
   digKeyIsDown: boolean;
   placeKeyIsDown: boolean;
@@ -33,8 +31,10 @@ type PlayerStoreActions = {
   setDigKeyIsDown: (input: boolean) => void;
   removeItem: (item: Item) => void;
   addItem: (item: Item) => void;
-  addTile: (next: { tile: Cell; item?: Item }) => void;
-  removeTile: (next: { tile: Cell; item?: Item }) => void;
+  addTile: (next: { tile: Cell; item?: Item; n?: number }) => boolean;
+  removeTile: (
+    n: number
+  ) => { tile: Cell; item?: Item; n?: number } | undefined;
   setPlayer: (nextPosition: PlayerStoreState["player"]) => void;
   moveInDirection: (nextCell: Cell) => void;
   setCanMove: (check: boolean) => void;
@@ -64,7 +64,7 @@ export const playerStore = createStore<PlayerStore>()((set) => ({
   },
   inventory: {
     items: [],
-    tiles: [],
+    tiles: new Array(8).fill(undefined),
   },
   player: undefined,
   setPlayer: (player) => {
@@ -102,20 +102,23 @@ export const playerStore = createStore<PlayerStore>()((set) => ({
       },
     });
   },
-  addTile: ({
-    tile,
-    item,
-  }: {
-    tile: Cell;
-    item?: Item;
-  }) => {
+  addTile: ({ tile, item, n }: { tile: Cell; item?: Item; n?: number }) => {
+    if (n === undefined) {
+      return false;
+    }
     const prevInventory = playerStore.getState().inventory;
+
+    if (prevInventory.tiles.some((t) => t?.n === n)) {
+      return false;
+    }
+
     set({
       inventory: {
         ...prevInventory,
-        tiles: [...prevInventory.tiles, { tile, item }],
+        tiles: [...prevInventory.tiles, { tile, item, n }],
       },
     });
+    return true;
   },
   setPlaceKeyIsDown: (input: boolean) => {
     return set({ placeKeyIsDown: input });
@@ -123,36 +126,50 @@ export const playerStore = createStore<PlayerStore>()((set) => ({
   setDigKeyIsDown: (input: boolean) => {
     return set({ digKeyIsDown: input });
   },
-  removeTile: (tile: { tile: Cell; item?: Item }) => {
-    const prevInventory = playerStore.getState().inventory;
-    set({
-      inventory: {
-        ...prevInventory,
-        tiles: prevInventory?.tiles?.filter(
-          (t) => !(tile.tile.x === t.tile.x && tile.tile.y === t.tile.y)
-        ),
-      },
+  removeTile: (n: number) => {
+    const previousTile = playerStore
+      .getState()
+      .inventory.tiles.find((t) => t?.n === n) as
+      | { tile: Cell; item?: Item; n: number }
+      | undefined;
+
+    set((state) => {
+      const prevInventory = state.inventory;
+      if (!prevInventory.tiles.find((t) => t?.n === n)) {
+        return state;
+      }
+      return {
+        inventory: {
+          ...prevInventory,
+          tiles: prevInventory?.tiles?.filter((t) => t?.n !== n),
+        },
+      };
     });
+
+    return previousTile;
   },
   setCanMove: (check: boolean) => {
     set({ canMove: check });
   },
   resetInventory: () => {
     set({ inventory: { items: [], tiles: [] } });
+    set({ stats: { health: 6, shards: 5, steps: 0 } });
   },
   heal: (amount: number, over?: boolean) => {
     const stats = playerStore.getState().stats;
-    const newVal = over ? stats.health + amount : Math.min(stats.health + amount, 6);
+    const newVal = over
+      ? stats.health + amount
+      : Math.min(stats.health + amount, 6);
 
-    return set({stats: {...stats, health: newVal}})
+    return set({ stats: { ...stats, health: newVal } });
   },
   addStep: (amount: number) => {
     const stats = playerStore.getState().stats;
-    return set({stats: {...stats, steps: stats.steps + amount}})
+    return set({ stats: { ...stats, steps: stats.steps + amount } });
   },
-  
-  updateShards:(amount: number)=> {
+
+  updateShards: (amount: number) => {
     const stats = playerStore.getState().stats;
-    return set({stats: {...stats, shards: stats.shards + amount}})
-  }
+    return set({ stats: { ...stats, shards: stats.shards + amount } });
+  },
 }));

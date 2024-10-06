@@ -1,6 +1,7 @@
 "use client";
 
 import { RoomMap } from "@/components/level/RoomMap";
+import { Metronome } from "@/components/ui/informative/Metronome";
 import { usePlaySound } from "@/hooks/usePlaySound";
 import { useResize } from "@/hooks/useResize";
 import { playerStore } from "@/stores/PlayerStore";
@@ -55,6 +56,7 @@ export default function Home() {
       ref={mainRef}
     >
       {hasLoaded ? <RoomMap seed={seed} setSeed={setSeed} /> : null}
+      <Metronome />
     </Box>
   );
 }

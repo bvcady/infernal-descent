@@ -17,7 +17,7 @@ export const useDig = () => {
     targetDiggingTile,
     setTargetDiggingTile,
   } = useStore(playerStore);
-  const { toggleShowZHint, showZHint } = useStore(windowStore);
+  const { toggleShowZHint, showZHint, beat } = useStore(windowStore);
 
   const [dirs, setDirs] = useState<{
     [key: string]: Cell | undefined;
@@ -67,17 +67,23 @@ export const useDig = () => {
     );
 
     if (foundTile) {
-      addTile({ tile: foundTile, item: foundItem });
-      setTiles(
-        tiles.filter((t) => !(t.x === foundTile.x && t.y === foundTile.y))
-      );
-      setItems(
-        items.filter((i) => !(i.x === foundTile.x && i.y === foundTile.y))
-      );
-      setTargetDiggingTile(undefined);
-      return setDigKeyIsDown(false);
+      const addedTile = addTile({
+        tile: foundTile,
+        item: foundItem,
+        n: Math.floor(beat / 2),
+      });
+      if (addedTile) {
+        setTiles(
+          tiles.filter((t) => !(t.x === foundTile.x && t.y === foundTile.y))
+        );
+        setItems(
+          items.filter((i) => !(i.x === foundTile.x && i.y === foundTile.y))
+        );
+        setTargetDiggingTile(undefined);
+        return setDigKeyIsDown(false);
+      }
     }
-  }, [tiles, items, digKeyIsDown, targetDiggingTile]);
+  }, [tiles, items, digKeyIsDown, targetDiggingTile, beat]);
 
   const handleDig = useCallback(
     (e: KeyboardEvent) => {
@@ -150,6 +156,7 @@ export const useDig = () => {
       dirs,
       digKeyIsDown,
       targetDiggingTile,
+      beat,
     ]
   );
 

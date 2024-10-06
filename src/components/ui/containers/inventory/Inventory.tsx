@@ -20,7 +20,8 @@ const InventoryWrapper = styled(Box)`
 
 export const Inventory = () => {
   const { inventory, stats } = useStore(playerStore);
-  const { cellSize } = useStore(windowStore);
+  const { cellSize, beat } = useStore(windowStore);
+
   return (
     <Box
       zIndex={2}
@@ -72,7 +73,26 @@ export const Inventory = () => {
           </Box>
         </InventoryWrapper>
         <InventoryWrapper padding={`${cellSize / 10}px`} height={cellSize / 2}>
-          {inventory?.tiles?.map((tile, index) => {
+          {new Array(8).fill("").map((_, index) => {
+            const tile = inventory?.tiles.find((t) => t?.n === index);
+            if (!tile) {
+              return (
+                <Box
+                  key={index}
+                  sx={{
+                    position: "relative",
+                    width: `${cellSize}px`,
+                    aspectRatio: 1,
+                    transform:
+                      Math.floor(beat / 2) === index
+                        ? "translateY(-25%)"
+                        : "translateY(0%)",
+                  }}
+                >
+                  <DefaultItem key={index} customSpriteName="empty" isStatic />
+                </Box>
+              );
+            }
             return (
               <Box
                 key={`${tile.tile.x} - ${tile.tile.y}`}
@@ -80,6 +100,10 @@ export const Inventory = () => {
                   position: "relative",
                   width: `${cellSize}px`,
                   aspectRatio: 1,
+                  transform:
+                    Math.floor(beat / 2) === index
+                      ? "translateY(-25%)"
+                      : "translateY(0%)",
                 }}
               >
                 <FloorTile

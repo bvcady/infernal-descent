@@ -11,12 +11,11 @@ const eight = quarter / 2;
 export const Metronome = () => {
   const [beatIncrement, toggleBeatIncrement] = useState(false);
   const requestRef = useRef(0);
-
-  const [beat, setBeat] = useState(0);
+  const { beat, setBeat } = useStore(windowStore);
 
   useEffect(() => {
     if (beatIncrement) {
-      setBeat((prev) => (prev + 1) % 16);
+      setBeat((beat + 1) % 16);
     }
   }, [beatIncrement]);
 
@@ -35,25 +34,5 @@ export const Metronome = () => {
     return () => cancelAnimationFrame(requestRef.current);
   }, []);
 
-  const { cellSize } = useStore(windowStore, (state) => state);
-  return (
-    <Box width={"100%"} maxWidth={cellSize * 1.2 * 16} padding={"1rem"}>
-      <Box
-        ml={`calc(${(beat + 1) * (100 / 16)}% - ${cellSize / 8}px - ${
-          cellSize / 2
-        }px)`}
-        mb={"0.5rem"}
-        bgcolor={"whitesmoke"}
-        width={cellSize / 4}
-        height={cellSize / 4}
-      />
-      <Box
-        // ml={`${beat}rem`}
-        width={"100%"}
-        bgcolor={"whitesmoke"}
-        height={"10px"}
-        sx={{ opacity: 0.4 }}
-      />
-    </Box>
-  );
+  return null;
 };

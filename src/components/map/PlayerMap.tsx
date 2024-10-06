@@ -1,20 +1,20 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
+import { useDig } from "@/hooks/useDig";
 import { useEnterRoom } from "@/hooks/useEnterRoom";
 import { useMovement } from "@/hooks/useMovement";
+import { usePlace } from "@/hooks/usePlace";
 import { levelStore } from "@/stores/LevelStore";
 import { playerStore } from "@/stores/PlayerStore";
 import { Cell } from "@/types/Cell";
 import { KeyboardDirection } from "@/types/KeyboardDirections";
 import { useCallback, useEffect, useState } from "react";
 import { useStore } from "zustand";
+import { DefaultItem } from "../items/default/DefaultItem";
 import { GridWrapper } from "../level/GridWrapper";
 import { Player } from "../player/Player";
-import { useDig } from "@/hooks/useDig";
-import { usePlace } from "@/hooks/usePlace";
 import { FloorTile } from "../tiles/passable/FloorTile";
-import { Shovel } from "../items/Shovel";
-import { Item } from "@/types/Item";
-import { DefaultItem } from "../items/default/DefaultItem";
+import { windowStore } from "@/stores/WindowStore";
+import { Box } from "@mui/material";
 // @ts-ignore
 
 interface Props {
@@ -32,8 +32,10 @@ export const PlayerMap = ({ startCell }: Props) => {
     player,
     digKeyIsDown,
     targetDiggingTile,
+    inventory,
   } = useStore(playerStore);
   const { tiles } = useStore(levelStore);
+  const { beat } = useStore(windowStore);
 
   const [moveDirection, setMoveDirection] = useState<KeyboardDirection>();
 
@@ -80,15 +82,21 @@ export const PlayerMap = ({ startCell }: Props) => {
           cell={player}
         />
       ) : null}
-      {placeKeyIsDown && futureTile?.tile ? (
-        <FloorTile
-          style={{ zoom: 0.66 }}
-          cell={
-            {
-              ...futureTile.tile,
-              x: futureTile.position.x,
-              y: futureTile.position.y,
-            } as Cell
+      {placeKeyIsDown && futureTile ? (
+        <DefaultItem
+          // isStatic
+          itemStyle={{
+            zoom: 0.66,
+            zIndex: 100,
+            transform: "translateY(-100%)",
+            border: "4px solid black",
+            borderRadius: "2px",
+          }}
+          positionOverride={futureTile.position}
+          customSpriteName={
+            inventory?.tiles.find((t) => t?.n === Math.floor(beat / 2))
+              ? "default_tile"
+              : "empty"
           }
         />
       ) : null}
