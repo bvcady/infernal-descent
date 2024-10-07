@@ -4,6 +4,7 @@ import { runStore } from "@/stores/RunStore";
 import { Room } from "@/types/Room";
 import { useCallback, useEffect } from "react";
 import { useStore } from "zustand";
+import { usePlaySound } from "./usePlaySound";
 
 export const useEnterRoom = () => {
   const {
@@ -15,6 +16,11 @@ export const useEnterRoom = () => {
     heal,
     updateShards,
   } = useStore(playerStore);
+
+  const { play: playHurt } = usePlaySound({
+    soundFile: "../../Audio/hitHurt.wav",
+    options: { volume: 0.5 },
+  });
   const { updateRooms, rooms, currentRoom } = useStore(runStore);
   const { walls, items, tiles } = useStore(levelStore);
 
@@ -106,6 +112,7 @@ export const useEnterRoom = () => {
       if (forced.type === "Stat") {
         if (forced.name === "health") {
           heal(-(forced.reduce || 0));
+          playHurt();
         }
         if (forced.name === "shards") {
           updateShards(-(forced.reduce || 0));

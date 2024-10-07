@@ -1,3 +1,4 @@
+import { usePlaySound } from "@/hooks/usePlaySound";
 import { levelStore } from "@/stores/LevelStore";
 import { playerStore } from "@/stores/PlayerStore";
 import { runStore } from "@/stores/RunStore";
@@ -23,7 +24,6 @@ interface Props {
   itemStyle?: CSSProperties;
   spriteStyle?: CSSProperties;
   positionOverride?: { x: number; y: number };
-  playPickUpSound?: () => void;
 }
 
 const AnimatedWrapper = styled(Box)``;
@@ -36,9 +36,17 @@ export const DefaultItem = ({
   customSpriteName,
   itemStyle = {},
   spriteStyle = {},
-  playPickUpSound,
   positionOverride,
 }: Props) => {
+  const { play: playPickupSound } = usePlaySound({
+    soundFile:
+      item?.name === "key" || item?.name === "shard_one"
+        ? "../../Audio/pickupCoin.wav"
+        : item?.name.includes("heart")
+        ? "../../Audio/explosion.wav"
+        : "",
+    options: { volume: 0.6 },
+  });
   const itemRef = useRef<HTMLDivElement>();
   const requestRef = useRef(0);
 
@@ -128,7 +136,7 @@ export const DefaultItem = ({
             (item) => !(item.x === player?.x && item.y === player?.y)
           )
         );
-        playPickUpSound?.();
+        playPickupSound?.();
       }
     },
     [playerIsOn, player, items, item, isStatic]

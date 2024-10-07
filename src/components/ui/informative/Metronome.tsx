@@ -1,3 +1,4 @@
+import { usePlaySound } from "@/hooks/usePlaySound";
 import { windowStore } from "@/stores/WindowStore";
 import { Box } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
@@ -9,12 +10,17 @@ const quarter = half / 2;
 const eight = quarter / 2;
 
 export const Metronome = () => {
+  const { play } = usePlaySound({
+    soundFile: "../../Audio/pickupCoin.wav",
+    options: { volume: 0.02 },
+  });
   const [beatIncrement, toggleBeatIncrement] = useState(false);
   const requestRef = useRef(0);
   const { beat, setBeat } = useStore(windowStore);
 
   useEffect(() => {
     if (beatIncrement) {
+      if ((beat / 2) % 1) play();
       setBeat((beat + 1) % 16);
     }
   }, [beatIncrement]);

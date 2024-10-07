@@ -19,6 +19,9 @@ export const usePlaySound = ({ soundFile, options }: Props) => {
   const [sound, setSound] = useState<Howl | undefined>();
 
   useEffect(() => {
+    if (!soundFile) {
+      return;
+    }
     setSound(
       new Howl({
         src: soundFile,

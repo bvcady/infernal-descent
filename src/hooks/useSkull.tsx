@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { useStore } from "zustand";
+import { usePlaySound } from "./usePlaySound";
 
 interface Props {
   setMoveDirection: Dispatch<SetStateAction<KeyboardDirection | undefined>>;
@@ -21,6 +22,11 @@ const dirs: KeyboardDirection[] = [
   "ArrowUp",
 ];
 export const useSkull = ({ setMoveDirection }: Props) => {
+  const { play } = usePlaySound({
+    soundFile: "../../Audio/synth.wav",
+    options: { volume: 0.3 },
+  });
+
   const { inventory } = useStore(playerStore);
   const [potentialMoveDirection, setPotentialMoveDirection] =
     useState<KeyboardDirection>(
@@ -43,6 +49,7 @@ export const useSkull = ({ setMoveDirection }: Props) => {
 
     if (Math.floor(beat / 2) === n) {
       setMoveDirection(potentialMoveDirection);
+      play();
     }
     if (Math.floor(beat / 2) - (1 % 8) === n) {
       setPotentialMoveDirection(

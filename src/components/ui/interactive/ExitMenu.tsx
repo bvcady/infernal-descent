@@ -152,7 +152,7 @@ export const ExitMenu = ({ exit }: Props) => {
                     display: "inline-block",
                   }}
                 >
-                  {requirements.pretty.toUpperCase()}{" "}
+                  {requirements.pretty?.toUpperCase()}{" "}
                   {requirements.amount && `x ${requirements.amount}`}
                 </span>{" "}
               </span>
@@ -171,7 +171,7 @@ export const ExitMenu = ({ exit }: Props) => {
                     }}
                   >
                     {"- "}
-                    {forcedEntry.pretty.toUpperCase()}{" "}
+                    {forcedEntry.pretty?.toUpperCase()}{" "}
                     {entryOptions.forcedEntry?.reduce &&
                       `x ${
                         entryOptions.forcedEntry?.name === "heart"

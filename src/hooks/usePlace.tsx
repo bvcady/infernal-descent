@@ -4,9 +4,15 @@ import { windowStore } from "@/stores/WindowStore";
 
 import { useCallback, useEffect } from "react";
 import { useStore } from "zustand";
+import { usePlaySound } from "./usePlaySound";
 
 export const usePlace = () => {
   const { beat } = useStore(windowStore);
+  const { play } = usePlaySound({
+    soundFile: "../../Audio/pickUpCoin.wav",
+    options: { volume: 0.4 },
+  });
+
   const { setItems, items, setTiles, tiles, walls } = useStore(levelStore);
   const {
     player,
@@ -73,6 +79,7 @@ export const usePlace = () => {
         if (futureTile) {
           const removedTile = removeTile(Math.floor(beat / 2));
           if (removedTile) {
+            play();
             setTiles([
               ...tiles,
               {

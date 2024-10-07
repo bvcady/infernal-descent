@@ -4,8 +4,13 @@ import { windowStore } from "@/stores/WindowStore";
 import { Cell } from "@/types/Cell";
 import { useCallback, useEffect, useState } from "react";
 import { useStore } from "zustand";
+import { usePlaySound } from "./usePlaySound";
 
 export const useDig = () => {
+  const { play } = usePlaySound({
+    soundFile: "../../Audio/explosion (1).wav",
+    options: { volume: 0.2 },
+  });
   const { setTiles, tiles, items, setItems } = useStore(levelStore);
   const {
     inventory,
@@ -85,6 +90,7 @@ export const useDig = () => {
         n: Math.floor(beat / 2),
       });
       if (addedTile) {
+        play();
         setTiles(
           tiles.filter((t) => !(t.x === foundTile.x && t.y === foundTile.y))
         );

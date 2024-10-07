@@ -4,6 +4,7 @@ import { runStore } from "@/stores/RunStore";
 import { KeyboardDirection } from "@/types/KeyboardDirections";
 import { Dispatch, useCallback, useEffect, useRef, useState } from "react";
 import { useStore } from "zustand";
+import { usePlaySound } from "./usePlaySound";
 
 interface Props {
   moveDirection?: KeyboardDirection;
@@ -11,6 +12,10 @@ interface Props {
 }
 
 export const useMovement = ({ moveDirection, setMoveDirection }: Props) => {
+  const { play: playHurt } = usePlaySound({
+    soundFile: "../../Audio/hitHurt.wav",
+    options: { volume: 0.5 },
+  });
   const requestRef = useRef(0);
 
   const { tiles, exits, items } = useStore(levelStore);
@@ -58,6 +63,7 @@ export const useMovement = ({ moveDirection, setMoveDirection }: Props) => {
       if (cellCheck && canMove && !placeKeyIsDown && !digKeyIsDown) {
         moveInDirection(cellCheck);
         if (itemInCell?.type === "Hurtful") {
+          playHurt();
           heal(-(itemInCell.damage || 0));
           setCurrentRoom({ ...currentRoom!, health_lost: true });
         }
