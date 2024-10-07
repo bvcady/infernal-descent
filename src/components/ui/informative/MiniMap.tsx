@@ -14,6 +14,15 @@ export const MiniMap = () => {
   const { cellSize, toggleShowBHint } = useStore(windowStore);
   const { setCanMove, digKeyIsDown, placeKeyIsDown } = useStore(playerStore);
 
+  useEffect(() => {
+    if (currentRoom?.items?.find((i) => i.name === "skull")) {
+      console.log({ currentRoom });
+    }
+    if (currentRoom?.itemsToPlace?.find((i) => i.name === "skull")) {
+      console.log({ currentRoom });
+    }
+  }, [currentRoom]);
+
   const handleKeyUp = (e: KeyboardEvent) => {
     if (e.repeat || digKeyIsDown || placeKeyIsDown) {
       return;

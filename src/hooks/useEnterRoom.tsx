@@ -28,7 +28,7 @@ export const useEnterRoom = () => {
       return false;
     }
 
-    if (exit?.isVisited) {
+    if (nextRoom?.isVisited) {
       return true;
     }
 

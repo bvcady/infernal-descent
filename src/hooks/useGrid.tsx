@@ -186,39 +186,21 @@ export const useGrid = ({ seed }: Props) => {
 
     const poiCell =
       nonEdgeCells[
-        Math.floor(
-          scale(
-            [0, 1],
-            [0, nonEdgeCells.length - 1]
-          )(generateNoise({ random: r }))
-        )
+        Math.floor(scale([0, 1], [0, nonEdgeCells.length - 1])(r.next()))
       ];
+
     const poiId = roomCells.findIndex(
       (c) => c.x === poiCell.x && c.y === poiCell.y
     );
 
-    //TODO: find solution for adding items in use grid with
-
     roomCells[poiId] = {
       ...poiCell,
-      // removed item for the poi cell for now
-      // item: currentRoom.itemsToPlace[0],
       isCollapsed: true,
       isPath: true,
       isOutside: false,
       isAccessible: true,
       isWall: false,
     };
-
-    const skullItem = currentRoom.itemsToPlace.find((i) => i.name === "skull");
-    if (skullItem) {
-      currentItems.push({
-        ...skullItem,
-        id: crypto.randomUUID(),
-        x: poiCell.x,
-        y: poiCell.y,
-      });
-    }
 
     const findPath = (startCell: Cell, route: Graph, endCell: Cell) => {
       return route.path(
@@ -503,7 +485,7 @@ export const useGrid = ({ seed }: Props) => {
     if (!previousRoom) {
       setStart(
         shuffle(
-          withNeighbours?.filter((n) => n.isPath),
+          withNeighbours?.filter((n) => n.isPath && !n.isEdge && !n.exit),
           r
         )[0]
       );
@@ -540,13 +522,12 @@ export const useGrid = ({ seed }: Props) => {
       [...itemPlacementOptions].forEach((cell, index) => {
         const item = currentRoom.itemsToPlace[index];
 
-        if (item.name !== "skull")
-          currentItems.push({
-            ...item,
-            x: cell.x,
-            y: cell.y,
-            id: crypto.randomUUID(),
-          });
+        currentItems.push({
+          ...item,
+          x: cell.x,
+          y: cell.y,
+          id: crypto.randomUUID(),
+        });
       });
     }
 

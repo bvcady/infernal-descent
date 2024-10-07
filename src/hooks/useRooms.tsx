@@ -372,6 +372,11 @@ export const useRooms = ({ seed }: Props) => {
 
     setCurrentRoom(selectedRoom);
 
+    console.log(
+      roomsWithNeighbours.filter((r) =>
+        r.itemsToPlace.find((i) => i.name === "skull")
+      )
+    );
     setRooms(
       roomsWithNeighbours.map((r) => {
         if (r.x === selectedRoom?.x && r.y === selectedRoom?.y) {

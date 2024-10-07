@@ -5,6 +5,7 @@ import { Metronome } from "@/components/ui/informative/Metronome";
 import { usePlaySound } from "@/hooks/usePlaySound";
 import { useResize } from "@/hooks/useResize";
 import { playerStore } from "@/stores/PlayerStore";
+import { runStore } from "@/stores/RunStore";
 import { windowStore } from "@/stores/WindowStore";
 import { Box } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
@@ -18,6 +19,7 @@ export default function Home() {
   const { toggleShowStartHint, toggleShowBHint, hasLoaded } =
     useStore(windowStore);
 
+  const { setPreviousRoom } = useStore(runStore);
   const { setPlayer, resetInventory } = useStore(playerStore);
   // useEffect(() => {
   //   setSeed((Math.random() + 1).toString(36).substring(7));
@@ -36,6 +38,7 @@ export default function Home() {
   useEffect(() => {
     if (seed) {
       play();
+      setPreviousRoom(undefined);
       setPlayer(undefined);
       resetInventory();
       toggleShowBHint(true);
