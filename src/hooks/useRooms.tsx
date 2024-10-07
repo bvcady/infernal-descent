@@ -106,6 +106,30 @@ export const useRooms = ({ seed }: Props) => {
       introRoom.itemsToPlace = shovelRoom.items || [];
       introRoom.entryRequirement = undefined;
       introRoom.isCollapsed = true;
+
+      // introRoom.itemsToPlace = [
+      //   ...introRoom.itemsToPlace,
+      //   {
+      //     name: "altar",
+      //     x: -1,
+      //     y: -1,
+      //     id: "",
+      //     rarity: 1000,
+      //     type: "Unobtainable",
+      //     canShovel: false,
+      //     description:
+      //       "The first altar, it seems to long to the skull you are holding.",
+      //   },
+      //   {
+      //     name: "skull",
+      //     x: 0,
+      //     y: 0,
+      //     id: "",
+      //     rarity: 10,
+      //     type: "Unobtainable",
+      //     canShovel: true,
+      //   },
+      // ];
       roomGrid[id] = introRoom;
       totalRooms.push(introRoom);
     }
@@ -264,15 +288,33 @@ export const useRooms = ({ seed }: Props) => {
             }
             nextRoom.maxExits = 4;
             nextRoom.isBossRoom = r.next() > 0.33;
-
-            nextRoom.entryRequirement = {
-              requirements: {
-                name: "skull",
-                type: "Item",
-                amount: 1,
-                pretty: "Intimidating Skull",
-              },
-            };
+            if (nextRoom.isBossRoom) {
+              nextRoom.size = 2;
+              nextRoom.density = 0;
+              nextRoom.emptiness = 0;
+              nextRoom.itemsToPlace = [
+                ...nextRoom.itemsToPlace,
+                {
+                  name: "altar",
+                  x: -1,
+                  y: -1,
+                  id: "",
+                  rarity: 1000,
+                  type: "Unobtainable",
+                  canShovel: false,
+                  description:
+                    "The first altar, it seems to long to the skull you are holding.",
+                },
+              ];
+              nextRoom.entryRequirement = {
+                requirements: {
+                  name: "skull",
+                  type: "Item",
+                  amount: 1,
+                  pretty: "Intimidating Skull",
+                },
+              };
+            }
           }
           mandatory =
             totalRooms.length > targetTotal &&
@@ -286,7 +328,7 @@ export const useRooms = ({ seed }: Props) => {
               totalRooms.filter((r) =>
                 r.itemsToPlace?.some((i) => i.name === "skull")
               ).length < nBossRooms &&
-              distanceFromBeginning > 3 &&
+              distanceFromBeginning > 1.5 &&
               r.next() < 0.25)
           ) {
             nextRoom.itemsToPlace?.push({

@@ -4,8 +4,8 @@ import { useGrid } from "@/hooks/useGrid";
 import { useRooms } from "@/hooks/useRooms";
 import { playerStore } from "@/stores/PlayerStore";
 import { windowStore } from "@/stores/WindowStore";
-import { Box } from "@mui/material";
-import { Dispatch, useEffect } from "react";
+import { Box, Drawer } from "@mui/material";
+import { Dispatch, useEffect, useState } from "react";
 import { useStore } from "zustand";
 import { ButtonArea } from "../console/ButtonArea";
 import { Console } from "../console/Console";
@@ -26,6 +26,9 @@ import { WallMap } from "../map/WallMap";
 import { UIOverlay } from "../ui/containers/RoomsOverlay";
 import { WelcomeScreen } from "../ui/home/WelcomeScreen";
 import { Button } from "../ui/interactive/Button";
+import { WinScreen } from "../ui/win/WinScreen";
+import { DefaultItem } from "../items/default/DefaultItem";
+import { miniFont } from "@/utils/defaultValues";
 
 interface Props {
   seed: string;
@@ -33,8 +36,9 @@ interface Props {
 }
 
 export const RoomMap = ({ seed, setSeed }: Props) => {
+  const [infoOpen, toggleInfoOpen] = useState(false);
   useRooms({ seed });
-  const { stats } = useStore(playerStore);
+  const { stats, hasWon } = useStore(playerStore);
   const {
     cellSize,
     toggleShowStartHint,
@@ -78,7 +82,120 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
         justifyContent={"center"}
         alignItems={"center"}
       >
-        <Button label="INFO" callback={() => {}} />
+        <Button
+          label="HINTS"
+          callback={() => {
+            toggleInfoOpen(true);
+          }}
+        />
+        <Drawer
+          open={infoOpen}
+          onClose={() => toggleInfoOpen(false)}
+          style={{}}
+          ModalProps={{
+            sx: {
+              overflowY: "scroll",
+            },
+          }}
+          PaperProps={{
+            sx: {
+              fontFamily: miniFont.style.fontFamily,
+              fontSize: "14px",
+              background: "#b0b0b0",
+              width: "100%",
+              maxWidth: "min(400px, 90dvw)",
+              padding: "1rem",
+              overflowY: "scroll",
+            },
+          }}
+        >
+          <span style={{ fontSize: "20px" }}>GOAL</span>
+          <Box display={"flex"} alignItems={"center"} padding={"1rem"}>
+            You are investigating the behaviour of a previously well-trusted
+            volcano. The townsfolk have experienced more irratic quakes and
+            ecological events coming from there. Reach the Altar in the room
+            indicated with the Skull to exit the volcano. Do this before you
+            succumb to exhaustion and seismic events. Rooms have their own
+            requirement for entry. BE CAREFUL.
+          </Box>
+
+          <span style={{ fontSize: "20px" }}>CONTROLS</span>
+          <Box display={"flex"} alignItems={"center"}>
+            Use directional pad to move.
+          </Box>
+          <Box display={"flex"} alignItems={"center"}>
+            <DefaultItem isStatic customSpriteName="shovel" /> Use Z to start
+            digging and directional pad to point.
+          </Box>
+          <Box display={"flex"} alignItems={"center"}>
+            <DefaultItem isStatic customSpriteName="empty" /> Use X to place
+            tile - directional pad to point.
+          </Box>
+          <Box display={"flex"} alignItems={"center"}>
+            <DefaultItem isStatic customSpriteName="map" /> Use B to show mini
+            map.
+          </Box>
+          <Box display={"flex"} alignItems={"center"}>
+            Use A to pick up or move other interactions.
+          </Box>
+          <Box display={"flex"} alignItems={"center"}>
+            The start button or S will restart the game.
+          </Box>
+
+          <span style={{ fontSize: "20px" }}>LEGEND</span>
+          <Box
+            display={"flex"}
+            gap={"0.5rem"}
+            maxWidth={"100%"}
+            width={"100%"}
+            sx={{ flexFlow: "wrap", alignItems: "center" }}
+          >
+            <span>
+              <DefaultItem isStatic customSpriteName="key" /> Key
+            </span>
+            <span>
+              <DefaultItem isStatic customSpriteName="chest_closed" /> Chest
+            </span>
+            <span>
+              <DefaultItem isStatic customSpriteName="heart_whole" /> Heart
+            </span>
+            <span>
+              <DefaultItem isStatic customSpriteName="ok" /> Exit (Open)
+            </span>
+            <span>
+              <DefaultItem isStatic customSpriteName="no_access" /> Exit
+              (Closed)
+            </span>
+            <span>
+              <DefaultItem isStatic customSpriteName="shard_one" /> Shard
+              (Currency)
+            </span>
+            <span>
+              <DefaultItem isStatic customSpriteName="shovel" />
+              Shovel
+            </span>
+            <span>
+              <DefaultItem isStatic customSpriteName="heart_half" /> Half A
+              Heart
+            </span>
+            <span>
+              <DefaultItem isStatic customSpriteName="heart_temporary" />{" "}
+              Temporary Heart
+            </span>
+            <span>
+              <DefaultItem isStatic customSpriteName="rubble" /> Rubble
+            </span>
+            <span>
+              <DefaultItem isStatic customSpriteName="spikes" /> Spikes (Damage)
+            </span>
+            <span>
+              <DefaultItem isStatic customSpriteName="lava" /> Lava (Damage)
+            </span>
+            <span>
+              <DefaultItem isStatic customSpriteName="skull" /> {`Skull (???)`}
+            </span>
+          </Box>
+        </Drawer>
         <Console p={cellSize / 2}>
           <ScreenPadding w={cellSize * 10}>
             <Box
@@ -87,7 +204,7 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
               sx={{ inset: 0, zIndex: -1 }}
             />
             <Viewer>
-              {seed && stats.health > 0 ? (
+              {seed && stats.health > 0 && !hasWon ? (
                 <CombinedMap>
                   <BottomMap
                     rockEdges={[...cells].filter(
@@ -104,6 +221,7 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
               ) : null}
               <UIOverlay />
             </Viewer>
+            {seed && stats.health > 0 && hasWon ? <WinScreen /> : null}
             {!seed || stats.health <= 0 ? (
               <WelcomeScreen dead={stats.health <= 0} />
             ) : null}

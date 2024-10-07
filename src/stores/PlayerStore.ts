@@ -5,6 +5,7 @@ import { createStore } from "zustand";
 
 type PlayerStoreState = {
   player?: Cell;
+  hasWon: boolean;
   inventory: {
     items: Item[];
     tiles: ({ tile: Cell; item?: Item; n: number } | undefined)[];
@@ -24,6 +25,7 @@ type PlayerStoreState = {
 };
 
 type PlayerStoreActions = {
+  toggleHasWon: (b: boolean) => void;
   heal: (input: number, over?: boolean) => void;
   updateShards: (input: number) => void;
   addStep: (input: number) => void;
@@ -50,6 +52,10 @@ type PlayerStoreActions = {
 type PlayerStore = PlayerStoreState & PlayerStoreActions;
 
 export const playerStore = createStore<PlayerStore>()((set) => ({
+  hasWon: false,
+  toggleHasWon: (b: boolean) => {
+    set({hasWon: b})
+  },
   digKeyIsDown: false,
   placeKeyIsDown: false,
   stats: { health: 6, steps: 0, shards: 5 },

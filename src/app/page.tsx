@@ -20,7 +20,7 @@ export default function Home() {
     useStore(windowStore);
 
   const { setPreviousRoom } = useStore(runStore);
-  const { setPlayer, resetInventory } = useStore(playerStore);
+  const { setPlayer, resetInventory, toggleHasWon } = useStore(playerStore);
   // useEffect(() => {
   //   setSeed((Math.random() + 1).toString(36).substring(7));
   // }, []);
@@ -41,6 +41,7 @@ export default function Home() {
       setPreviousRoom(undefined);
       setPlayer(undefined);
       resetInventory();
+      toggleHasWon(false);
       toggleShowBHint(true);
     }
     toggleShowStartHint(!seed);

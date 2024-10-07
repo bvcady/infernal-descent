@@ -48,6 +48,8 @@ export const useEnterRoom = () => {
       const possibleItem = inventory.items.find(
         (item) => item.name === requirements.name
       );
+
+      console.log(possibleItem);
       if (possibleItem) {
         if (requirements.reduce) {
           removeItem(possibleItem);

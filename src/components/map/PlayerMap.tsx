@@ -14,7 +14,8 @@ import { GridWrapper } from "../level/GridWrapper";
 import { Player } from "../player/Player";
 import { FloorTile } from "../tiles/passable/FloorTile";
 import { windowStore } from "@/stores/WindowStore";
-import { Box } from "@mui/material";
+import { useAltar } from "@/hooks/useAltar";
+import { useSkull } from "@/hooks/useSkull";
 // @ts-ignore
 
 interface Props {
@@ -43,6 +44,9 @@ export const PlayerMap = ({ startCell }: Props) => {
     setPlayer(tiles.find((c) => c.x === startCell?.x && c.y === startCell?.y));
   }, [startCell]);
 
+  useEffect(() => {
+    console.log({ inventory });
+  }, [inventory]);
   const handleKeyUp = useCallback(
     (e: KeyboardEvent) => {
       if (cardinals.includes(e.key)) {
@@ -62,6 +66,8 @@ export const PlayerMap = ({ startCell }: Props) => {
   useEnterRoom();
   useDig();
   usePlace();
+  useAltar();
+  const { arrow } = useSkull({ setMoveDirection });
 
   const shovelCell = targetDiggingTile
     ? { ...player, x: targetDiggingTile.x, y: targetDiggingTile.y }
@@ -69,6 +75,14 @@ export const PlayerMap = ({ startCell }: Props) => {
 
   return (
     <GridWrapper>
+      {arrow && player ? (
+        <DefaultItem
+          isStatic
+          itemStyle={{ zoom: 3, opacity: 0.8, mixBlendMode: "multiply" }}
+          customSpriteName={arrow}
+          positionOverride={{ x: player.x, y: player.y }}
+        />
+      ) : null}
       <Player />
       {placeKeyIsDown && player && !futureTile ? (
         <FloorTile

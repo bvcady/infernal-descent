@@ -153,6 +153,7 @@ export const DefaultItem = ({
         display: "grid",
         placeItems: "center",
         overflow: "visible",
+        zoom: item?.name === "altar" ? 3 : 1,
         ...itemStyle,
       }}
     >

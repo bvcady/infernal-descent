@@ -58,7 +58,19 @@ export const useDig = () => {
     if (!targetDiggingTile) {
       return;
     }
-
+    const canShovel =
+      [...tiles].some(
+        (i) => i.x === targetDiggingTile.x && i.y === targetDiggingTile.y
+      ) ||
+      [...items].some(
+        (i) =>
+          i.x === targetDiggingTile.x &&
+          i.y === targetDiggingTile.y &&
+          i.canShovel
+      );
+    if (!canShovel) {
+      return;
+    }
     const foundTile = [...tiles].find(
       (t) => t.x === targetDiggingTile.x && t.y === targetDiggingTile.y
     );

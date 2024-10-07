@@ -152,9 +152,7 @@ export const ExitMenu = ({ exit }: Props) => {
                     display: "inline-block",
                   }}
                 >
-                  {requirements.hidden
-                    ? "????"
-                    : requirements.pretty.toUpperCase()}{" "}
+                  {requirements.pretty.toUpperCase()}{" "}
                   {requirements.amount && `x ${requirements.amount}`}
                 </span>{" "}
               </span>
