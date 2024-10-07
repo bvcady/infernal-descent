@@ -29,6 +29,7 @@ import { Button } from "../ui/interactive/Button";
 import { WinScreen } from "../ui/win/WinScreen";
 import { DefaultItem } from "../items/default/DefaultItem";
 import { miniFont } from "@/utils/defaultValues";
+import { runStore } from "@/stores/RunStore";
 
 interface Props {
   seed: string;
@@ -38,6 +39,7 @@ interface Props {
 export const RoomMap = ({ seed, setSeed }: Props) => {
   const [infoOpen, toggleInfoOpen] = useState(false);
   useRooms({ seed });
+  const { currentRoom } = useStore(runStore);
   const { stats, hasWon } = useStore(playerStore);
   const {
     cellSize,
@@ -100,10 +102,10 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
           PaperProps={{
             sx: {
               fontFamily: miniFont.style.fontFamily,
-              fontSize: "14px",
+              fontSize: "12px",
               background: "#b0b0b0",
               width: "100%",
-              maxWidth: "min(400px, 90dvw)",
+              maxWidth: "min(400px, 80dvw)",
               padding: "1rem",
               overflowY: "scroll",
             },
@@ -199,7 +201,7 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
         <Console p={cellSize / 2}>
           <ScreenPadding w={cellSize * 10}>
             <Box
-              bgcolor={"#252533"}
+              bgcolor={currentRoom?.bgColor ?? "#252533"}
               position={"absolute"}
               sx={{ inset: 0, zIndex: -1 }}
             />

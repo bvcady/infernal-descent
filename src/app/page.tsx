@@ -25,8 +25,8 @@ export default function Home() {
   //   setSeed((Math.random() + 1).toString(36).substring(7));
   // }, []);
   const { play } = usePlaySound({
-    soundFile: "../../Audio/80bpm-piano.wav",
-    options: { playbackRate: 1, loop: true, volume: 0.2 },
+    soundFile: "../../Audio/loop_two.wav",
+    options: { playbackRate: 1, loop: true, volume: 0.4 },
   });
 
   useEffect(() => {

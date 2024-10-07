@@ -292,6 +292,7 @@ export const useRooms = ({ seed }: Props) => {
               nextRoom.size = 2;
               nextRoom.density = 0;
               nextRoom.emptiness = 0;
+              nextRoom.bgColor = "#300303";
               nextRoom.itemsToPlace = [
                 ...nextRoom.itemsToPlace,
                 {
@@ -331,6 +332,7 @@ export const useRooms = ({ seed }: Props) => {
               distanceFromBeginning > 1.5 &&
               r.next() < 0.25)
           ) {
+            nextRoom.bgColor = "#20051b";
             nextRoom.itemsToPlace?.push({
               name: "skull",
               id: "",
@@ -374,6 +376,14 @@ export const useRooms = ({ seed }: Props) => {
         const gridId = roomGrid.findIndex((r) => r.id === n.id);
         totalRooms[totId] = n;
         roomGrid[gridId] = n;
+      }
+
+      if (
+        nextRoom.itemsToPlace.some((i) => i.name === "key") &&
+        !nextRoom.itemsToPlace.some((i) => i.name === "skull") &&
+        !nextRoom.isBossRoom
+      ) {
+        nextRoom.bgColor = "#221d02";
       }
 
       nextRoom.isCollapsed = true;

@@ -10,6 +10,7 @@ export type Room = {
   y: number;
   isCollapsed: boolean;
   size: number;
+  bgColor?: string;
   neighbours: {
     top?: Room;
     bottom?: Room;
