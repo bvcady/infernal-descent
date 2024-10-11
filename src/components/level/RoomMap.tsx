@@ -242,60 +242,56 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
           <WelcomeScreen dead={stats.health <= 0} />
         ) : null}
         {/* </ScreenPadding> */}
-
-        {isMobile ? (
-          <ButtonArea>
-            <DirectionalPad>
-              <ArrowButton
-                dir="ArrowLeft"
-                callback={() => {}}
-                rotation="270deg"
-              />
-              <ArrowButton dir="ArrowUp" callback={() => {}} rotation="0deg" />
-              <ArrowButton
-                dir="ArrowRight"
-                callback={() => {}}
-                rotation="90deg"
-              />
-              <ArrowButton
-                dir="ArrowDown"
-                callback={() => {}}
-                rotation="180deg"
-              />
-              <div
-                style={{
-                  gridRow: "2 / span 1",
-                  gridColumn: "2 / span 1",
-                  backgroundColor: "rgba(0, 0, 0, 0.3)",
-                  width: Math.min(cellSize, 100),
-                  height: Math.min(cellSize, 100),
-                }}
-              />
-            </DirectionalPad>
-            <SSButtonContainer w={cellSize / 1.5}>
-              <SSButton
-                callback={() => {
-                  updateSeed();
-                }}
-              />
-            </SSButtonContainer>
-            <Box display={"flex"} flexDirection={"column"}>
-              <LetterButtonContainer
-                w={cellSize * 1.125}
-                marginLeft={"-20%"}
-                mt={"10%"}
-              >
-                <LetterButton letter="X" color="#e24e4e" />
-                <LetterButton letter="Z" color="#5454a7" />
-              </LetterButtonContainer>
-              <LetterButtonContainer w={cellSize * 1.125}>
-                <LetterButton letter="B" color="#c89a3f" />
-                <LetterButton letter="A" color="#399a4e" />
-              </LetterButtonContainer>
-            </Box>
-          </ButtonArea>
-        ) : null}
-        {/* </Console> */}
+        <ButtonArea isMobile={isMobile}>
+          <DirectionalPad>
+            <ArrowButton
+              dir="ArrowLeft"
+              callback={() => {}}
+              rotation="270deg"
+            />
+            <ArrowButton dir="ArrowUp" callback={() => {}} rotation="0deg" />
+            <ArrowButton
+              dir="ArrowRight"
+              callback={() => {}}
+              rotation="90deg"
+            />
+            <ArrowButton
+              dir="ArrowDown"
+              callback={() => {}}
+              rotation="180deg"
+            />
+            <div
+              style={{
+                gridRow: "2 / span 1",
+                gridColumn: "2 / span 1",
+                backgroundColor: "rgba(0, 0, 0, 0.3)",
+                width: Math.min(cellSize, 100),
+                height: Math.min(cellSize, 100),
+              }}
+            />
+          </DirectionalPad>
+          <SSButtonContainer w={cellSize / 1.5}>
+            <SSButton
+              callback={() => {
+                updateSeed();
+              }}
+            />
+          </SSButtonContainer>
+          <Box display={"flex"} flexDirection={"column"}>
+            <LetterButtonContainer
+              w={cellSize * 1.125}
+              marginLeft={"-20%"}
+              mt={"10%"}
+            >
+              <LetterButton letter="X" color="#e24e4e" />
+              <LetterButton letter="Z" color="#5454a7" />
+            </LetterButtonContainer>
+            <LetterButtonContainer w={cellSize * 1.125}>
+              <LetterButton letter="B" color="#c89a3f" />
+              <LetterButton letter="A" color="#399a4e" />
+            </LetterButtonContainer>
+          </Box>
+        </ButtonArea>
       </Box>
     </>
   );

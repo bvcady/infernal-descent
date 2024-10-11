@@ -3,8 +3,13 @@ import { ButtonAreaWrapper } from "./Console.styles";
 
 interface Props {
   children?: ReactNode;
+  isMobile?: boolean;
 }
 
-export const ButtonArea = ({ children }: Props) => {
-  return <ButtonAreaWrapper>{children}</ButtonAreaWrapper>;
+export const ButtonArea = ({ children, isMobile }: Props) => {
+  return (
+    <ButtonAreaWrapper style={{ visibility: isMobile ? "visible" : "hidden" }}>
+      {children}
+    </ButtonAreaWrapper>
+  );
 };
