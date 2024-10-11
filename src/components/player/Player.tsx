@@ -6,6 +6,8 @@ import { useStore } from "zustand";
 
 const PlayerSprite = styled(Box)``;
 
+const d = 17;
+
 export const Player = () => {
   const { player } = useStore(playerStore);
   const { cellSize } = useStore(windowStore, (state) => state);
@@ -22,7 +24,6 @@ export const Player = () => {
     const quarter = half / 2;
 
     const isUp = time % half < quarter;
-    // const isUp = false;
 
     if (playerRef.current) {
       playerRef.current.style.transform = isUp
@@ -37,7 +38,6 @@ export const Player = () => {
     requestRef.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(requestRef.current);
   }, []);
-  const d = 17;
 
   return (
     <>
@@ -53,12 +53,15 @@ export const Player = () => {
           gridRowStart: y + 1,
           gridColumnEnd: "span 1",
           gridRowEnd: "span 1",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
+          // zIndex: cell?.y,
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
           backgroundImage: `url("../../images/Monochrome/Tilemap/new_tile${
             7 + 7 * d + 1
           }.png")`,
+          // backgroundImage: `url("../../images/Monochrome/Tilemap/new_tile${
+          //   7 + 7 * d + 1
+          // }.png")`,
         }}
       />
     </>
