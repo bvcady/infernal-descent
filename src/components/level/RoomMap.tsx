@@ -101,6 +101,7 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
         <Button
           label="HINTS"
           style={{
+            maxHeight: "fit-content",
             position: "fixed",
             top: cellSize * 1.5,
             left: cellSize * 0.5,
