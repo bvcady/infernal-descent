@@ -29,12 +29,13 @@ export const ScreenPadding = styled("div")<{w: number}>`
   overflow: hidden;
 `;
 
-export const ButtonAreaWrapper = styled("div")`
+export const ButtonAreaWrapper = styled("div")<{w: number}>`
+  --w: ${({w}) => w || 0}px;
   position: fixed; 
-  left: 2rem;
-  right: 2rem;
+  left: var(--w);
+  right: var(--w);
   bottom: 0;
-  padding-bottom: 2rem;
+  padding-bottom: var(--w);
   max-width: 100%;
   display: flex;
   justify-content: space-between;

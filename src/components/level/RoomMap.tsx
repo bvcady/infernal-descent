@@ -3,33 +3,30 @@
 import { useGrid } from "@/hooks/useGrid";
 import { useRooms } from "@/hooks/useRooms";
 import { playerStore } from "@/stores/PlayerStore";
+import { runStore } from "@/stores/RunStore";
 import { windowStore } from "@/stores/WindowStore";
+import { miniFont } from "@/utils/defaultValues";
 import { Box, Drawer } from "@mui/material";
 import { Dispatch, useEffect, useState } from "react";
 import { useStore } from "zustand";
 import { ButtonArea } from "../console/ButtonArea";
-import { Console } from "../console/Console";
-import { ScreenPadding } from "../console/Console.styles";
 import { ArrowButton } from "../console/controls/buttons/ArrowButton";
 import { DirectionalPad } from "../console/controls/buttons/DirectionalPad";
 import { LetterButton } from "../console/controls/buttons/LetterButton";
 import { LetterButtonContainer } from "../console/controls/buttons/LetterButtonStyles";
 import { SSButton } from "../console/controls/buttons/SSButton";
 import { SSButtonContainer } from "../console/controls/buttons/SSButtonStyles";
+import { DefaultItem } from "../items/default/DefaultItem";
 import { BottomMap } from "../map/BottomMap";
 import { CombinedMap } from "../map/CombinedMap";
 import { ItemMap } from "../map/ItemMap";
 import { PlayerMap } from "../map/PlayerMap";
 import { TileMap } from "../map/TileMap";
-import { Viewer } from "../map/Viewer";
 import { WallMap } from "../map/WallMap";
 import { UIOverlay } from "../ui/containers/RoomsOverlay";
 import { WelcomeScreen } from "../ui/home/WelcomeScreen";
 import { Button } from "../ui/interactive/Button";
 import { WinScreen } from "../ui/win/WinScreen";
-import { DefaultItem } from "../items/default/DefaultItem";
-import { miniFont } from "@/utils/defaultValues";
-import { runStore } from "@/stores/RunStore";
 
 interface Props {
   seed: string;
@@ -102,6 +99,7 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
           label="HINTS"
           style={{
             maxHeight: "fit-content",
+            height: cellSize,
             position: "fixed",
             top: cellSize * 1.5,
             left: cellSize * 0.5,
