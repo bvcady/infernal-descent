@@ -10,6 +10,7 @@ import { useStore } from "zustand";
 
 interface Props {
   children?: ReactNode;
+  isMobile?: boolean;
 }
 
 const Wrapper = styled(Box)<{ focus: { x: number; y: number }; zoom: number }>`
@@ -27,17 +28,20 @@ const Wrapper = styled(Box)<{ focus: { x: number; y: number }; zoom: number }>`
 
   /* Apply the turbulence here */
 `;
-export const CombinedMap = ({ children }: Props) => {
+export const CombinedMap = ({ children, isMobile }: Props) => {
   const { cellSize } = useStore(windowStore);
   const { dimensions } = useStore(levelStore);
   const { currentRoom } = useStore(runStore);
   const { player } = useStore(playerStore);
 
-  const zoom = scale([1, 5], [1, 0.6])(currentRoom?.size || 1);
+  const zoom = scale([1, 5], [1, 0.5])(currentRoom?.size || 1);
 
   const focus = {
-    x: (dimensions.width * cellSize) / 2 - (player?.x || 10) * cellSize,
-    y: (dimensions.height * cellSize) / 2 - ((player?.y || 10) - 1) * cellSize,
+    x: (dimensions.width * cellSize) / 2 - ((player?.x || 10) + 0.5) * cellSize,
+    y:
+      (dimensions.height * cellSize) / 2 -
+      ((player?.y || 10) + 1) * cellSize -
+      (isMobile ? cellSize * 1.5 : 0),
   };
   return (
     <Wrapper zoom={zoom} focus={focus}>

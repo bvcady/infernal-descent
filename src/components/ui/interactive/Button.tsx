@@ -1,11 +1,13 @@
 import { windowStore } from "@/stores/WindowStore";
 import { miniFont } from "@/utils/defaultValues";
 import { ButtonBase, styled } from "@mui/material";
+import { CSSProperties } from "react";
 import { useStore } from "zustand";
 
 interface Props {
   callback?: () => void;
   label?: string;
+  style?: CSSProperties;
 }
 
 const CustomButton = styled(ButtonBase)`
@@ -18,7 +20,7 @@ const CustomButton = styled(ButtonBase)`
   border-radius: 4px;
 `;
 
-export const Button = ({ callback, label }: Props) => {
+export const Button = ({ callback, label, style = {} }: Props) => {
   const { cellSize } = useStore(windowStore);
   return (
     <CustomButton
@@ -28,6 +30,7 @@ export const Button = ({ callback, label }: Props) => {
         zIndex: 1000,
         pointerEvents: "all",
         cursor: "pointer",
+        ...style,
       }}
       onClick={() => {
         callback?.();

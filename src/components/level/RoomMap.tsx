@@ -100,6 +100,12 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
       >
         <Button
           label="HINTS"
+          style={{
+            position: "fixed",
+            top: cellSize * 1.5,
+            left: cellSize * 0.5,
+            margin: "1rem",
+          }}
           callback={() => {
             toggleInfoOpen(true);
           }}
@@ -221,7 +227,7 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
             />
             <Viewer> */}
         {seed && stats.health > 0 && !hasWon ? (
-          <CombinedMap>
+          <CombinedMap isMobile={isMobile}>
             <BottomMap
               rockEdges={[...cells].filter(
                 (c) => c.neighbours?.top?.isWall && !c.isWall
