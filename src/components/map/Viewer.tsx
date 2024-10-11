@@ -20,7 +20,6 @@ const StyledViewer = styled(Box)<ViewerProps>`
   user-select: none;
   overflow: hidden;
   z-index: 2;
-  mix-blend-mode: screen;
 `;
 
 export const Viewer = ({ children }: Props) => {

@@ -1,8 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    // output: 'export',
-    // trailingSlash: true,
-    // distDir: 'dist'
+    output: 'export',
+    trailingSlash: true,
+    distDir: 'dist',
+    webpack: (config) => {
+    config.module.rules.push({
+      test: /\.svg$/i,
+      issuer: /\.[jt]sx?$/,
+      use: ['@svgr/webpack'],
+    })
+    return config
+  },
 };
 
 export default nextConfig;

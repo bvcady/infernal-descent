@@ -19,7 +19,6 @@ export const WelcomeScreen = ({ dead }: Props) => {
         flexDirection={"column"}
         justifyContent={"center"}
         alignContent={"center"}
-        sx={{ mixBlendMode: "screen" }}
       >
         <Box
           width={"100%"}

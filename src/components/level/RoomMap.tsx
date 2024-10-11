@@ -77,7 +77,7 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
     <>
       <Box
         position={"relative"}
-        width={11 * cellSize}
+        width={"100%"}
         height={"100%"}
         display={"flex"}
         flexDirection={"column"}
@@ -198,79 +198,88 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
             </span>
           </Box>
         </Drawer>
-        <Console p={cellSize / 2}>
+        {/* <Console p={cellSize / 2}>
           <ScreenPadding w={cellSize * 10}>
             <Box
               bgcolor={currentRoom?.bgColor ?? "#252533"}
               position={"absolute"}
               sx={{ inset: 0, zIndex: -1 }}
             />
-            <Viewer>
-              {seed && stats.health > 0 && !hasWon ? (
-                <CombinedMap>
-                  <BottomMap
-                    rockEdges={[...cells].filter(
-                      (c) => c.neighbours?.top?.isWall && !c.isWall
-                    )}
-                    exits={exits}
-                  />
+            <Viewer> */}
+        {seed && stats.health > 0 && !hasWon ? (
+          <CombinedMap>
+            <BottomMap
+              rockEdges={[...cells].filter(
+                (c) => c.neighbours?.top?.isWall && !c.isWall
+              )}
+              exits={exits}
+            />
 
-                  <TileMap />
-                  <ItemMap />
-                  <PlayerMap startCell={start} />
-                  <WallMap />
-                </CombinedMap>
-              ) : null}
-              <UIOverlay />
-            </Viewer>
-            {seed && stats.health > 0 && hasWon ? <WinScreen /> : null}
-            {!seed || stats.health <= 0 ? (
-              <WelcomeScreen dead={stats.health <= 0} />
-            ) : null}
-          </ScreenPadding>
+            <TileMap />
+            <ItemMap />
+            <PlayerMap startCell={start} />
+            <WallMap />
+          </CombinedMap>
+        ) : null}
+        <UIOverlay />
+        {/* </Viewer> */}
+        {seed && stats.health > 0 && hasWon ? <WinScreen /> : null}
+        {!seed || stats.health <= 0 ? (
+          <WelcomeScreen dead={stats.health <= 0} />
+        ) : null}
+        {/* </ScreenPadding> */}
 
-          <ButtonArea>
-            <DirectionalPad>
-              <ArrowButton
-                dir="ArrowLeft"
-                callback={() => {}}
-                rotation="270deg"
-              />
-              <ArrowButton dir="ArrowUp" callback={() => {}} rotation="0deg" />
-              <ArrowButton
-                dir="ArrowRight"
-                callback={() => {}}
-                rotation="90deg"
-              />
-              <ArrowButton
-                dir="ArrowDown"
-                callback={() => {}}
-                rotation="180deg"
-              />
-            </DirectionalPad>
-            <SSButtonContainer w={cellSize}>
-              <SSButton
-                callback={() => {
-                  updateSeed();
-                }}
-              />
-            </SSButtonContainer>
-            <Box display={"flex"} flexDirection={"column"}>
-              <LetterButtonContainer
-                w={cellSize * 1.33}
-                marginLeft={"-20%"}
-                mt={"10%"}
-              >
-                <LetterButton letter="X" color="#e24e4e" />
-                <LetterButton letter="Z" color="#5454a7" />
-              </LetterButtonContainer>
-              <LetterButtonContainer w={cellSize * 1.33}>
-                <LetterButton letter="B" color="#c89a3f" />
-                <LetterButton letter="A" color="#399a4e" />
-              </LetterButtonContainer>
-            </Box>
-          </ButtonArea>
-        </Console>
+        <ButtonArea>
+          <DirectionalPad>
+            <ArrowButton
+              dir="ArrowLeft"
+              callback={() => {}}
+              rotation="270deg"
+            />
+            <ArrowButton dir="ArrowUp" callback={() => {}} rotation="0deg" />
+            <ArrowButton
+              dir="ArrowRight"
+              callback={() => {}}
+              rotation="90deg"
+            />
+            <ArrowButton
+              dir="ArrowDown"
+              callback={() => {}}
+              rotation="180deg"
+            />
+            <div
+              style={{
+                gridRow: "2 / span 1",
+                gridColumn: "2 / span 1",
+                backgroundColor: "rgba(0, 0, 0, 0.3)",
+                width: Math.min(cellSize * 1.25, 100),
+                height: Math.min(cellSize * 1.25, 100),
+              }}
+            />
+          </DirectionalPad>
+          <SSButtonContainer w={cellSize}>
+            <SSButton
+              callback={() => {
+                updateSeed();
+              }}
+            />
+          </SSButtonContainer>
+          <Box display={"flex"} flexDirection={"column"}>
+            <LetterButtonContainer
+              w={cellSize * 1.33}
+              marginLeft={"-20%"}
+              mt={"10%"}
+            >
+              <LetterButton letter="X" color="#e24e4e" />
+              <LetterButton letter="Z" color="#5454a7" />
+            </LetterButtonContainer>
+            <LetterButtonContainer w={cellSize * 1.33}>
+              <LetterButton letter="B" color="#c89a3f" />
+              <LetterButton letter="A" color="#399a4e" />
+            </LetterButtonContainer>
+          </Box>
+        </ButtonArea>
+        {/* </Console> */}
       </Box>
     </>
   );

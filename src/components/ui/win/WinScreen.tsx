@@ -34,7 +34,6 @@ export const WinScreen = () => {
         flexDirection={"column"}
         justifyContent={"center"}
         alignContent={"center"}
-        sx={{ mixBlendMode: "screen" }}
       >
         <Box
           width={`${cellSize * 6}px`}

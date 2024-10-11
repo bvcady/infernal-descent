@@ -7,13 +7,16 @@ export const SSButtonContainer = styled(Box)<{w: number}>`
   justify-content: space-between;
 
   border-radius: calc(var(--w) /4);
+  background-color: rgba(0, 0, 0, 0.4);
+  border: 4px solid blanchedalmond;
+  border-bottom: none;
   width: calc(var(--w) * 2);
   /* height: calc(var(--w)); */
   padding: calc(var(--w) / 4);
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
   position: absolute;
-  top: 0;
+  bottom: 0;
   left: 0;
   right: 0;
   margin-left: auto;

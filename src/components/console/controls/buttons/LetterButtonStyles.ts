@@ -4,8 +4,9 @@ import { Box } from "@mui/system";
 
 export const LetterButtonContainer = styled(Box)<{ w: number }>`
   --rot: 12deg;
-  --w: ${({ w }) => w }px;
+  --w: ${({ w }) => Math.min(w, 100) }px;
   width: calc(var(--w)*2.25);
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -13,6 +14,8 @@ export const LetterButtonContainer = styled(Box)<{ w: number }>`
   padding: calc(var(--w)/7.5);
   border-radius: var(--w);
   rotate: calc(-1*var(--rot));
+  border: 4px solid blanchedalmond;
+
   button {
     color: #333333DD;
     font-size: calc(var(--w) / 2.5);
@@ -20,7 +23,7 @@ export const LetterButtonContainer = styled(Box)<{ w: number }>`
     aspect-ratio: 1;
     rotate: var(--rot);
     box-shadow: inset 2px 2px 2px 0 rgba(255, 255,255, 0.3), 2px 2px 2px 0 rgba(0, 0, 0, 0.1);
-    span {
+    span:first-of-type {
       transform: translateY(-33%);
     }
   }
@@ -32,6 +35,9 @@ export const LetterButtonWrapper = styled(ButtonBase)<{
   color: ${({color}) => color};
   font-family: ${miniFont.style.fontFamily};
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   ${({ color }) =>
     color

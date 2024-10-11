@@ -24,6 +24,8 @@ const Wrapper = styled(Box)<{ focus: { x: number; y: number }; zoom: number }>`
     transform: translate(${focus.x}px, ${focus.y}px);
   `}
   transition: all 0.4s ease-out;
+
+  /* Apply the turbulence here */
 `;
 export const CombinedMap = ({ children }: Props) => {
   const { cellSize } = useStore(windowStore);
@@ -35,7 +37,7 @@ export const CombinedMap = ({ children }: Props) => {
 
   const focus = {
     x: (dimensions.width * cellSize) / 2 - (player?.x || 10) * cellSize,
-    y: (dimensions.height * cellSize) / 2 - (player?.y || 10) * cellSize,
+    y: (dimensions.height * cellSize) / 2 - ((player?.y || 10) - 1) * cellSize,
   };
   return (
     <Wrapper zoom={zoom} focus={focus}>

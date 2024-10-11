@@ -1,12 +1,13 @@
 import { playerStore } from "@/stores/PlayerStore";
 import { windowStore } from "@/stores/WindowStore";
+import PlayerOutline from "../../../public/images/player_outline.svg";
+import PlayerBody from "../../../public/images/player_body.svg";
+import PlayerFace from "../../../public/images/player_face.svg";
 import { Box, styled } from "@mui/material";
 import { useEffect, useRef } from "react";
 import { useStore } from "zustand";
 
 const PlayerSprite = styled(Box)``;
-
-const d = 17;
 
 export const Player = () => {
   const { player } = useStore(playerStore);
@@ -23,7 +24,8 @@ export const Player = () => {
     const half = one / 2;
     const quarter = half / 2;
 
-    const isUp = time % half < quarter;
+    // const isUp = time % half < quarter;
+    const isUp = false;
 
     if (playerRef.current) {
       playerRef.current.style.transform = isUp
@@ -44,8 +46,8 @@ export const Player = () => {
       <PlayerSprite
         ref={playerRef}
         className="player"
-        width={cellSize}
-        height={cellSize}
+        width={cellSize * 3}
+        height={cellSize * 3}
         sx={{
           overflow: "visible",
           position: "relative",
@@ -53,17 +55,44 @@ export const Player = () => {
           gridRowStart: y + 1,
           gridColumnEnd: "span 1",
           gridRowEnd: "span 1",
-          // zIndex: cell?.y,
-          backgroundSize: "cover",
-          backgroundRepeat: "no-repeat",
-          backgroundImage: `url("../../images/Monochrome/Tilemap/new_tile${
-            7 + 7 * d + 1
-          }.png")`,
-          // backgroundImage: `url("../../images/Monochrome/Tilemap/new_tile${
-          //   7 + 7 * d + 1
-          // }.png")`,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          translate: `0 ${cellSize}px`,
         }}
-      />
+      >
+        <PlayerOutline
+          style={{ position: "absolute", inset: 0 }}
+        ></PlayerOutline>
+        <PlayerBody
+          style={{
+            position: "absolute",
+            inset: 0,
+            filter: "url(#displacementFilter)",
+          }}
+        ></PlayerBody>
+        <PlayerFace style={{ position: "absolute", inset: 0 }}></PlayerFace>
+      </PlayerSprite>
+      <svg>
+        <filter id="displacementFilter">
+          <feTurbulence
+            type="turbulence"
+            baseFrequency={cellSize / 50}
+            numOctaves="2"
+            result="turbulence"
+            // seed={(player ? player.x + player.x * player.y : 0).toString()}
+          />
+          <feDisplacementMap
+            name="turbulenceResult"
+            in2="turbulence"
+            in="SourceGraphic"
+            scale={cellSize / 100}
+            xChannelSelector="A"
+            yChannelSelector="A"
+          />
+          <feGaussianBlur in="turbulenceResult" stdDeviation={cellSize / 200} />
+        </filter>
+      </svg>
     </>
   );
 };

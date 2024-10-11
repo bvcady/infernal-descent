@@ -21,12 +21,14 @@ export const ArrowButton = ({ dir, rotation = "0deg" }: Props) => {
     keyboardRef?.current?.dispatchEvent(event);
   };
 
+  const maxDim = Math.min(cellSize * 1.25, 100);
+
   return (
     <ArrowButtonWrapper
       style={{
-        width: cellSize * 1.25,
-        height: cellSize * 1.25,
-        borderWidth: `${cellSize / 12}px`,
+        width: maxDim,
+        height: maxDim,
+        borderWidth: "4px",
       }}
       ref={keyboardRef}
       {...{ position: dir, rotation }}
