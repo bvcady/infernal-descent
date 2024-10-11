@@ -54,6 +54,20 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
     seed,
   });
 
+  const [width, setWidth] = useState<number>(window.innerWidth);
+
+  function handleWindowSizeChange() {
+    setWidth(window.innerWidth);
+  }
+  useEffect(() => {
+    window.addEventListener("resize", handleWindowSizeChange);
+    return () => {
+      window.removeEventListener("resize", handleWindowSizeChange);
+    };
+  }, []);
+
+  const isMobile = width <= 768;
+
   const updateSeed = () => {
     const r = (Math.random() + 1).toString(36).substring(4).toLocaleUpperCase();
     setSeed(r);
@@ -221,7 +235,7 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
             <WallMap />
           </CombinedMap>
         ) : null}
-        <UIOverlay />
+        <UIOverlay isMobile={isMobile} />
         {/* </Viewer> */}
         {seed && stats.health > 0 && hasWon ? <WinScreen /> : null}
         {!seed || stats.health <= 0 ? (
@@ -229,56 +243,58 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
         ) : null}
         {/* </ScreenPadding> */}
 
-        <ButtonArea>
-          <DirectionalPad>
-            <ArrowButton
-              dir="ArrowLeft"
-              callback={() => {}}
-              rotation="270deg"
-            />
-            <ArrowButton dir="ArrowUp" callback={() => {}} rotation="0deg" />
-            <ArrowButton
-              dir="ArrowRight"
-              callback={() => {}}
-              rotation="90deg"
-            />
-            <ArrowButton
-              dir="ArrowDown"
-              callback={() => {}}
-              rotation="180deg"
-            />
-            <div
-              style={{
-                gridRow: "2 / span 1",
-                gridColumn: "2 / span 1",
-                backgroundColor: "rgba(0, 0, 0, 0.3)",
-                width: Math.min(cellSize * 1.25, 100),
-                height: Math.min(cellSize * 1.25, 100),
-              }}
-            />
-          </DirectionalPad>
-          <SSButtonContainer w={cellSize}>
-            <SSButton
-              callback={() => {
-                updateSeed();
-              }}
-            />
-          </SSButtonContainer>
-          <Box display={"flex"} flexDirection={"column"}>
-            <LetterButtonContainer
-              w={cellSize * 1.33}
-              marginLeft={"-20%"}
-              mt={"10%"}
-            >
-              <LetterButton letter="X" color="#e24e4e" />
-              <LetterButton letter="Z" color="#5454a7" />
-            </LetterButtonContainer>
-            <LetterButtonContainer w={cellSize * 1.33}>
-              <LetterButton letter="B" color="#c89a3f" />
-              <LetterButton letter="A" color="#399a4e" />
-            </LetterButtonContainer>
-          </Box>
-        </ButtonArea>
+        {isMobile ? (
+          <ButtonArea>
+            <DirectionalPad>
+              <ArrowButton
+                dir="ArrowLeft"
+                callback={() => {}}
+                rotation="270deg"
+              />
+              <ArrowButton dir="ArrowUp" callback={() => {}} rotation="0deg" />
+              <ArrowButton
+                dir="ArrowRight"
+                callback={() => {}}
+                rotation="90deg"
+              />
+              <ArrowButton
+                dir="ArrowDown"
+                callback={() => {}}
+                rotation="180deg"
+              />
+              <div
+                style={{
+                  gridRow: "2 / span 1",
+                  gridColumn: "2 / span 1",
+                  backgroundColor: "rgba(0, 0, 0, 0.3)",
+                  width: Math.min(cellSize, 100),
+                  height: Math.min(cellSize, 100),
+                }}
+              />
+            </DirectionalPad>
+            <SSButtonContainer w={cellSize / 1.5}>
+              <SSButton
+                callback={() => {
+                  updateSeed();
+                }}
+              />
+            </SSButtonContainer>
+            <Box display={"flex"} flexDirection={"column"}>
+              <LetterButtonContainer
+                w={cellSize * 1.125}
+                marginLeft={"-20%"}
+                mt={"10%"}
+              >
+                <LetterButton letter="X" color="#e24e4e" />
+                <LetterButton letter="Z" color="#5454a7" />
+              </LetterButtonContainer>
+              <LetterButtonContainer w={cellSize * 1.125}>
+                <LetterButton letter="B" color="#c89a3f" />
+                <LetterButton letter="A" color="#399a4e" />
+              </LetterButtonContainer>
+            </Box>
+          </ButtonArea>
+        ) : null}
         {/* </Console> */}
       </Box>
     </>

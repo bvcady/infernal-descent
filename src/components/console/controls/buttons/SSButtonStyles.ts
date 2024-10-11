@@ -12,7 +12,7 @@ export const SSButtonContainer = styled(Box)<{w: number}>`
   border-bottom: none;
   width: calc(var(--w) * 2);
   /* height: calc(var(--w)); */
-  padding: calc(var(--w) / 4);
+  padding: calc(var(--w) / 2);
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
   position: absolute;

@@ -5,7 +5,10 @@ import { MiniMap } from "../informative/MiniMap";
 import { PressHint } from "../informative/PressHint";
 import { Inventory } from "./inventory/Inventory";
 
-export const UIOverlay = () => {
+interface Props {
+  isMobile?: boolean;
+}
+export const UIOverlay = ({ isMobile }: Props) => {
   const {
     cellSize,
     showAHint,
@@ -64,7 +67,11 @@ export const UIOverlay = () => {
       <MiniMap />
       <Box
         id={"ui-screen"}
-        sx={{ boxSizing: "border-box", inset: 0 }}
+        sx={{
+          boxSizing: "border-box",
+          inset: 0,
+          bottom: isMobile ? cellSize * 3.5 : 0,
+        }}
         position={"absolute"}
         width={"100%"}
         padding={`${cellSize / 2}px`}

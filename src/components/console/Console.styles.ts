@@ -31,11 +31,13 @@ export const ScreenPadding = styled("div")<{w: number}>`
 
 export const ButtonAreaWrapper = styled("div")`
   position: fixed; 
+  left: 2rem;
+  right: 2rem;
   bottom: 0;
-  width: 100%;
+  padding-bottom: 2rem;
+  max-width: 100%;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
   grid-template-columns: repeat(3, 1fr);
-  padding-bottom: 2%;
 `;
