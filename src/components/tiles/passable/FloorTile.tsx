@@ -41,7 +41,6 @@ export const FloorTile = ({ cell, style = {} }: Props) => {
       gridRow={`${y + 1} / span 1`}
       bgcolor={"white"}
       borderRadius={"4px"}
-      sx={{ filter: "url(#displacementFilter)" }}
       // border={"1px solid white"}
     />
     // <DefaultTile style={{ ...style }} cell={cell} tileNumber={pickedTile} />

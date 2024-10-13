@@ -10,8 +10,6 @@ export const WallMap = () => {
   const { walls } = useStore(levelStore);
   const { player } = useStore(playerStore);
 
-  const seed = player ? player.x + player.x * player.y : 0;
-
   return (
     <GridWrapper
       style={{ pointerEvents: "none", filter: "url(#displacementFilter)" }}
@@ -26,7 +24,6 @@ export const WallMap = () => {
             baseFrequency={0.04}
             numOctaves="4"
             result="turbulence"
-            seed={seed}
           />
           <feDisplacementMap
             name="turbulenceResult"

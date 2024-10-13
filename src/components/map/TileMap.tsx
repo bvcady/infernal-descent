@@ -11,7 +11,11 @@ export const TileMap = () => {
   const { player } = useStore(playerStore);
 
   return (
-    <GridWrapper style={{}}>
+    <GridWrapper
+      style={{
+        filter: "url(#displacementFilter)",
+      }}
+    >
       {tiles.map((cell) => (
         <FloorTile key={`tile - ${cell.x} - ${cell.y}`} cell={cell} />
       ))}
