@@ -26,7 +26,7 @@ export default function Home() {
   // }, []);
   const { play } = usePlaySound({
     soundFile: "../../Audio/loop_two.wav",
-    options: { playbackRate: 1, loop: true, volume: 0.4 },
+    options: { playbackRate: 1.125, loop: true, volume: 0.4 },
   });
 
   useEffect(() => {

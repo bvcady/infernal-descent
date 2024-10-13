@@ -86,7 +86,7 @@ export const DefaultItem = ({
   }, [playerIsOn, inventory, items]);
 
   const animate = (time: number) => {
-    const speed = 1500;
+    const speed = 666.6666667 * 2;
     const isUp = time % speed < speed / 2;
 
     if (itemRef.current) {

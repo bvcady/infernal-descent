@@ -80,7 +80,7 @@ export const useMovement = ({ moveDirection, setMoveDirection }: Props) => {
   }, [shouldDoNextMove]);
 
   const animate = (time: number) => {
-    const one = 3000;
+    const one = 666.66666 * 4;
     const half = one / 2;
     const quart = half / 2;
     const eight = quart / 2;

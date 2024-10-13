@@ -10,26 +10,16 @@ interface Props {
 export const RockBottom = ({ cell }: Props) => {
   const { cellSize } = useStore(windowStore, (state) => state);
 
-  const x = cell?.x || 0;
-  const y = cell?.y || 0;
-
+  const x = cell?.x || -2;
+  const y = cell?.y || -2;
   return (
     <Box
-      width={cellSize * 0.9}
-      height={cellSize * 0.9}
-      sx={{
-        transform: `translateY(-75%) scale(${
-          (cell?.n || 0) > 0.5 ? 1 : -1
-        }, 1)`,
-        gridColumnStart: x + 1,
-        gridColumnEnd: "span 1",
-        gridRowStart: y + 1,
-        gridRowEnd: "span 1",
-        backgroundPosition: "center center",
-        backgroundSize: "contain",
-        backgroundRepeat: "no-repeat",
-        backgroundImage: `url("../../images/Monochrome/Tilemap/new_tile${10}.png")`,
-      }}
+      width={cellSize}
+      height={cellSize}
+      gridColumn={`${x + 1} / span 1`}
+      gridRow={`${y} / span 1`}
+      bgcolor={"black"}
+      // border={"1px solid white"}
     />
   );
 };

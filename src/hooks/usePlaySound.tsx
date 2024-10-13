@@ -37,7 +37,7 @@ export const usePlaySound = ({ soundFile, options }: Props) => {
   }, [soundFile]);
 
   const handlePlay = () => {
-    if (options?.playbackRate) {
+    if (!options?.playbackRate) {
       setPlaybackRate(scale([0, 1], [0.9, 1.1])(Math.random()));
     }
     if (!options?.shouldInterupt && sound?.playing()) {

@@ -10,9 +10,26 @@ const InventoryWrapper = styled(Box)`
   max-width: 100%;
   background-color: rgba(0, 0, 0, 0.8);
   display: flex;
+
   > div {
     zoom: 0.55;
   }
+`;
+
+const SquareInventory = styled(Box)`
+  top: 20dvh;
+  background-color: black;
+  border-radius: 4px;
+  zoom: 0.33;
+  margin-left: auto;
+  display: grid;
+  height: fit-content;
+  z-index: 100;
+  position: absolute;
+  grid-template-areas:
+    "inv1 inv2 inv3"
+    "inv8 face inv4"
+    "inv7 inv6 inv5";
 `;
 
 export const Inventory = () => {
@@ -20,16 +37,16 @@ export const Inventory = () => {
   const { cellSize, beat } = useStore(windowStore);
 
   return (
-    <Box
-      zIndex={2}
-      position={"absolute"}
-      width={"100%"}
-      display={"flex"}
-      flexDirection={"column"}
-      borderBottom={"2px solid rgba(0, 0, 0, 0.4)"}
-      sx={{ backdropFilter: "blur(12px)" }}
-    >
-      <>
+    <>
+      <Box
+        zIndex={2}
+        position={"absolute"}
+        width={"100%"}
+        display={"flex"}
+        flexDirection={"column"}
+        borderBottom={"2px solid rgba(0, 0, 0, 0.4)"}
+        sx={{ backdropFilter: "blur(12px)" }}
+      >
         <InventoryWrapper padding={`${cellSize / 10}px`} height={cellSize / 2}>
           {inventory?.items?.map((item) => {
             return <DefaultItem key={item.id} item={item} isStatic />;
@@ -69,58 +86,54 @@ export const Inventory = () => {
             </Box>
           </Box>
         </InventoryWrapper>
-        <InventoryWrapper
-          padding={`${cellSize / 10}px`}
-          height={cellSize / 2}
-          justifyContent={"center"}
-        >
-          {new Array(8).fill("").map((_, index) => {
-            const tile = inventory?.tiles.find((t) => t?.n === index);
-            if (!tile) {
-              return (
-                <Box
-                  key={index}
-                  sx={{
-                    position: "relative",
-                    width: `${cellSize}px`,
-                    aspectRatio: 1,
-                    transform:
-                      Math.floor(beat / 2) === index
-                        ? "translateY(-25%)"
-                        : "translateY(0%)",
-                  }}
-                >
-                  <DefaultItem key={index} customSpriteName="empty" isStatic />
-                </Box>
-              );
-            }
+      </Box>
+      <SquareInventory padding={`${cellSize / 10}px`} justifyContent={"center"}>
+        {new Array(8).fill("").map((_, index) => {
+          const tile = inventory?.tiles.find((t) => t?.n === index);
+          if (!tile) {
             return (
               <Box
-                key={`${tile.tile.x} - ${tile.tile.y} - ${tile.n}`}
+                key={index}
                 sx={{
+                  gridArea: `inv${index + 1}`,
                   position: "relative",
                   width: `${cellSize}px`,
                   aspectRatio: 1,
-                  transform:
-                    Math.floor(beat / 2) === index
-                      ? "translateY(-25%)"
-                      : "translateY(0%)",
+                  transform: `scale(${
+                    Math.floor(beat / 2) !== index ? 1 : 1.25
+                  })`,
                 }}
               >
-                <FloorTile
-                  style={{ position: "absolute", inset: 0 }}
-                  cell={tile.tile}
-                />
-                {tile.item ? (
-                  <Box sx={{ position: "absolute", inset: 0, zIndex: 2 }}>
-                    <DefaultItem key={index} item={tile.item} isStatic />
-                  </Box>
-                ) : null}
+                <DefaultItem key={index} customSpriteName="empty" isStatic />
               </Box>
             );
-          })}
-        </InventoryWrapper>
-      </>
-    </Box>
+          }
+          return (
+            <Box
+              key={`${tile.tile.x} - ${tile.tile.y} - ${tile.n}`}
+              sx={{
+                gridArea: `inv${index + 1}`,
+                position: "relative",
+                width: `${cellSize}px`,
+                aspectRatio: 1,
+                transform: `scale(${
+                  Math.floor(beat / 2) !== index ? 1 : 1.25
+                })`,
+              }}
+            >
+              <FloorTile
+                style={{ position: "absolute", inset: 0 }}
+                cell={tile.tile}
+              />
+              {tile.item ? (
+                <Box sx={{ position: "absolute", inset: 0, zIndex: 2 }}>
+                  <DefaultItem key={index} item={tile.item} isStatic />
+                </Box>
+              ) : null}
+            </Box>
+          );
+        })}
+      </SquareInventory>
+    </>
   );
 };

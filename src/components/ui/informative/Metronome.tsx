@@ -1,10 +1,9 @@
 import { usePlaySound } from "@/hooks/usePlaySound";
 import { windowStore } from "@/stores/WindowStore";
-import { Box } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useStore } from "zustand";
 
-const one = 1500;
+const one = 666.6666667 * 2;
 const half = one / 2;
 const quarter = half / 2;
 const eight = quarter / 2;

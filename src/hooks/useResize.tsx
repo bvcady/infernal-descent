@@ -21,7 +21,7 @@ export const useResize = () => {
     if (!hasLoaded) {
       setHasLoaded(true);
     }
-    setCellSize(Math.min(newCellSize * 2.5, 300));
+    setCellSize(Math.min(newCellSize * 4, 300));
   };
 
   useEffect(() => {
