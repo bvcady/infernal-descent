@@ -9,7 +9,6 @@ interface Props {
   dir: "ArrowUp" | "ArrowDown" | "ArrowLeft" | "ArrowRight";
 }
 export const ArrowButton = ({ dir, rotation = "0deg" }: Props) => {
-  const { cellSize } = useStore(windowStore);
   const keyboardRef = useRef<HTMLButtonElement>(null);
   const handleClick = (
     dir: "ArrowUp" | "ArrowDown" | "ArrowLeft" | "ArrowRight"
@@ -21,21 +20,14 @@ export const ArrowButton = ({ dir, rotation = "0deg" }: Props) => {
     keyboardRef?.current?.dispatchEvent(event);
   };
 
-  const maxDim = Math.min(cellSize, 100);
-
   return (
     <ArrowButtonWrapper
-      style={{
-        width: maxDim,
-        height: maxDim,
-        borderWidth: "4px",
-      }}
       ref={keyboardRef}
       {...{ position: dir, rotation }}
       onClick={(e) => {
         e.preventDefault();
         handleClick(dir);
       }}
-    ></ArrowButtonWrapper>
+    />
   );
 };

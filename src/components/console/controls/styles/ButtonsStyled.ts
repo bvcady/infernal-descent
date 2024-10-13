@@ -7,10 +7,12 @@ interface WrapperProps {
 }
 
 export const ArrowButtonWrapper = styled(ButtonBase)<WrapperProps>`
+  width: var(--uiW);
+  height: var(--uiW);
   display: grid;
   place-items: center;
   border-radius: 0.25rem;
-  border: 1px solid blanchedalmond;
+  border: calc(var(--uiW)/20) solid blanchedalmond;
   border-bottom: none;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
@@ -22,25 +24,25 @@ export const ArrowButtonWrapper = styled(ButtonBase)<WrapperProps>`
     css`
       grid-row: 1 / span 1;
       grid-column: 2 / span 1;
-      transform: translateY(4px) rotate(${rotation});
+      transform: translateY(calc(var(--uiW)/20)) rotate(${rotation});
     `}
     ${position === "ArrowLeft" &&
     css`
       grid-row: 2 / span 1;
       grid-column: 1 / span 1;
-      transform: translateX(4px) rotate(${rotation});
+      transform: translateX(calc(var(--uiW)/20)) rotate(${rotation});
     `}
       ${position === "ArrowDown" &&
     css`
       grid-row: 3 / span 1;
       grid-column: 2 / span 1;
-      transform: translateY(-4px) rotate(${rotation});
+      transform: translateY(calc(-1 * var(--uiW)/20)) rotate(${rotation});
     `}
       ${position === "ArrowRight" &&
     css`
       grid-row: 2 / span 1;
       grid-column: 3 / span 1;
-      transform: translateX(-4px) rotate(${rotation});
+      transform: translateX(calc(-1 * var(--uiW)/20)) rotate(${rotation});
     `}
   `}
 `;

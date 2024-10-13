@@ -7,16 +7,29 @@ import { useResize } from "@/hooks/useResize";
 import { playerStore } from "@/stores/PlayerStore";
 import { runStore } from "@/stores/RunStore";
 import { windowStore } from "@/stores/WindowStore";
-import { Box } from "@mui/material";
+import styled from "@emotion/styled";
 import { useEffect, useRef, useState } from "react";
 import { useStore } from "zustand";
+
+const GameWrapper = styled("main")<{ cellSize: number }>`
+  position: relative;
+  width: 100dvw;
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: start;
+
+  --w: ${({ cellSize }) => cellSize}px;
+  --uiW: ${({ cellSize }) => Math.min(36, cellSize)}px;
+`;
 
 export default function Home() {
   useResize();
   const mainRef = useRef<HTMLElement>(null);
 
   const [seed, setSeed] = useState<string>("");
-  const { toggleShowStartHint, toggleShowBHint, hasLoaded } =
+  const { toggleShowStartHint, toggleShowBHint, hasLoaded, cellSize } =
     useStore(windowStore);
 
   const { setPreviousRoom } = useStore(runStore);
@@ -48,19 +61,9 @@ export default function Home() {
   }, [seed]);
 
   return (
-    <Box
-      component={"main"}
-      position={"relative"}
-      width={"100dvw"}
-      height={"100dvh"}
-      overflow={"hidden"}
-      display={"flex"}
-      justifyContent={"center"}
-      alignItems={"flex-start"}
-      ref={mainRef}
-    >
+    <GameWrapper ref={mainRef} cellSize={cellSize}>
       {hasLoaded ? <RoomMap seed={seed} setSeed={setSeed} /> : null}
       <Metronome />
-    </Box>
+    </GameWrapper>
   );
 }

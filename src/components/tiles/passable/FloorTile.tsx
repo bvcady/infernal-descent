@@ -1,10 +1,9 @@
+import { windowStore } from "@/stores/WindowStore";
 import { Cell } from "@/types/Cell";
 import { scale } from "@/utils/scale";
-import { DefaultTile } from "../default/DefaultTile";
-import { CSSProperties } from "react";
 import { Box } from "@mui/material";
+import { CSSProperties } from "react";
 import { useStore } from "zustand";
-import { windowStore } from "@/stores/WindowStore";
 
 interface Props {
   cell?: Cell;

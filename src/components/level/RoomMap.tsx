@@ -270,12 +270,12 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
                 gridRow: "2 / span 1",
                 gridColumn: "2 / span 1",
                 backgroundColor: "rgba(0, 0, 0, 0.3)",
-                width: Math.min(cellSize, 100),
-                height: Math.min(cellSize, 100),
+                width: "var(--uiW)",
+                height: "var(--uiW)",
               }}
             />
           </DirectionalPad>
-          <SSButtonContainer w={cellSize / 1.5}>
+          <SSButtonContainer>
             <SSButton
               callback={() => {
                 updateSeed();
@@ -283,15 +283,11 @@ export const RoomMap = ({ seed, setSeed }: Props) => {
             />
           </SSButtonContainer>
           <Box display={"flex"} flexDirection={"column"}>
-            <LetterButtonContainer
-              w={cellSize * 1.125}
-              marginLeft={"-20%"}
-              mt={"10%"}
-            >
+            <LetterButtonContainer marginLeft={"-20%"} mt={"10%"}>
               <LetterButton letter="X" color="#e24e4e" />
               <LetterButton letter="Z" color="#5454a7" />
             </LetterButtonContainer>
-            <LetterButtonContainer w={cellSize * 1.125}>
+            <LetterButtonContainer>
               <LetterButton letter="B" color="#c89a3f" />
               <LetterButton letter="A" color="#399a4e" />
             </LetterButtonContainer>

@@ -9,12 +9,8 @@ interface Props {
 }
 
 export const ButtonArea = ({ children, isMobile }: Props) => {
-  const { cellSize } = useStore(windowStore);
   return (
-    <ButtonAreaWrapper
-      w={cellSize / 2}
-      style={{ visibility: isMobile ? "visible" : "hidden" }}
-    >
+    <ButtonAreaWrapper style={{ visibility: isMobile ? "visible" : "hidden" }}>
       {children}
     </ButtonAreaWrapper>
   );

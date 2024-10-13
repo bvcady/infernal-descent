@@ -24,7 +24,7 @@ const Wrapper = styled(Box)<{ focus: { x: number; y: number }; zoom: number }>`
   ${({ focus }) => css`
     transform: translate(${focus.x}px, ${focus.y}px);
   `}
-  transition: all 0.7s ease 0.35s;
+  transition: all 1.4s ease-out;
   /* transition: all 0.7s cubic-bezier(.55,-0.5,.67,.92) 0.35s; */
 
   /* Apply the turbulence here */

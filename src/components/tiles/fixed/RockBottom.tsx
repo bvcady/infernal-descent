@@ -19,7 +19,7 @@ export const RockBottom = ({ cell }: Props) => {
       gridColumn={`${x + 1} / span 1`}
       gridRow={`${y} / span 1`}
       bgcolor={"black"}
-      // border={"1px solid white"}
+      sx={{ filter: "url(#displacementFilter)" }}
     />
   );
 };

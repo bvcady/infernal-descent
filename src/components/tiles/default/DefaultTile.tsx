@@ -30,34 +30,25 @@ export const DefaultTile = ({
   children,
 }: Props) => {
   const { cellSize } = useStore(windowStore, (state) => state);
-  const bgPath = customPath
-    ? `url("../../${customPath}")`
-    : tileNumber >= 0
-    ? `url("../../images/Monochrome/Tilemap/new_tile${tileNumber + 1}.png")`
-    : undefined;
+  // const bgPath = customPath
+  //   ? `url("../../${customPath}")`
+  //   : tileNumber >= 0
+  //   ? `url("../../images/Monochrome/Tilemap/new_tile${tileNumber + 1}.png")`
+  //   : undefined;
+
+  const x = cell?.x || -2;
+  const y = cell?.y || -2;
+
   return (
     <Box
-      onClick={() => onClick?.()}
-      ref={tileRef}
-      className={className}
-      width={cellSize}
-      height={cellSize}
-      sx={{
-        backgroundColor: noBackground ? "transparent" : "black",
-        gridColumnStart: (cell?.x || 0) + 1,
-        gridRowStart: (cell?.y || 0) + 1,
-        gridColumnEnd: "span 1",
-        gridRowEnd: "span 1",
-        backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
-        pointerEvents: "none",
-        ...style,
-        backgroundImage: bgPath,
-        boxShadow: hasShadow ? `0 4px 4px 0 rgba(0, 0, 0, 0.6)` : "unset",
-        fontFamily: miniFont.style.fontFamily,
-        display: "grid",
-        placeItems: "center",
-      }}
+      width={cellSize * 0.9}
+      height={cellSize * 0.9}
+      gridColumn={`${x + 1} / span 1`}
+      gridRow={`${y + 1} / span 1`}
+      bgcolor={"white"}
+      borderRadius={"4px"}
+      sx={{ filter: "url(#displacementFilter)" }}
+      // border={"1px solid white"}
     >
       {children}
     </Box>

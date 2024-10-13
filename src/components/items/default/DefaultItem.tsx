@@ -28,7 +28,10 @@ interface Props {
 
 const AnimatedWrapper = styled(Box)``;
 
-const DefaultWrapper = styled(Box)``;
+const DefaultWrapper = styled(Box)`
+  width: var(--w);
+  height: var(--w);
+`;
 
 export const DefaultItem = ({
   item,
@@ -50,7 +53,7 @@ export const DefaultItem = ({
   const itemRef = useRef<HTMLDivElement>();
   const requestRef = useRef(0);
 
-  const { cellSize, toggleShowAHint, showAHint } = useStore(windowStore);
+  const { toggleShowAHint } = useStore(windowStore);
   const { player, inventory, addItem, heal, updateShards } =
     useStore(playerStore);
   const { setItems, items } = useStore(levelStore);
@@ -166,8 +169,6 @@ export const DefaultItem = ({
       }}
     >
       <DefaultWrapper
-        width={cellSize}
-        height={cellSize}
         sx={{
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
