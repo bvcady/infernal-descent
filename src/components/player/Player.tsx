@@ -32,9 +32,8 @@ export const Player = () => {
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           overflow: "visible",
-          backgroundImage: `url("../../images/dancie.gif")`,
+          backgroundImage: `url("../../images/main_guy.png")`,
           translate: "0 -30%",
-          filter: "url(#displacementFilter)",
         }}
       />
     </>

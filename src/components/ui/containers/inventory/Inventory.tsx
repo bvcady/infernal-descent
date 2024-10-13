@@ -16,20 +16,26 @@ const InventoryWrapper = styled(Box)`
   }
 `;
 
-const SquareInventory = styled(Box)`
-  top: 20dvh;
+const SquareInventory = styled("div")`
+  position: absolute;
+  top: 0;
+  left: 50%;
+  translate: -50% 0;
   background-color: black;
   border-radius: 4px;
-  zoom: 0.33;
-  margin-left: auto;
   display: grid;
-  height: fit-content;
   z-index: 100;
-  position: absolute;
+  padding: calc(var(--uiW) / 2);
+  margin: 0 auto;
+
   grid-template-areas:
     "inv1 inv2 inv3"
     "inv8 face inv4"
     "inv7 inv6 inv5";
+  div {
+    width: calc(var(--uiW));
+    height: calc(var(--uiW));
+  }
 `;
 
 export const Inventory = () => {
@@ -39,8 +45,8 @@ export const Inventory = () => {
   return (
     <>
       <Box
-        zIndex={2}
         position={"absolute"}
+        zIndex={2}
         width={"100%"}
         display={"flex"}
         flexDirection={"column"}
@@ -59,6 +65,7 @@ export const Inventory = () => {
                     .map((_, index) => (
                       <DefaultItem
                         key={index}
+                        ui
                         isStatic
                         customSpriteName={
                           stats.health > 6 &&
@@ -86,14 +93,30 @@ export const Inventory = () => {
             </Box>
           </Box>
         </InventoryWrapper>
-      </Box>
-      <SquareInventory padding={`${cellSize / 10}px`} justifyContent={"center"}>
-        {new Array(8).fill("").map((_, index) => {
-          const tile = inventory?.tiles.find((t) => t?.n === index);
-          if (!tile) {
+        <SquareInventory>
+          {new Array(8).fill("").map((_, index) => {
+            const tile = inventory?.tiles.find((t) => t?.n === index);
+            if (!tile) {
+              return (
+                <Box
+                  key={index}
+                  sx={{
+                    gridArea: `inv${index + 1}`,
+                    position: "relative",
+                    width: `${cellSize}px`,
+                    aspectRatio: 1,
+                    transform: `scale(${
+                      Math.floor(beat / 2) !== index ? 1 : 1.25
+                    })`,
+                  }}
+                >
+                  <DefaultItem key={index} customSpriteName="empty" isStatic />
+                </Box>
+              );
+            }
             return (
               <Box
-                key={index}
+                key={`${tile.tile.x} - ${tile.tile.y} - ${tile.n}`}
                 sx={{
                   gridArea: `inv${index + 1}`,
                   position: "relative",
@@ -104,36 +127,20 @@ export const Inventory = () => {
                   })`,
                 }}
               >
-                <DefaultItem key={index} customSpriteName="empty" isStatic />
+                <FloorTile
+                  style={{ position: "absolute", inset: 0 }}
+                  cell={tile.tile}
+                />
+                {tile.item ? (
+                  <Box sx={{ position: "absolute", inset: 0, zIndex: 2 }}>
+                    <DefaultItem key={index} item={tile.item} isStatic />
+                  </Box>
+                ) : null}
               </Box>
             );
-          }
-          return (
-            <Box
-              key={`${tile.tile.x} - ${tile.tile.y} - ${tile.n}`}
-              sx={{
-                gridArea: `inv${index + 1}`,
-                position: "relative",
-                width: `${cellSize}px`,
-                aspectRatio: 1,
-                transform: `scale(${
-                  Math.floor(beat / 2) !== index ? 1 : 1.25
-                })`,
-              }}
-            >
-              <FloorTile
-                style={{ position: "absolute", inset: 0 }}
-                cell={tile.tile}
-              />
-              {tile.item ? (
-                <Box sx={{ position: "absolute", inset: 0, zIndex: 2 }}>
-                  <DefaultItem key={index} item={tile.item} isStatic />
-                </Box>
-              ) : null}
-            </Box>
-          );
-        })}
-      </SquareInventory>
+          })}
+        </SquareInventory>
+      </Box>
     </>
   );
 };

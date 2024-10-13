@@ -24,13 +24,14 @@ interface Props {
   itemStyle?: CSSProperties;
   spriteStyle?: CSSProperties;
   positionOverride?: { x: number; y: number };
+  ui?: boolean;
 }
 
 const AnimatedWrapper = styled(Box)``;
 
-const DefaultWrapper = styled(Box)`
-  width: var(--w);
-  height: var(--w);
+const DefaultWrapper = styled(Box)<{ ui?: boolean }>`
+  width: ${({ ui }) => (ui ? "var(--uiW)" : "var(--w)")};
+  height: ${({ ui }) => (ui ? "var(--uiW)" : "var(--w)")};
 `;
 
 export const DefaultItem = ({
@@ -40,6 +41,7 @@ export const DefaultItem = ({
   itemStyle = {},
   spriteStyle = {},
   positionOverride,
+  ui,
 }: Props) => {
   const { play: playPickupSound } = usePlaySound({
     soundFile:
@@ -169,6 +171,7 @@ export const DefaultItem = ({
       }}
     >
       <DefaultWrapper
+        ui={ui}
         sx={{
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",

@@ -25,10 +25,33 @@ export const GridWrapper = ({ children, style = {} }: Props) => {
         gridTemplateRows: `repeat(${height}, ${cellSize}px)`,
         placeItems: "center",
         pointerEvents: "none",
+        filter: "url(#displacementFilter)",
         ...style,
       }}
     >
       {children}
+      <svg>
+        <filter id="displacementFilter">
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency={0.04}
+            numOctaves="4"
+            result="turbulence"
+          />
+          <feDisplacementMap
+            name="turbulenceResult"
+            in2="turbulence"
+            in="SourceGraphic"
+            scale={5}
+            xChannelSelector="A"
+            yChannelSelector="A"
+          />
+          <feGaussianBlur
+            in="turbulenceResult"
+            stdDeviation={(0.5).toString()}
+          />
+        </filter>
+      </svg>
     </Box>
   );
 };

@@ -5,13 +5,13 @@ export const SSButtonContainer = styled(Box)`
   flex-direction: column;
   justify-content: space-between;
 
-  border-radius: calc(var(--uiW) /4);
+  border-radius: calc(var(--uiW) / 8);
   background-color: rgba(0, 0, 0, 0.4);
   border: calc(var(--uiW)/20) solid blanchedalmond;
   border-bottom: none;
   width: calc(var(--uiW) * 2);
   /* height: calc(var(--uiW)); */
-  padding: calc(var(--uiW) / 2);
+  padding: calc(var(--uiW) / 4);
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
   position: absolute;

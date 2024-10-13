@@ -21,7 +21,7 @@ const GameWrapper = styled("main")<{ cellSize: number }>`
   align-items: start;
 
   --w: ${({ cellSize }) => cellSize}px;
-  --uiW: ${({ cellSize }) => Math.min(36, cellSize)}px;
+  --uiW: ${({ cellSize }) => Math.min(42, cellSize)}px;
 `;
 
 export default function Home() {

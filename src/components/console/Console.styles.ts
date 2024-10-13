@@ -31,10 +31,10 @@ export const ScreenPadding = styled("div")<{w: number}>`
 
 export const ButtonAreaWrapper = styled("div")`
   position: fixed; 
-  left: var(--uiW);
-  right: var(--uiW);
+  left: calc(var(--uiW)/2);
+  right: calc(var(--uiW)/2);
   bottom: 0;
-  padding-bottom: var(--uiW);
+  padding-bottom: calc(var(--uiW)/2);
   max-width: 100%;
   display: flex;
   justify-content: space-between;
